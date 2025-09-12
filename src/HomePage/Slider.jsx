@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import image1 from "../assets/Home/موكب موبايل يد 2.png";
-import image2 from "../assets/Home/موكب موبايل يد 2.png";
-import image3 from "../assets/Home/موكب موبايل يد 2.png";
 import looder from "../assets/Home/Isolation_Mode (2).png";
 import looder2 from "../assets/Home/Isolation_Mode.png";
 import looder3 from "../assets/Home/Isolation_Mode (1).png";
@@ -13,6 +10,7 @@ import { motion } from "framer-motion";
 import { fadeIn } from "../Framermotion/Varient";
 import playStore from "../assets/Home/google.png";
 import appStore from "../assets/Home/apple (1).png";
+import baseApi from "../api/baseApi";
 const MotionDiv = motion.div;
 
 const ProfessionalCarousel = ({ items, autoPlay = true, interval = 5000 }) => {
@@ -234,32 +232,57 @@ const ProfessionalCarousel = ({ items, autoPlay = true, interval = 5000 }) => {
 
 // Example usage
 const Slider = () => {
-  const carouselItems = [
-    {
-      id: 1,
-      image: image1,
-      paragraph: "انستا هيلث",
-      title: "حمل التطبيق الأن",
-      descriptionTwo:
-        "هي منصة لحجز خدمات الرعاية الصحية في منزلك بحيث تربط المرضى بالعديد من الخدمات الطبية  من خلال نخبة من  أفضل مقدمي الرعاية الصحية من المستشفيات و المراكز الطبية إما من خلال الزيارات المنزلية أو الاستشارات الطبية",
-    },
-    {
-      id: 2,
-      image: image2,
-      paragraph: " انستا هيلث",
-      title: "حمل التطبيق الأن",
-      descriptionTwo:
-        "هي منصة لحجز خدمات الرعاية الصحية في منزلك بحيث تربط المرضى بالعديد من الخدمات الطبية  من خلال نخبة من  أفضل مقدمي الرعاية الصحية من المستشفيات و المراكز الطبية إما من خلال الزيارات المنزلية أو الاستشارات الطبية",
-    },
-    {
-      id: 3,
-      image: image3,
-      paragraph: " انستا هيلث",
-      title: "حمل التطبيق الأن",
-      descriptionTwo:
-        "هي منصة لحجز خدمات الرعاية الصحية في منزلك بحيث تربط المرضى بالعديد من الخدمات الطبية  من خلال نخبة من  أفضل مقدمي الرعاية الصحية من المستشفيات و المراكز الطبية إما من خلال الزيارات المنزلية أو الاستشارات الطبية",
-    },
-  ];
+  const [carouselItems, setCarouselItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchAdvertisements = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const response = await baseApi.get("/Advertisments");
+        if (response.data.success) {
+          const advertisements = response.data.data.map((ad) => ({
+            id: ad.id,
+            image: ad.imageUrl,
+            paragraph: "انستا هيلث",
+            title: "حمل التطبيق الأن",
+            descriptionTwo: ad.description,
+          }));
+          setCarouselItems(advertisements);
+        } else {
+          setError("تعذر تحميل الإعلانات");
+        }
+      } catch {
+        setError("تعذر تحميل الإعلانات");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAdvertisements();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-secondary">
+        <div className="flex justify-center items-center h-[90vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-second"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-secondary">
+        <div className="flex justify-center items-center h-[90vh]">
+          <p className="text-center text-red-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-secondary">
