@@ -10,13 +10,17 @@ import ForgetPassword from "./Authinction/ForgetPassword";
 import ResetPassword from "./Authinction/ResetPassword";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import MainHome from "./HomePage/MainHome";
 
 function App() {
   return (
     <BrowserRouter>
       <ToastContainer />
       <Routes>
-        <Route path="/" element={<Layout />} />
+        <Route path="/" element={<Layout />}>
+          <Route index element={<MainHome />} />
+        </Route>
+
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/authenticate-email" element={<AuthenticateEmail />} />

@@ -289,8 +289,8 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen auth-container flex items-center justify-center p-4">
-      <div className="w-full max-w-3xl  mx-auto rounded-xl overflow-hidden">
+    <div className="min-h-screen auth-container flex items-center justify-center p-2">
+      <div className="w-full lg:max-w-3xl   mx-auto rounded-xl overflow-hidden">
         <div className=" p-8 rtl:text-right">
           <Link to={"/"}>
             <img src={logo} alt="Logo" className="mt-0 mb-2 mx-auto w-20" />
