@@ -3,7 +3,7 @@ import { FaChevronDown, FaChevronUp, FaBars, FaTimes } from "react-icons/fa";
 import { FiLock, FiLogIn, FiLogOut, FiUser } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext";
-import navlogo from "../assets/Home/insta health 1.png";
+import navlogo from "../assets/Home/LOGO(INSTA HEALTH).svg";
 import { toast } from "react-toastify";
 
 const Navbar = () => {
@@ -100,9 +100,9 @@ const Navbar = () => {
     <nav className="bg-white shadow-md  z-50 sticky top-0">
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-2">
         {/* Logo + Menu Toggle (for xl and below) */}
-        <div className="flex justify-between  items-center h-20 xl:hidden">
+        <div className="flex justify-between  items-center h-24 xl:hidden">
           <Link to={"/"}>
-            <img src={navlogo} alt="navlogo" className="w-[70px]" />
+            <img src={navlogo} alt="navlogo" className="w-[90px]" />
           </Link>
           <button
             onClick={toggleMobileMenu}
@@ -113,9 +113,9 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Nav (visible on xl+) */}
-        <div className="hidden xl:flex justify-around p-4 space-x-20 items-center ">
+        <div className="hidden xl:flex justify-around p-2 space-x-20 items-center ">
           <Link to={"/"}>
-            <img src={navlogo} alt="navlogo" className="w-[80px]" />
+            <img src={navlogo} alt="navlogo" className="w-[100px]" />
           </Link>
           <div className="flex items-center gap-10">
             {navItems.map((item) =>
