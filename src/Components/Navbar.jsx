@@ -138,7 +138,7 @@ const Navbar = () => {
                     )}
                   </button>
                   <div
-                    className={`absolute z-10 rtl:-right-13 rtl:top-15 ltr:left-0 mt-0 w-56 origin-top-right rounded-[12px] bg-white shadow-[0px_0px_4px_0px_#B5D0C5] transition-all duration-300 ease-out ${
+                    className={`absolute z-10 rtl:-right-13 rtl:top-15  ltr:left-0  w-56 origin-top-right rounded-[12px] bg-white shadow-[0px_0px_4px_0px_#B5D0C5] transition-all duration-300 ease-out ${
                       isServicesOpen === item.name
                         ? "opacity-100 scale-100"
                         : "opacity-0 scale-95 pointer-events-none"
@@ -207,7 +207,7 @@ const Navbar = () => {
 
         {/* Mobile Menu (shown on xl and below) */}
         {mobileMenuOpen && (
-          <div className="xl:hidden bg-white shadow-lg rounded-b-lg absolute top-16 left-0 right-0 z-[10000]">
+          <div className="xl:hidden bg-white shadow-lg rounded-b-lg absolute top-24 left-0 right-0 z-[10000]">
             <div className="px-2 pt-2 pb-3 space-y-1 rtl:text-right">
               {navItems.map((item) =>
                 item.subItems ? (
