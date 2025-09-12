@@ -5,7 +5,7 @@ import baseApi from "../api/baseApi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthContext } from "../Context/AuthContext";
-import logo from "../assets/Home/insta health 1.png";
+import logo from "../assets/Home/LOGO(INSTA HEALTH).svg";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
@@ -165,7 +165,7 @@ const Login = () => {
       <div className="flex flex-col max-w-2xl  items-center justify-center w-full gap-10 rounded-xl overflow-hidden">
         <div className="w-full  p-8 rtl:text-right">
           <Link to={"/"} className="cursor-pointer ">
-            <img src={logo} alt="Logo" className="w-[90px] mx-auto " />
+            <img src={logo} alt="Logo" className="w-[100px] mx-auto " />
           </Link>
           <h2 className="text-3xl text-center  font-bold text-gray-800 mb-2">
             تسجيل الدخول

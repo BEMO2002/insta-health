@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import baseApi from "../api/baseApi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import logo from "../assets/Home/insta health 1.png";
+import logo from "../assets/Home/LOGO(INSTA HEALTH).svg";
 
 import { FaCamera } from "react-icons/fa";
 import Cropper from "react-easy-crop";
@@ -293,7 +293,11 @@ const Signup = () => {
       <div className="w-full lg:max-w-3xl   mx-auto rounded-xl overflow-hidden">
         <div className=" p-8 rtl:text-right">
           <Link to={"/"}>
-            <img src={logo} alt="Logo" className="mt-0 mb-2 mx-auto w-20" />
+            <img
+              src={logo}
+              alt="Logo"
+              className="mt-0 mb-2 mx-auto w-[100px]"
+            />
           </Link>
           <h2 className="text-[36px] text-center  font-bold text-[#313131] mb-2">
             إنشاء حساب
