@@ -2,12 +2,12 @@ import React from "react";
 
 const items = [
   {
-    icon: "/src/assets/HOME/why (1).png",
+    icon: "/why (1).png",
     title: "دفع الكتروني",
   },
-  { icon: "/src/assets/HOME/why (2).png", title: "متابعة دورية" },
+  { icon: "/why (2).png", title: "متابعة دورية" },
   {
-    icon: "/src/assets/HOME/why (3).png",
+    icon: "/why (3).png",
     title: "ملف طبي للمريض",
   },
 ];
