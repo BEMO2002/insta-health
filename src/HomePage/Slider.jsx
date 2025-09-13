@@ -55,7 +55,7 @@ const ProfessionalCarousel = ({ items, autoPlay = true, interval = 5000 }) => {
 
   return (
     <div
-      className="relative bg-baseThree z-2 w-full h-[90vh] max-h-screen overflow-hidden lg:pt-10 md:pt-40 pt-14 "
+      className="relative bg-baseThree z-2 w-full h-[90vh] max-h-screen overflow-hidden lg:pt-10 md:pt-40 pt-20 "
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       aria-live="polite"
@@ -105,17 +105,17 @@ const ProfessionalCarousel = ({ items, autoPlay = true, interval = 5000 }) => {
             <img
               src={looder2}
               alt=""
-              className="absolute opacity-30 lg:opacity-55 md:opacity-100 md:right-20 right-5 bottom-0 w-40  z-50"
+              className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 md:right-20 right-5 bottom-0 w-40  z-50"
             />
             <img
               src={looder3}
               alt=""
-              className="absolute opacity-30 lg:opacity-55 md:opacity-100 md:left-20 left-5 bottom-0 w-40 z-50  "
+              className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 md:left-20 left-5 bottom-0 w-40 z-50  "
             />
             <img
               src={looder4}
               alt=""
-              className="absolute opacity-30 lg:opacity-55 md:opacity-100 right-0 top-20 "
+              className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 right-0 top-20 "
             />
 
             <div
