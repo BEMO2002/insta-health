@@ -8,6 +8,7 @@ import SliderOne from "./SliderOne";
 import Work from "./Work";
 import Testimonials from "./Testimonials";
 import Faq from "./Faq";
+import ServiceItems from "./ServiceItems";
 
 const MainHome = () => {
   return (
@@ -19,6 +20,7 @@ const MainHome = () => {
       <Numbers />
       <SliderOne />
       <Work />
+      <ServiceItems />
       <Testimonials />
       <Faq />
     </>

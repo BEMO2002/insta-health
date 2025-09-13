@@ -14,6 +14,10 @@ export const Services = () => {
       src: "/scientists-examining-tissue-samples-microscope-laboratory-with-digital-displays-graphs 1.png",
       label: "المعامل",
     },
+    {
+      src: "/pharam.jpg",
+      label: "الصيدليات",
+    },
   ];
 
   return (
@@ -54,24 +58,24 @@ export const Services = () => {
         initial="hidden"
         whileInView="show"
         viewport={{ once: false, amount: 0 }}
-        className="py-20 root hidden lg:block"
+        className="py-20 p-8 root hidden lg:block"
       >
-        <div className="container mx-auto mb-3  cursor-pointer">
+        <div className="container mx-auto max-w-7xl mb-3  cursor-pointer">
           <div className="flex items-center justify-center flex-col gap-3 ">
-            <span className="mx-4 text-xl lg:text-3xl font-bold">خدماتنا</span>
+            <span className="mx-4 text-xl lg:text-3xl text-second font-bold">خدماتنا</span>
             <p className="mx-4 text-lg lg:text-2xl font-semibold">
               كل قطاعات المجال الصحي بين ايديك
             </p>
           </div>
 
-          <div className="container mx-auto flex items-center flex-col lg:flex-row gap-x-3 gap-y-3 list-image mt-8 car-top">
+          <div className="container mx-auto flex items-center flex-col lg:flex-row gap-x-3 gap-y-3 list-image mt-8 ">
             {images.map((item, index) => (
               <div
                 key={index}
                 onMouseOver={() => {
                   setActiveIndex(index);
                 }}
-                className={`h-[200px] lg:h-[600px] rounded-2xl cursor-pointer overflow-hidden relative transition-all duration-300 ${
+                className={`h-[200px] lg:h-[600px]  rounded-2xl cursor-pointer overflow-hidden relative transition-all duration-300 ${
                   activeIndex === index ? "active" : ""
                 }`}
               >

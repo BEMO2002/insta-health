@@ -41,7 +41,7 @@ const SliderOne = () => {
 
       <div className="w-full max-w-6xl mx-auto py-4 px-2">
         <div className="flex items-center justify-center gap-3 mb-4">
-          <h2 className="text-center font-bold text-2xl md:text-3xl ">
+          <h2 className="text-center font-bold text-2xl md:text-3xl text-second">
             شركاء النجاح
           </h2>
         </div>

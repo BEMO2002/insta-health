@@ -113,9 +113,9 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Nav (visible on xl+) */}
-        <div className="hidden xl:flex justify-around p-2 space-x-20 items-center ">
+        <div className="hidden xl:flex justify-around p-2 space-x-10 items-center ">
           <Link to={"/"}>
-            <img src={navlogo} alt="navlogo" className="w-[100px]" />
+            <img src={navlogo} alt="navlogo" className="w-[80px]" />
           </Link>
           <div className="flex items-center gap-10">
             {navItems.map((item) =>

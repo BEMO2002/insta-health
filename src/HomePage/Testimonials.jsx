@@ -82,12 +82,12 @@ const Testimonials = () => {
           </div>
 
           {/* Main title */}
-          <h2 className="text-4xl md:text-5xl text-center lg:text-6xl font-bold mb-6 text-primary leading-tight">
+          <h2 className="text-3xl md:text-3xl text-center lg:text-4xl font-bold mb-6 text-primary leading-tight">
             تجارب حقيقية مع خدماتنا الطبية
           </h2>
 
           {/* Subtitle */}
-          <p className="text-xl text-gray-600 max-w-3xl text-center mx-auto leading-relaxed">
+          <p className="text-lg text-gray-600 max-w-3xl text-center mx-auto leading-relaxed">
             نوفر زيارات منزلية، تحاليل بالمنزل، واستشارات عن بُعد عبر فريق طبي
             معتمد.
           </p>
@@ -116,15 +116,15 @@ const Testimonials = () => {
             {testimonials.map((testimonial) => (
               <SwiperSlide key={testimonial.id}>
                 <div className="group h-full">
-                  <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-gray-100 mb-3 shadow-xl flex flex-col h-[420px] transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:bg-white relative overflow-hidden">
+                  <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-gray-100 mb-3 shadow-xl flex flex-col h-[320px] transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:bg-white relative overflow-hidden">
                     {/* Decorative gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-second/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-second/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
 
                     {/* Quote icon */}
                     <div
                       className={`absolute ${
                         isRTL ? "left-6" : "right-6"
-                      } top-6 text-primary/10 group-hover:text-primary/20 transition-colors duration-300`}
+                      } top-6 text-primary group-hover:text-primary transition-colors duration-300`}
                     >
                       <svg
                         width="40"

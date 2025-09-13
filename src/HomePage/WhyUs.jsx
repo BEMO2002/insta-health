@@ -30,7 +30,7 @@ const WhyUS = () => {
     <section className="bg-white py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-4">
         <div className="mx-auto max-w-md text-center">
-          <h2 className="text-2xl font-bold uppercase tracking-wide  md:text-3xl">
+          <h2 className="text-2xl font-bold uppercase tracking-wide  md:text-3xl text-second">
             ليه تختارنا؟
           </h2>
         </div>

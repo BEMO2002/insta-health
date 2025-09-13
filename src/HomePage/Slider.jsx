@@ -100,22 +100,22 @@ const ProfessionalCarousel = ({ items, autoPlay = true, interval = 5000 }) => {
             <img
               src={looder}
               alt=""
-              className="absolute opacity-30 lg:opacity-100 md:opacity-100 md:left-20 left-5 top-0 w-40  z-5"
+              className="absolute opacity-30 lg:opacity-100 md:opacity-100 md:left-20 left-5 top-0 w-40  z-50"
             />
             <img
               src={looder2}
               alt=""
-              className="absolute opacity-30 lg:opacity-55 md:opacity-100 md:right-20 right-5 bottom-0 w-40  z-5"
+              className="absolute opacity-30 lg:opacity-55 md:opacity-100 md:right-20 right-5 bottom-0 w-40  z-50"
             />
             <img
               src={looder3}
               alt=""
-              className="absolute opacity-30 lg:opacity-55 md:opacity-100 md:left-20 left-5 bottom-0 w-40  z-5"
+              className="absolute opacity-30 lg:opacity-55 md:opacity-100 md:left-20 left-5 bottom-0 w-40 z-50  "
             />
             <img
               src={looder4}
               alt=""
-              className="absolute opacity-30 lg:opacity-55 md:opacity-100 right-0 top-20  z-5"
+              className="absolute opacity-30 lg:opacity-55 md:opacity-100 right-0 top-20 "
             />
 
             <div
@@ -157,13 +157,13 @@ const ProfessionalCarousel = ({ items, autoPlay = true, interval = 5000 }) => {
                   initial="hidden"
                   whileInView="show"
                   viewport={{ once: false, amount: 0 }}
-                  className="w-full lg:w-1/2 relative z-10"
+                  className="w-full lg:w-1/2 relative z-40  "
                 >
-                  <div className="relative w-full h-full flex items-center justify-center">
+                  <div className="relative w-full h-full flex items-center  justify-center">
                     <img
                       src={item.image}
                       alt={item.alt || `Slide ${index + 1}`}
-                      className="w-full h-auto md:max-h-[1320px] object-contain rounded-xl"
+                      className="w-full h-auto md:max-h-[1320px]  object-contain rounded-xl"
                     />
                   </div>
                 </MotionDiv>
