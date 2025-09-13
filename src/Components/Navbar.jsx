@@ -190,6 +190,13 @@ const Navbar = () => {
                   <FiLogIn className="mr-2" size={23} />
                   تسجيل الدخول
                 </Link>
+                <Link
+                  to="/provider"
+                  className="min-w-[156px] min-h-[48px] text-center bg-gradient-to-r from-second to-primary text-white px-[16px] py-[8px] rounded-[8px] text-[15px] font-[700] flex items-center justify-center hover:bg-primary duration-300"
+                >
+                  <FiUser className="mr-2" size={20} />
+                  هل انت مقدم خدمة
+                </Link>
               </div>
             ) : (
               <>
@@ -268,6 +275,14 @@ const Navbar = () => {
                     >
                       <FiLogIn className="mr-2" size={20} />
                       تسجيل الدخول
+                    </Link>
+                    <Link
+                      to="/provider"
+                      className="bg-gradient-to-r from-second to-primary text-white px-4 py-2 rounded-md text-md font-medium flex items-center justify-center hover:bg-primary duration-300"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <FiUser className="mr-2" size={20} />
+                      هل انت مقدم خدمة
                     </Link>
                   </>
                 ) : (
