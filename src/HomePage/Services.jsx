@@ -26,7 +26,7 @@ export const Services = () => {
       <section id="About" className="py-16 p-4 root lg:hidden">
         <div className="container mx-auto mb-3">
           <div className="flex items-center justify-center flex-col gap-3 ">
-            <span className="mx-4 text-xl font-bold">خدماتنا</span>
+            <span className="mx-4 text-xl font-bold text-second">خدماتنا</span>
             <p className="mx-4 text-lg font-semibold">
               كل قطاعات المجال الصحي بين ايديك
             </p>
@@ -62,7 +62,9 @@ export const Services = () => {
       >
         <div className="container mx-auto max-w-7xl mb-3  cursor-pointer">
           <div className="flex items-center justify-center flex-col gap-3 ">
-            <span className="mx-4 text-xl lg:text-3xl text-second font-bold">خدماتنا</span>
+            <span className="mx-4 text-xl lg:text-3xl text-second font-bold">
+              خدماتنا
+            </span>
             <p className="mx-4 text-lg lg:text-2xl font-semibold">
               كل قطاعات المجال الصحي بين ايديك
             </p>
