@@ -1,6 +1,12 @@
 import React, { useState, useContext } from "react";
 import { FaChevronDown, FaChevronUp, FaBars, FaTimes } from "react-icons/fa";
-import { FiLock, FiLogIn, FiLogOut, FiUser } from "react-icons/fi";
+import {
+  FiLock,
+  FiLogIn,
+  FiLogOut,
+  FiUser,
+  FiChevronDown as FiChevronDownIcon,
+} from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext";
 import navlogo from "../assets/Home/LOGO(INSTA HEALTH).svg";
@@ -9,7 +15,9 @@ import { toast } from "react-toastify";
 const Navbar = () => {
   const { isAuthenticated, logout } = useContext(AuthContext);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const [isAuthDropdownOpen, setIsAuthDropdownOpen] = useState(false);
   const [dropdownTimeout, setDropdownTimeout] = useState(null);
+  const [authDropdownTimeout, setAuthDropdownTimeout] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openMobileDropdown, setOpenMobileDropdown] = useState(null);
   const navigate = useNavigate();
@@ -32,6 +40,26 @@ const Navbar = () => {
 
   const handleDropdownMouseLeave = () => {
     setIsServicesOpen(false);
+  };
+
+  const handleAuthMouseEnter = () => {
+    clearTimeout(authDropdownTimeout);
+    setIsAuthDropdownOpen(true);
+  };
+
+  const handleAuthMouseLeave = () => {
+    const timeout = setTimeout(() => {
+      setIsAuthDropdownOpen(false);
+    }, 300);
+    setAuthDropdownTimeout(timeout);
+  };
+
+  const handleAuthDropdownMouseEnter = () => {
+    clearTimeout(authDropdownTimeout);
+  };
+
+  const handleAuthDropdownMouseLeave = () => {
+    setIsAuthDropdownOpen(false);
   };
 
   const toggleMobileDropdown = (itemName) => {
@@ -59,22 +87,6 @@ const Navbar = () => {
     { name: "الصفحة الرئيسية", path: "/" },
 
     {
-      name: "عن انستا هلث",
-      subItems: [
-        { name: "من نحن", path: "/about" },
-        { name: "كلمة الرئيس", path: "/president-message" },
-        { name: "مجلس الإدارة", path: "/council" },
-        { name: "المديرين", path: "/Captain" },
-        { name: "فروع النقابة", path: "/address" },
-        { name: "اللجان التخصصية", path: "/committees" },
-        {
-          name: "المختبرات والمكاتب المجازه",
-          path: "/laboratories-and-offices",
-        },
-      ],
-    },
-
-    {
       name: "الخدمات الطبية",
       subItems: [
         { name: "انتساب جديد", path: "/member" },
@@ -92,8 +104,6 @@ const Navbar = () => {
       ],
     },
 
-    { name: "المجلة العلمية", path: "/journal" },
-    { name: "الأسئلة الشائعة", path: "/faq" },
     { name: "اتصل بنا", path: "/contact" },
   ];
   return (
@@ -113,11 +123,11 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Nav (visible on xl+) */}
-        <div className="hidden xl:flex justify-around p-2 space-x-10 items-center ">
-          <Link to={"/"}>
-            <img src={navlogo} alt="navlogo" className="w-[80px]" />
-          </Link>
+        <div className="hidden xl:flex justify-around p-2 h-[80px]  items-center ">
           <div className="flex items-center gap-10">
+            <Link to={"/"}>
+              <img src={navlogo} alt="navlogo" className="w-[80px]" />
+            </Link>
             {navItems.map((item) =>
               item.subItems ? (
                 <div
@@ -127,14 +137,14 @@ const Navbar = () => {
                   onMouseLeave={handleMouseLeave}
                 >
                   <button
-                    className="relative text-primary p-2 text-[13px] font-[800] flex items-center rounded-md hover:bg-second hover:text-white transition-colors duration-300"
+                    className="relative text-primary p-2 text-[13px] font-[800] flex items-center flex-row-reverse rounded-md hover:bg-second hover:text-white transition-colors duration-300"
                     aria-expanded={isServicesOpen === item.name}
                   >
                     {item.name}
                     {isServicesOpen === item.name ? (
-                      <FaChevronUp className="w-4 h-4 mr-1 mt-1" />
+                      <FaChevronUp className="w-4 h-4 ml-1" />
                     ) : (
-                      <FaChevronDown className="w-4 h-4 mr-1 mt-1 " />
+                      <FaChevronDown className="w-4 h-4 ml-1 " />
                     )}
                   </button>
                   <div
@@ -175,29 +185,58 @@ const Navbar = () => {
           {/* Desktop Auth Buttons */}
           <div className="flex items-center gap-3">
             {!isAuthenticated ? (
-              <div className="flex gap-4">
-                <Link
-                  to="/signup"
-                  className="min-w-[156px] min-h-[48px] text-center bg-second text-white px-[16px] py-[8px] rounded-[8px] text-[15px] font-[700] flex items-center justify-center hover:bg-primary duration-300"
+              <>
+                {/* Auth Dropdown */}
+                <div
+                  className="relative"
+                  onMouseEnter={handleAuthMouseEnter}
+                  onMouseLeave={handleAuthMouseLeave}
                 >
-                  <FiLock className="mr-2" size={20} />
-                  التسجيل
-                </Link>
-                <Link
-                  to="/login"
-                  className="min-w-[156px] min-h-[48px] text-center text-second border-2 border-second rounded-[8px] px-[16px] py-[8px] text-[15px] font-[700] flex items-center justify-center hover:bg-second hover:text-white duration-300"
-                >
-                  <FiLogIn className="mr-2" size={23} />
-                  تسجيل الدخول
-                </Link>
+                  <butto
+                    className="w-12 h-12 text-center text-second border-2 border-second  rounded-full p-3 text-[15px] font-[700] flex items-center justify-center hover:bg-second hover:text-white duration-300"
+                    aria-expanded={isAuthDropdownOpen}
+                  >
+                    <FiUser size={20} />
+                  </butto>
+
+                  <div
+                    className={`absolute z-20 rtl:-right-0 rtl:top-15 ltr:left-0 w-48 origin-top-right rounded-[12px] bg-white shadow-[0px_4px_20px_0px_rgba(0,0,0,0.15)] transition-all duration-300 ease-out ${
+                      isAuthDropdownOpen
+                        ? "opacity-100 scale-100"
+                        : "opacity-0 scale-95 pointer-events-none"
+                    }`}
+                    role="menu"
+                    onMouseEnter={handleAuthDropdownMouseEnter}
+                    onMouseLeave={handleAuthDropdownMouseLeave}
+                  >
+                    <div className="py-2">
+                      <Link
+                        to="/signup"
+                        className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-second hover:text-white transition-colors duration-150"
+                      >
+                        <FiLock className="ml-3" size={18} />
+                        انشاء حساب
+                      </Link>
+                      <Link
+                        to="/login"
+                        className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-second hover:text-white transition-colors duration-150"
+                      >
+                        <FiLogIn className="ml-3" size={18} />
+                        تسجيل الدخول
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Provider Button - Separate */}
                 <Link
                   to="/provider"
-                  className="min-w-[156px] min-h-[48px] text-center bg-gradient-to-r from-second to-primary text-white px-[16px] py-[8px] rounded-[8px] text-[15px] font-[700] flex items-center justify-center hover:bg-primary duration-300"
+                  className="min-w-[156px] min-h-[48px] text-center bg-second text-white px-[16px] py-[8px] rounded-[8px] text-[15px] font-[700] flex items-center justify-center hover:bg-primary duration-300"
                 >
-                  <FiUser className="mr-2" size={20} />
-                  هل انت مقدم خدمة
+                  <FiUser className="ml-2" size={20} />
+                  هل انت مقدم خدمة ؟
                 </Link>
-              </div>
+              </>
             ) : (
               <>
                 <button
@@ -207,6 +246,13 @@ const Navbar = () => {
                   <FiLogOut className="ml-2" size={23} />
                   تسجيل الخروج
                 </button>
+                <Link
+                  to="/provider"
+                  className="min-w-[156px] min-h-[48px] text-center bg-second text-white px-[16px] py-[8px] rounded-[8px] text-[15px] font-[700] flex items-center justify-center hover:bg-primary duration-300"
+                >
+                  <FiUser className="ml-2" size={20} />
+                  هل انت مقدم خدمة ؟
+                </Link>
               </>
             )}
           </div>

@@ -4,8 +4,7 @@ import looder from "../assets/Home/Isolation_Mode (2).png";
 import looder2 from "../assets/Home/Isolation_Mode.png";
 import looder3 from "../assets/Home/Isolation_Mode (1).png";
 import looder4 from "../assets/Home/Polygon 1.png";
-import looder5 from "../assets/Home/Polygon 2.png";
-import mouse from "../assets/Home/wireless-mouse_3355048 1.png";
+
 import { motion } from "framer-motion";
 import { fadeIn } from "../Framermotion/Varient";
 import playStore from "../assets/Home/google.png";
@@ -55,7 +54,7 @@ const ProfessionalCarousel = ({ items, autoPlay = true, interval = 5000 }) => {
 
   return (
     <div
-      className="relative bg-baseThree z-2 w-full h-[90vh] max-h-screen overflow-hidden lg:pt-10 md:pt-40 pt-20 "
+      className="relative bg-baseThree z-2 w-full h-[90vh] max-h-screen overflow-hidden lg:pt-10 md:pt-40 pt-30 "
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       aria-live="polite"
@@ -143,7 +142,7 @@ const ProfessionalCarousel = ({ items, autoPlay = true, interval = 5000 }) => {
                     </p>
                   )}
                   {item.title && (
-                    <h3 className="text-lg md:text-3xl lg:text-5xl font-bold mb-2 text-base">
+                    <h3 className="text-lg md:text-3xl lg:text-[32px] font-bold mb-2 lg:mt-[60px] text-base">
                       {item.title}
                     </h3>
                   )}
@@ -171,27 +170,6 @@ const ProfessionalCarousel = ({ items, autoPlay = true, interval = 5000 }) => {
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Centered CTA above indicators (triangle pointing down, content upright) */}
-      <div className="absolute left-1/2 -translate-x-1/2 md:bottom-24 bottom-10 z-20 select-none">
-        <div className="relative w-[180px] h-[120px]  mx-auto">
-          <img
-            src={looder5}
-            alt=""
-            className="absolute inset-0 hidden lg:block  object-contain "
-          />
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-white font-bold">
-            <span className="text-sm hidden lg:block md:text-white lg:text-lg mt-1">
-              اعرف أكثر
-            </span>
-            <img
-              src={mouse}
-              alt=""
-              className=" md:w-16 w-12 mt-2 animate-bounce "
-            />
-          </div>
-        </div>
       </div>
 
       {/* Navigation Arrows - Always Visible */}

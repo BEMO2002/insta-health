@@ -23,7 +23,7 @@ export const Services = () => {
   return (
     <>
       {/* Mobile (no animation) */}
-      <section id="About" className="py-16 p-4 root lg:hidden">
+      <section id="About" className="py-[24px] p-4 root lg:hidden">
         <div className="container mx-auto mb-3">
           <div className="flex items-center justify-center flex-col gap-3 ">
             <span className="mx-4 text-xl font-bold text-second">خدماتنا</span>

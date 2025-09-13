@@ -4,7 +4,7 @@ import looder4 from "../assets/Home/Polygon 3.png";
 
 const AboutTwo = () => {
   return (
-    <div className="relative py-16 md:py-24">
+    <div className="relative py-[24px] md:py-24">
       <img
         src={looder4}
         alt=""
@@ -16,7 +16,7 @@ const AboutTwo = () => {
           <img
             src={AboutTwoImage}
             alt="About Two"
-            className=" rounded-lg  object-cover shadow-lg"
+            className=" rounded-lg  object-cover "
           />
         </div>
         {/* Right Side: Text */}
