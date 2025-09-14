@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   FaMapMarkerAlt,
@@ -12,11 +12,21 @@ import Filtration from "../Components/Filtration";
 
 const Providers = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // States
   const [providers, setProviders] = useState([]);
-  const [filteredProviders, setFilteredProviders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [pageIndex, setPageIndex] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [isDataChanging, setIsDataChanging] = useState(false);
+  const pageSize = 5;
+
+  // Ref for fetchProviders to prevent re-creation
+  const fetchProvidersRef = useRef();
+
+  // Filters state
   const [filters, setFilters] = useState({
     governorateId: null,
     cityId: null,
@@ -39,81 +49,148 @@ const Providers = () => {
     });
   }, [searchParams]);
 
-  useEffect(() => {
-    const fetchProviders = async () => {
-      try {
-        setLoading(true);
-        const response = await baseApi.get("/ServicesProviders");
+  // Fetch providers function
+  const fetchProviders = useCallback(async () => {
+    try {
+      setLoading(true);
+      setIsDataChanging(true);
 
-        if (response.data.success) {
-          setProviders(response.data.data.items);
-          setFilteredProviders(response.data.data.items);
-        } else {
-          setError("فشل في تحميل البيانات");
-        }
-      } catch (err) {
-        setError("حدث خطأ في تحميل البيانات");
-        console.error("Error fetching providers:", err);
-      } finally {
-        setLoading(false);
+      const params = {
+        PageIndex: pageIndex,
+        PageSize: pageSize,
+      };
+
+      // Add filters to API parameters
+      if (filters.specialityId) {
+        params.MedicalSpecialityId = filters.specialityId;
       }
-    };
+      if (filters.governorateId) {
+        params.GovernorateId = filters.governorateId;
+      }
+      if (filters.cityId) {
+        params.CityId = filters.cityId;
+      }
+      if (filters.searchTerm) {
+        params.SearchName = filters.searchTerm;
+      }
 
-    fetchProviders();
-  }, []);
+      const response = await baseApi.get("/ServicesProviders", { params });
 
-  // Filter providers based on selected filters
+      if (response.data.success) {
+        // Add delay for smooth transition
+        setTimeout(() => {
+          setProviders(response.data.data.items);
+          setTotalCount(response.data.data.count);
+          setIsDataChanging(false);
+        }, 300);
+      } else {
+        setError("فشل في تحميل البيانات");
+        setIsDataChanging(false);
+      }
+    } catch (err) {
+      setError("حدث خطأ في تحميل البيانات");
+      console.error("Error fetching providers:", err);
+      setIsDataChanging(false);
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    pageIndex,
+    filters.specialityId,
+    filters.governorateId,
+    filters.cityId,
+    filters.searchTerm,
+    pageSize,
+  ]);
+
+  // Update ref when fetchProviders changes
   useEffect(() => {
-    let filtered = [...providers];
+    fetchProvidersRef.current = fetchProviders;
+  }, [fetchProviders]);
 
-    // Filter by search term
-    if (filters.searchTerm) {
-      filtered = filtered.filter(
-        (provider) =>
-          provider.name
-            .toLowerCase()
-            .includes(filters.searchTerm.toLowerCase()) ||
-          provider.description
-            .toLowerCase()
-            .includes(filters.searchTerm.toLowerCase())
-      );
+  // Fetch data when filters or page changes
+  useEffect(() => {
+    fetchProvidersRef.current();
+  }, [
+    pageIndex,
+    filters.specialityId,
+    filters.governorateId,
+    filters.cityId,
+    filters.searchTerm,
+    pageSize,
+  ]);
+
+  // Handle filter changes
+  const handleFilterChange = useCallback(
+    (newFilters) => {
+      // Check if filters actually changed
+      const filtersChanged =
+        newFilters.specialityId !== filters.specialityId ||
+        newFilters.governorateId !== filters.governorateId ||
+        newFilters.cityId !== filters.cityId ||
+        newFilters.searchTerm !== filters.searchTerm;
+
+      setFilters(newFilters);
+
+      // Only reset to page 1 if filters actually changed
+      if (filtersChanged) {
+        setPageIndex(1);
+      }
+
+      // Update URL parameters
+      const newParams = {};
+      if (newFilters.specialityId) {
+        newParams.speciality = newFilters.specialityId.toString();
+      }
+      if (newFilters.governorateId) {
+        newParams.governorate = newFilters.governorateId.toString();
+      }
+      if (newFilters.cityId) {
+        newParams.city = newFilters.cityId.toString();
+      }
+      if (newFilters.searchTerm) {
+        newParams.search = newFilters.searchTerm;
+      }
+
+      setSearchParams(newParams, { replace: true });
+    },
+    [
+      setSearchParams,
+      filters.specialityId,
+      filters.governorateId,
+      filters.cityId,
+      filters.searchTerm,
+    ]
+  );
+
+  // Handle page change
+  const handlePageChange = useCallback(
+    (newPage) => {
+      if (newPage >= 1 && newPage <= Math.ceil(totalCount / pageSize)) {
+        setPageIndex(newPage);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    },
+    [totalCount, pageSize]
+  );
+
+  // Generate page numbers for pagination
+  const getPageNumbers = useCallback(() => {
+    const totalPages = Math.ceil(totalCount / pageSize);
+    const maxPagesToShow = 5;
+    const pages = [];
+    let startPage = Math.max(1, pageIndex - Math.floor(maxPagesToShow / 2));
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+    if (endPage - startPage + 1 < maxPagesToShow) {
+      startPage = Math.max(1, endPage - maxPagesToShow + 1);
     }
 
-    // Filter by speciality
-    if (filters.specialityId) {
-      filtered = filtered.filter(
-        (provider) => provider.specialityId === filters.specialityId
-      );
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
     }
-
-    // Filter by governorate
-    if (filters.governorateId) {
-      filtered = filtered.filter(
-        (provider) =>
-          provider.cityId &&
-          provider.goverorateName === getGovernorateName(filters.governorateId)
-      );
-    }
-
-    // Filter by city
-    if (filters.cityId) {
-      filtered = filtered.filter(
-        (provider) => provider.cityId === filters.cityId
-      );
-    }
-
-    setFilteredProviders(filtered);
-  }, [providers, filters]);
-
-  const getGovernorateName = () => {
-    // This would need to be implemented based on your governorate data
-    // For now, we'll use the existing governorateName from the provider data
-    return null;
-  };
-
-  const handleFilterChange = useCallback((newFilters) => {
-    setFilters(newFilters);
-  }, []);
+    return pages;
+  }, [pageIndex, totalCount, pageSize]);
 
   if (loading) {
     return (
@@ -139,7 +216,14 @@ const Providers = () => {
     );
   }
 
-  if (providers.length === 0) {
+  // Check if there are any active filters
+  const hasActiveFilters =
+    filters.specialityId ||
+    filters.governorateId ||
+    filters.cityId ||
+    filters.searchTerm;
+
+  if (providers.length === 0 && !loading && !hasActiveFilters) {
     return (
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
@@ -150,6 +234,8 @@ const Providers = () => {
       </section>
     );
   }
+
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
     <section className="py-16 bg-gray-50">
@@ -171,11 +257,19 @@ const Providers = () => {
           initialSearchTerm={filters.searchTerm}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProviders.map((provider) => (
+        <div
+          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-all duration-500 ${
+            isDataChanging ? "opacity-50 scale-95" : "opacity-100 scale-100"
+          }`}
+        >
+          {providers.map((provider, index) => (
             <div
               key={provider.id}
-              className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden"
+              className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden animate-fade-in-up"
+              style={{
+                animationDelay: `${index * 100}ms`,
+                animationFillMode: "both",
+              }}
             >
               <div className="relative">
                 <img
@@ -248,11 +342,46 @@ const Providers = () => {
           ))}
         </div>
 
-        {filteredProviders.length === 0 && providers.length > 0 && (
+        {providers.length === 0 && !loading && (
           <div className="text-center py-12">
             <p className="text-gray-600 text-lg">
               لا توجد نتائج مطابقة للفلاتر المحددة
             </p>
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {totalCount > pageSize && (
+          <div className="flex justify-center items-center mt-8 space-x-2">
+            <button
+              onClick={() => handlePageChange(pageIndex - 1)}
+              disabled={pageIndex === 1}
+              className="px-4 py-2 bg-second text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              السابق
+            </button>
+
+            {getPageNumbers().map((page) => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`px-4 py-2 rounded-lg ${
+                  page === pageIndex
+                    ? "bg-primary text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button
+              onClick={() => handlePageChange(pageIndex + 1)}
+              disabled={pageIndex === totalPages}
+              className="px-4 py-2 bg-second text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              التالي
+            </button>
           </div>
         )}
       </div>
@@ -263,6 +392,21 @@ const Providers = () => {
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
+        }
+        
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .animate-fade-in-up {
+          animation: fade-in-up 0.6s ease-out;
         }
       `}</style>
     </section>

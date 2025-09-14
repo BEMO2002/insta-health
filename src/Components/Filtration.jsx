@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { FaChevronDown, FaSearch, FaTimes } from "react-icons/fa";
 import baseApi from "../api/baseApi";
 
@@ -9,6 +9,7 @@ const Filtration = ({
   initialCityId,
   initialSearchTerm,
 }) => {
+  // Data states
   const [governorates, setGovernorates] = useState([]);
   const [cities, setCities] = useState([]);
   const [specialities, setSpecialities] = useState([]);
@@ -19,24 +20,29 @@ const Filtration = ({
   });
 
   // Filter states
-  const [selectedGovernorate, setSelectedGovernorate] = useState(
-    initialGovernorateId || null
-  );
-  const [selectedCity, setSelectedCity] = useState(initialCityId || null);
-  const [selectedSpeciality, setSelectedSpeciality] = useState(
-    initialSpecialityId || null
-  );
+  const [selectedGovernorate, setSelectedGovernorate] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(null);
+  const [selectedSpeciality, setSelectedSpeciality] = useState(null);
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm || "");
+  const [isFiltering, setIsFiltering] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
 
   // Dropdown states
   const [isGovernorateOpen, setIsGovernorateOpen] = useState(false);
   const [isCityOpen, setIsCityOpen] = useState(false);
   const [isSpecialityOpen, setIsSpecialityOpen] = useState(false);
 
-  // Use ref to prevent infinite loops
-  const isUpdatingFromProps = useRef(false);
+  // Refs
+  const searchTimeoutRef = useRef(null);
+  const isInitialized = useRef(false);
+  const onFilterChangeRef = useRef(onFilterChange);
 
-  // Fetch Governorates
+  // Update ref when onFilterChange changes
+  useEffect(() => {
+    onFilterChangeRef.current = onFilterChange;
+  }, [onFilterChange]);
+
+  // Fetch Governorates - only once
   useEffect(() => {
     const fetchGovernorates = async () => {
       try {
@@ -54,7 +60,7 @@ const Filtration = ({
     fetchGovernorates();
   }, []);
 
-  // Fetch Medical Specialities
+  // Fetch Medical Specialities - only once
   useEffect(() => {
     const fetchSpecialities = async () => {
       try {
@@ -72,42 +78,9 @@ const Filtration = ({
     fetchSpecialities();
   }, []);
 
-  // Update filters when initial values change
-  useEffect(() => {
-    isUpdatingFromProps.current = true;
-
-    if (initialSpecialityId !== selectedSpeciality?.id) {
-      setSelectedSpeciality(
-        initialSpecialityId ? { id: initialSpecialityId } : null
-      );
-    }
-    if (initialGovernorateId !== selectedGovernorate?.id) {
-      setSelectedGovernorate(
-        initialGovernorateId ? { id: initialGovernorateId } : null
-      );
-    }
-    if (initialCityId !== selectedCity?.id) {
-      setSelectedCity(initialCityId ? { id: initialCityId } : null);
-    }
-    if (initialSearchTerm !== searchTerm) {
-      setSearchTerm(initialSearchTerm || "");
-    }
-
-    // Reset flag after a short delay
-    setTimeout(() => {
-      isUpdatingFromProps.current = false;
-    }, 100);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    initialSpecialityId,
-    initialGovernorateId,
-    initialCityId,
-    initialSearchTerm,
-  ]);
-
   // Fetch Cities when governorate changes
   useEffect(() => {
-    if (selectedGovernorate) {
+    if (selectedGovernorate?.id) {
       const fetchCities = async () => {
         try {
           setLoading((prev) => ({ ...prev, cities: true }));
@@ -131,12 +104,61 @@ const Filtration = ({
     }
   }, [selectedGovernorate]);
 
-  // Apply filters when any filter changes
+  // Initialize filters from props - only when data is loaded and not already initialized
   useEffect(() => {
-    // Don't send filters if we're updating from props
-    if (isUpdatingFromProps.current) {
+    if (loading.governorates || loading.specialities || isInitialized.current) {
       return;
     }
+
+    // Set speciality
+    if (initialSpecialityId && specialities.length > 0) {
+      const speciality = specialities.find(
+        (item) => item.id === initialSpecialityId
+      );
+      if (speciality) {
+        setSelectedSpeciality(speciality);
+      }
+    }
+
+    // Set governorate
+    if (initialGovernorateId && governorates.length > 0) {
+      const governorate = governorates.find(
+        (item) => item.id === initialGovernorateId
+      );
+      if (governorate) {
+        setSelectedGovernorate(governorate);
+      }
+    }
+
+    // Set search term
+    if (initialSearchTerm) {
+      setSearchTerm(initialSearchTerm);
+    }
+
+    isInitialized.current = true;
+  }, [
+    initialSpecialityId,
+    initialGovernorateId,
+    initialSearchTerm,
+    specialities,
+    governorates,
+    loading.governorates,
+    loading.specialities,
+  ]);
+
+  // Set city after cities are loaded
+  useEffect(() => {
+    if (initialCityId && cities.length > 0) {
+      const city = cities.find((item) => item.id === initialCityId);
+      if (city) {
+        setSelectedCity(city);
+      }
+    }
+  }, [initialCityId, cities]);
+
+  // Apply filters with debounce - only when not initializing
+  useEffect(() => {
+    if (!isInitialized.current) return;
 
     const filters = {
       governorateId: selectedGovernorate?.id || null,
@@ -145,14 +167,29 @@ const Filtration = ({
       searchTerm: searchTerm.trim(),
     };
 
-    onFilterChange(filters);
-  }, [
-    selectedGovernorate,
-    selectedCity,
-    selectedSpeciality,
-    searchTerm,
-    onFilterChange,
-  ]);
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // Show loading with smooth transition
+    setIsFiltering(true);
+    setTimeout(() => setShowLoading(true), 100); // Small delay for smooth appearance
+
+    searchTimeoutRef.current = setTimeout(() => {
+      onFilterChangeRef.current(filters);
+      // Hide loading with smooth transition
+      setTimeout(() => {
+        setShowLoading(false);
+        setTimeout(() => setIsFiltering(false), 300); // Wait for fade out
+      }, 600); // Show loading for a bit longer
+    }, 1000); // Increased debounce time to 1000ms (1 second)
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [selectedGovernorate, selectedCity, selectedSpeciality, searchTerm]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -170,91 +207,114 @@ const Filtration = ({
     };
   }, []);
 
-  const handleGovernorateSelect = (governorate) => {
+  // Event handlers
+  const handleGovernorateSelect = useCallback((governorate) => {
     setSelectedGovernorate(governorate);
     setSelectedCity(null);
     setIsGovernorateOpen(false);
-  };
+  }, []);
 
-  const handleCitySelect = (city) => {
+  const handleCitySelect = useCallback((city) => {
     setSelectedCity(city);
     setIsCityOpen(false);
-  };
+  }, []);
 
-  const handleSpecialitySelect = (speciality) => {
+  const handleSpecialitySelect = useCallback((speciality) => {
     setSelectedSpeciality(speciality);
     setIsSpecialityOpen(false);
-  };
+  }, []);
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setSelectedGovernorate(null);
     setSelectedCity(null);
     setSelectedSpeciality(null);
     setSearchTerm("");
-  };
+  }, []);
 
-  const Dropdown = ({
-    isOpen,
-    setIsOpen,
-    selectedItem,
-    items,
-    onSelect,
-    placeholder,
-    loading: isLoading,
-    disabled = false,
-  }) => (
-    <div className="relative dropdown-container">
-      <button
-        type="button"
-        onClick={() => !disabled && setIsOpen(!isOpen)}
-        disabled={disabled}
-        className={`w-full px-4 py-3 text-right border border-gray-300 rounded-lg bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-second focus:border-transparent transition-colors duration-200 ${
-          disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
-        }`}
-      >
-        <div className="flex items-center justify-between">
-          <FaChevronDown
-            className={`text-gray-400 transition-transform duration-200 ${
-              isOpen ? "rotate-180" : ""
-            }`}
-          />
-          <span
-            className={`${selectedItem ? "text-gray-900" : "text-gray-500"}`}
-          >
-            {selectedItem
-              ? selectedItem.arabicName || selectedItem.name
-              : placeholder}
-          </span>
-        </div>
-      </button>
+  // Dropdown component
+  const Dropdown = useCallback(
+    ({
+      isOpen,
+      setIsOpen,
+      selectedItem,
+      items,
+      onSelect,
+      placeholder,
+      loading: isLoading,
+      disabled = false,
+    }) => (
+      <div className="relative dropdown-container">
+        <button
+          type="button"
+          onClick={() => !disabled && setIsOpen(!isOpen)}
+          disabled={disabled}
+          className={`w-full px-4 py-3 text-right border border-gray-300 rounded-lg bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-second focus:border-transparent transition-colors duration-200 ${
+            disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <FaChevronDown
+              className={`text-gray-400 transition-transform duration-200 ${
+                isOpen ? "rotate-180" : ""
+              }`}
+            />
+            <span
+              className={`${selectedItem ? "text-gray-900" : "text-gray-500"}`}
+            >
+              {selectedItem
+                ? selectedItem.arabicName || selectedItem.name || "غير محدد"
+                : placeholder}
+            </span>
+          </div>
+        </button>
 
-      {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-          {isLoading ? (
-            <div className="p-4 text-center">
-              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-second mx-auto"></div>
-            </div>
-          ) : (
-            items.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => onSelect(item)}
-                className="w-full px-4 py-3 text-right hover:bg-second hover:text-white transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg"
-              >
-                {item.arabicName || item.name}
-              </button>
-            ))
-          )}
-        </div>
-      )}
-    </div>
+        {isOpen && (
+          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            {isLoading ? (
+              <div className="p-4 text-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-second mx-auto"></div>
+              </div>
+            ) : items.length > 0 ? (
+              items.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onSelect(item)}
+                  className="w-full px-4 py-3 text-right hover:bg-second hover:text-white transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg"
+                >
+                  {item.arabicName || item.name || "غير محدد"}
+                </button>
+              ))
+            ) : (
+              <div className="p-4 text-center text-gray-500">
+                لا توجد عناصر متاحة
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    ),
+    []
   );
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-primary">فلترة النتائج</h3>
+        <div className="flex items-center gap-3">
+          <h3 className="text-xl font-bold text-primary">فلترة النتائج</h3>
+          {isFiltering && (
+            <div
+              className={`flex items-center gap-2 text-sm text-gray-500 transition-all duration-300 ${
+                showLoading
+                  ? "opacity-100 translate-x-0"
+                  : "opacity-0 -translate-x-2"
+              }`}
+            >
+              <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary"></div>
+              <span>جاري التحديث...</span>
+            </div>
+          )}
+        </div>
         <button
           onClick={clearFilters}
           className="flex items-center text-gray-500 hover:text-red-600 transition-colors duration-200"
@@ -279,6 +339,15 @@ const Filtration = ({
               placeholder="ابحث عن اسم الخدمة..."
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-second focus:border-transparent"
             />
+            {isFiltering && searchTerm && (
+              <div
+                className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
+                  showLoading ? "opacity-100 scale-100" : "opacity-0 scale-75"
+                }`}
+              >
+                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary"></div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -336,61 +405,64 @@ const Filtration = ({
       {(selectedGovernorate ||
         selectedCity ||
         selectedSpeciality ||
-        searchTerm) && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <div className="flex flex-wrap gap-2">
-            <span className="text-sm text-gray-600">الفلاتر النشطة:</span>
+        searchTerm) &&
+        !loading.governorates &&
+        !loading.specialities &&
+        !loading.cities && (
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="flex flex-wrap gap-2">
+              <span className="text-sm text-gray-600">الفلاتر النشطة:</span>
 
-            {selectedSpeciality && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-second text-white">
-                {selectedSpeciality.name}
-                <button
-                  onClick={() => setSelectedSpeciality(null)}
-                  className="mr-2 hover:text-red-200"
-                >
-                  <FaTimes size={12} />
-                </button>
-              </span>
-            )}
+              {selectedSpeciality?.name && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-second text-white">
+                  {selectedSpeciality.name}
+                  <button
+                    onClick={() => setSelectedSpeciality(null)}
+                    className="mr-2 hover:text-red-200"
+                  >
+                    <FaTimes size={12} />
+                  </button>
+                </span>
+              )}
 
-            {selectedGovernorate && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary text-white">
-                {selectedGovernorate.arabicName}
-                <button
-                  onClick={() => setSelectedGovernorate(null)}
-                  className="mr-2 hover:text-red-200"
-                >
-                  <FaTimes size={12} />
-                </button>
-              </span>
-            )}
+              {selectedGovernorate?.arabicName && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary text-white">
+                  {selectedGovernorate.arabicName}
+                  <button
+                    onClick={() => setSelectedGovernorate(null)}
+                    className="mr-2 hover:text-red-200"
+                  >
+                    <FaTimes size={12} />
+                  </button>
+                </span>
+              )}
 
-            {selectedCity && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-600 text-white">
-                {selectedCity.arabicName}
-                <button
-                  onClick={() => setSelectedCity(null)}
-                  className="mr-2 hover:text-red-200"
-                >
-                  <FaTimes size={12} />
-                </button>
-              </span>
-            )}
+              {selectedCity?.arabicName && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-600 text-white">
+                  {selectedCity.arabicName}
+                  <button
+                    onClick={() => setSelectedCity(null)}
+                    className="mr-2 hover:text-red-200"
+                  >
+                    <FaTimes size={12} />
+                  </button>
+                </span>
+              )}
 
-            {searchTerm && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-600 text-white">
-                "{searchTerm}"
-                <button
-                  onClick={() => setSearchTerm("")}
-                  className="mr-2 hover:text-red-200"
-                >
-                  <FaTimes size={12} />
-                </button>
-              </span>
-            )}
+              {searchTerm && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-600 text-white">
+                  "{searchTerm}"
+                  <button
+                    onClick={() => setSearchTerm("")}
+                    className="mr-2 hover:text-red-200"
+                  >
+                    <FaTimes size={12} />
+                  </button>
+                </span>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 };
