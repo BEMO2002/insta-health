@@ -20,16 +20,18 @@ const CounterBox = ({ end, label }) => {
   );
 };
 
-const Numbers = () => {
+const NumbersTwo = () => {
   const numbersData = [
-    { end: 330, label: "استشارة" },
-    { end: 850, label: "مريض" },
-    { end: 25, label: "زيارة منزلية" },
-    { end: 5, label: "مقدم خدمة" },
-    { end: 150, label: "مستشفى" },
-    { end: 89, label: "معمل" },
-    { end: 45, label: "مركز اشعة" },
-    { end: 320, label: "عيادة طبيب" },
+    { end: 67, label: "مراكز متخصصة" },
+    { end: 180, label: "ممرض" },
+    { end: 420, label: "طبيب" },
+    { end: 25, label: "شركة خدمات" },
+    { end: 38, label: "مستلزمات طبية" },
+    { end: 12, label: "اسعاف خاص" },
+    { end: 95, label: "جهاز طبي" },
+    { end: 156, label: "مستلزمات طبية" },
+    { end: 1250, label: "متلقي خدمة" },
+    { end: 890, label: "عمليه حجز" },
   ];
 
   return (
@@ -86,4 +88,4 @@ const Numbers = () => {
   );
 };
 
-export default Numbers;
+export default NumbersTwo;

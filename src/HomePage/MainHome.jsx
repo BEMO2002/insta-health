@@ -9,18 +9,22 @@ import Work from "./Work";
 import Testimonials from "./Testimonials";
 import Faq from "./Faq";
 import ServiceItems from "./ServiceItems";
+import NumbersTwo from "./NumbersTwo";
+// import Search from "./Search";
 
 const MainHome = () => {
   return (
     <>
       <Slider />
-      <AboutTwo />
-      <Services />
+      {/* <Search /> */}
       <WhyUs />
-      <Numbers />
+      <Services />
       <SliderOne />
-      <Work />
       <ServiceItems />
+      <Work />
+      <AboutTwo />
+      <Numbers />
+      <NumbersTwo />
       <Testimonials />
       <Faq />
     </>

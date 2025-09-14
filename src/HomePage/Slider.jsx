@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import looder from "../assets/Home/Isolation_Mode (2).png";
 import looder2 from "../assets/Home/Isolation_Mode.png";
@@ -10,56 +10,18 @@ import { fadeIn } from "../Framermotion/Varient";
 import playStore from "../assets/Home/google.png";
 import appStore from "../assets/Home/apple (1).png";
 import baseApi from "../api/baseApi";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import Search from "./Search";
+
 const MotionDiv = motion.div;
 
-const ProfessionalCarousel = ({ items, autoPlay = true, interval = 5000 }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const timerRef = useRef(null);
-
-  const goToNext = useCallback(() => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === items.length - 1 ? 0 : prevIndex + 1
-    );
-    resetTimer();
-  }, [items.length]);
-
-  const goToPrev = useCallback(() => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? items.length - 1 : prevIndex - 1
-    );
-    resetTimer();
-  }, [items.length]);
-
-  const goToSlide = useCallback((index) => {
-    setCurrentIndex(index);
-    resetTimer();
-  }, []);
-
-  const resetTimer = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-  };
-
-  useEffect(() => {
-    if (!autoPlay || isPaused) return;
-
-    timerRef.current = setTimeout(goToNext, interval);
-
-    return () => {
-      resetTimer();
-    };
-  }, [currentIndex, isPaused, autoPlay, interval, goToNext]);
-
+const ProfessionalCarousel = ({ items }) => {
   return (
-    <div
-      className="relative bg-baseThree z-2 w-full h-[90vh] max-h-screen overflow-hidden lg:pt-10 md:pt-40 pt-30 "
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div className="relative  z-2 w-full h-[100vh] max-h-screen  ">
       {/* Animated Floating Circles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-5">
         {/* Circle 1 */}
@@ -84,126 +46,142 @@ const ProfessionalCarousel = ({ items, autoPlay = true, interval = 5000 }) => {
         <div className="absolute bottom-1/2 left-1/6 w-6 h-6 bg-primary/20 rounded-full animate-bounce-scale"></div>
       </div>
 
-      {/* Slides */}
-      <div className="relative w-full h-full transition-transform duration-700 ease-in-out">
+      {/* Swiper Container */}
+      <Swiper
+        modules={[Autoplay, Navigation, Pagination]}
+        spaceBetween={0}
+        slidesPerView={1}
+        autoplay={{
+          delay: 6000,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: false,
+        }}
+        navigation={{
+          nextEl: ".swiper-button-next-custom",
+          prevEl: ".swiper-button-prev-custom",
+        }}
+        pagination={{
+          clickable: true,
+          el: ".swiper-pagination-custom",
+          bulletClass: "swiper-pagination-bullet-custom",
+          bulletActiveClass: "swiper-pagination-bullet-active-custom",
+        }}
+        loop={true}
+        className="w-full h-full"
+      >
         {items.map((item, index) => (
-          <div
-            key={item.id || index}
-            className={`absolute inset-0 w-full h-full flex items-center justify-center transition-opacity duration-700 ${
-              index === currentIndex
-                ? "opacity-100"
-                : "opacity-0 pointer-events-none"
-            }`}
-            aria-hidden={index !== currentIndex}
-          >
-            <img
-              src={looder}
-              alt=""
-              className="absolute opacity-30 lg:opacity-100 md:opacity-100 md:left-20 left-5 top-0 w-40  z-50"
-            />
-            <img
-              src={looder2}
-              alt=""
-              className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 md:right-20 right-5 bottom-0 w-40  z-50"
-            />
-            <img
-              src={looder3}
-              alt=""
-              className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 md:left-20 left-5 bottom-0 w-40 z-50  "
-            />
-            <img
-              src={looder4}
-              alt=""
-              className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 right-0 top-20 "
-            />
+          <SwiperSlide key={item.id || index}>
+            <div className="relative w-full h-full flex items-center overflow-hidden justify-center">
+              <img
+                src={looder}
+                alt=""
+                className="absolute opacity-30 lg:opacity-100 md:opacity-100 md:left-20 left-5 top-0 w-40 z-50"
+              />
+              <img
+                src={looder2}
+                alt=""
+                className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 md:right-20 right-5 bottom-0 w-40 z-50"
+              />
+              <img
+                src={looder3}
+                alt=""
+                className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 md:left-20 left-5 bottom-0 w-40 z-50"
+              />
+              <img
+                src={looder4}
+                alt=""
+                className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 right-0 top-20 z-50"
+              />
 
-            <div
-              className="container mx-auto px-4 py-12 relative z-10"
-              dir="rtl"
-            >
-              <div className="flex flex-col lg:flex-row items-center text-right gap-8 lg:gap-5">
-                {/* Text Section */}
-                <MotionDiv
-                  variants={fadeIn("down", 0.2)}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: false, amount: 0 }}
-                  className="w-full lg:w-1/2 relative z-20"
-                >
-                  {item.paragraph && (
-                    <h2 className="text-2xl font-[700] p-2 px-6 w-fit ml-auto border border-base hover:bg-second hover:text-white transition-all duration-300 cursor-pointer rounded-full  mb-4 text-black leading-tight">
-                      {item.paragraph}
+              <div
+                className="container mx-auto px-4 py-12 relative z-10"
+                dir="rtl"
+              >
+                <div className="flex flex-col lg:flex-row items-center text-right gap-8 lg:gap-5">
+                  {/* Text Section */}
+                  <MotionDiv
+                    variants={fadeIn("down", 0.2)}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: false, amount: 0 }}
+                    className="w-full lg:w-1/2 relative z-[9999]"
+                  >
+                    <h2 className="text-2xl font-[700] p-2 px-6 w-fit ml-auto border border-base hover:bg-second hover:text-white transition-all duration-300 cursor-pointer rounded-full mb-4 text-black leading-tight">
+                      {item.paragraph || "انستا هيلث"}
                     </h2>
-                  )}
 
-                  {item.descriptionTwo && (
-                    <p className="text-sm md:text-lg lg:text-xl font-semibold md:w-[520px] ml-auto text-base mt-5 mb-6">
-                      {item.descriptionTwo}
-                    </p>
-                  )}
-                  {item.title && (
-                    <h3 className="text-lg md:text-3xl lg:text-[32px] font-bold mb-2 lg:mt-[60px] text-base">
-                      {item.title}
-                    </h3>
-                  )}
-                  <div className="flex gap-2 mt-5">
-                    <img src={playStore} alt="" className="lg:w-52 w-32" />
-                    <img src={appStore} alt="" className="lg:w-52 w-32" />
-                  </div>
-                </MotionDiv>
-                <MotionDiv
-                  variants={fadeIn("right", 0.2)}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: false, amount: 0 }}
-                  className="w-full lg:w-1/2 relative z-40  "
-                >
-                  <div className="relative w-full h-full flex items-center  justify-center">
-                    <img
-                      src={item.image}
-                      alt={item.alt || `Slide ${index + 1}`}
-                      className="w-full h-auto md:max-h-[1320px]  object-contain rounded-xl"
-                    />
-                  </div>
-                </MotionDiv>
+                    {item.descriptionTwo && (
+                      <p className="text-sm md:text-lg lg:text-xl font-semibold md:w-[520px] ml-auto text-base mt-5 mb-6">
+                        {item.descriptionTwo}
+                      </p>
+                    )}
+                    {item.title && (
+                      <h3 className="text-lg md:text-3xl lg:text-[32px] font-bold mb-2 lg:mt-[50px] text-base">
+                        {item.title}
+                      </h3>
+                    )}
+                    <div className="flex gap-2 mt-5">
+                      <img src={playStore} alt="" className="lg:w-52 w-32" />
+                      <img src={appStore} alt="" className="lg:w-52 w-32" />
+                    </div>
+                    {/* Search Component */}
+                    <div className=" items-start ml-auto max-w-lg mt-2 relative z-[9999]">
+                      <Search />
+                    </div>
+                  </MotionDiv>
+                  <MotionDiv
+                    variants={fadeIn("right", 0.2)}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: false, amount: 0 }}
+                    className="w-full lg:w-1/2 relative"
+                  >
+                    <div className="relative w-full h-full flex items-center justify-center">
+                      <img
+                        src={item.image}
+                        alt={item.alt || `Slide ${index + 1}`}
+                        className="w-full md:h-auto h-[400px]   object-contain rounded-xl"
+                      />
+                    </div>
+                  </MotionDiv>
+                </div>
               </div>
             </div>
-          </div>
+          </SwiperSlide>
         ))}
-      </div>
+      </Swiper>
 
-      {/* Navigation Arrows - Always Visible */}
-      <button
-        onClick={goToPrev}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 shadow-lg bg-white text-black hover:bg-black hover:text-white transition duration-300"
-        aria-label="Previous slide"
-      >
+      {/* Custom Navigation Arrows */}
+      <button className="swiper-button-prev-custom absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 shadow-lg bg-white text-black hover:bg-black hover:text-white transition duration-300">
         <FiChevronLeft className="w-6 h-6" />
       </button>
-      <button
-        onClick={goToNext}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 shadow-lg bg-white text-black hover:bg-black hover:text-white transition duration-300"
-        aria-label="Next slide"
-      >
+      <button className="swiper-button-next-custom absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 shadow-lg bg-white text-black hover:bg-black hover:text-white transition duration-300">
         <FiChevronRight className="w-6 h-6" />
       </button>
 
-      {/* Indicators */}
-      <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-2 z-20">
-        {items.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`w-3 h-3 rounded-full transition ${
-              index === currentIndex
-                ? "bg-second w-6"
-                : "bg-primary hover:bg-second"
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-            aria-current={index === currentIndex}
-          />
-        ))}
-      </div>
+      {/* Custom Pagination */}
+      <div className="swiper-pagination-custom absolute bottom-8 left-0 right-0 flex justify-center gap-2 z-20"></div>
+
+      {/* Custom Styles */}
+      <style jsx>{`
+        .swiper-pagination-bullet-custom {
+          width: 12px;
+          height: 12px;
+          background-color: #3b82f6;
+          border-radius: 50%;
+          transition: all 0.3s ease;
+          cursor: pointer;
+        }
+        .swiper-pagination-bullet-active-custom {
+          background-color: #2685c7;
+          width: 24px;
+          border-radius: 6px;
+        }
+        .swiper-button-prev-custom:after,
+        .swiper-button-next-custom:after {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 };
@@ -267,7 +245,7 @@ const Slider = () => {
       <ProfessionalCarousel
         items={carouselItems}
         autoPlay={true}
-        interval={6000}
+        interval={3000}
       />
     </div>
   );

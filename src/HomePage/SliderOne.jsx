@@ -72,11 +72,11 @@ const SliderOne = () => {
           >
             {images.map((img, idx) => (
               <SwiperSlide key={idx}>
-                <div className="h-50 sm:h-48 md:h-56 lg:h-60 xl:h-64 flex items-center justify-center p-1">
+                <div className="h-50 sm:h-48 md:h-56 lg:h-60 xl:h-80 flex items-center justify-center p-1">
                   <img
                     src={img}
                     alt={`partner-${idx + 1}`}
-                    className=" object-contain w-56  bg-white"
+                    className=" object-contain w-70  bg-white"
                     style={{ display: "block" }}
                   />
                 </div>

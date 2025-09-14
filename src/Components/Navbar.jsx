@@ -121,7 +121,7 @@ const Navbar = () => {
   };
 
   const navItems = [
-    { name: "مقدمي الخدمات", path: "/providers" },
+    // { name: "مقدمي الخدمات", path: "/providers" },
     {
       name: "احجز اونلاين",
       subItems: medicalSpecialities.map((speciality) => ({
