@@ -85,26 +85,50 @@ const Navbar = () => {
 
   const navItems = [
     { name: "الصفحة الرئيسية", path: "/" },
-
+    { name: "مقدمي الخدمات", path: "/providers" },
     {
-      name: "الخدمات الطبية",
+      name: "احجز اونلاين",
       subItems: [
-        { name: "انتساب جديد", path: "/member" },
-        { name: "تجديد الانتساب", path: "/renew" },
-        { name: "خدمات الترقية", path: "/title" },
-        { name: "استمارة التقديم لفتح مختبر علمي و", path: "/open-lab" },
+        { name: "مستشفيات", path: "/member" },
+        { name: "عيادات", path: "/renew" },
+        { name: "معامل", path: "/title" },
+        { name: "صيدليات", path: "/title" },
         {
-          name: "استمارة التقديم لفتح مكتب استشاري طبي",
-          path: "/open-office",
-        },
-        {
-          name: "استمارة ممارسة المهنة (اجازة المراكز الطبية)",
+          name: "اشعه",
           path: "/practice-license",
         },
+        { name: "ممرض", path: "/title" },
+        { name: "طبيب", path: "/title" },
+        { name: "مراكز متخصصه", path: "/title" },
+        { name: "علاج طبيعي وتجميل", path: "/title" },
       ],
     },
-
-    { name: "اتصل بنا", path: "/contact" },
+    {
+      name: "المتجر ",
+      subItems: [
+        { name: "المستلزمات الطبية", path: "/member" },
+        { name: "الاجهزة الطبية", path: "/renew" },
+        { name: "الاجهزه التعويضيه", path: "/title" },
+      ],
+    },
+    {
+      name: " الملف الطبي",
+      subItems: [
+        { name: "استماره طلب الكارت الذكي وفتح ملف طبي  ", path: "/member" },
+      ],
+    },
+    {
+      name: "  كارت الخصومات",
+      subItems: [{ name: "استماره كارت الاسره  ", path: "/member" }],
+    },
+    {
+      name: "السياحه العلاجيه ",
+      subItems: [{ name: " خدمات السياحه العلاجيه", path: "/member" }],
+    },
+    {
+      name: "الروشته ",
+      subItems: [{ name: " المدونه الطبيه", path: "/member" }],
+    },
   ];
   return (
     <nav className="bg-white shadow-md  z-50 sticky top-0">
@@ -192,12 +216,12 @@ const Navbar = () => {
                   onMouseEnter={handleAuthMouseEnter}
                   onMouseLeave={handleAuthMouseLeave}
                 >
-                  <butto
+                  <button
                     className="w-12 h-12 text-center text-second border-2 border-second  rounded-full p-3 text-[15px] font-[700] flex items-center justify-center hover:bg-second hover:text-white duration-300"
                     aria-expanded={isAuthDropdownOpen}
                   >
                     <FiUser size={20} />
-                  </butto>
+                  </button>
 
                   <div
                     className={`absolute z-20 rtl:-right-0 rtl:top-15 ltr:left-0 w-48 origin-top-right rounded-[12px] bg-white shadow-[0px_4px_20px_0px_rgba(0,0,0,0.15)] transition-all duration-300 ease-out ${

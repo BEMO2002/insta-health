@@ -76,7 +76,7 @@ const SliderOne = () => {
                   <img
                     src={img}
                     alt={`partner-${idx + 1}`}
-                    className=" object-contain  bg-white"
+                    className=" object-contain w-56  bg-white"
                     style={{ display: "block" }}
                   />
                 </div>

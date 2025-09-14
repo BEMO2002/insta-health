@@ -1,6 +1,10 @@
 import React from "react";
 import CountUp from "react-countup";
 import { useInView } from "react-intersection-observer";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/autoplay";
 
 const CounterBox = ({ end, label }) => {
   const { ref, inView } = useInView({ triggerOnce: true });
@@ -17,18 +21,77 @@ const CounterBox = ({ end, label }) => {
 };
 
 const Numbers = () => {
+  const numbersData = [
+    { end: 330, label: "استشارة" },
+    { end: 850, label: "مريض" },
+    { end: 25, label: "زيارة منزلية" },
+    { end: 5, label: "مقدم خدمة" },
+    { end: 150, label: "مستشفى" },
+    { end: 89, label: "معمل" },
+    { end: 45, label: "مركز اشعة" },
+    { end: 320, label: "عيادة طبيب" },
+    { end: 67, label: "مراكز متخصصة" },
+    { end: 180, label: "ممرض" },
+    { end: 420, label: "طبيب" },
+    { end: 25, label: "شركة خدمات" },
+    { end: 38, label: "مستلزمات طبية" },
+    { end: 12, label: "اسعاف خاص" },
+    { end: 95, label: "جهاز طبي" },
+    { end: 156, label: "مستلزمات طبية" },
+    { end: 1250, label: "متلقي خدمة" },
+    { end: 890, label: "عمليه حجز" },
+  ];
+
   return (
     <section className="py-[90px] px-4 sm:px-6 lg:px-8 relative">
       <div className="container mx-auto">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-6">
-            <CounterBox end={330} label="استشارة" />
-            <CounterBox end={850} label="مريض" />
-            <CounterBox end={25} label="زيارة منزلية" />
-            <CounterBox end={5} label="مقدم خدمة" />
-          </div>
+          <Swiper
+            modules={[Autoplay]}
+            spaceBetween={30}
+            slidesPerView={2}
+            autoplay={{
+              delay: 2000,
+              disableOnInteraction: false,
+            }}
+            breakpoints={{
+              640: {
+                slidesPerView: 3,
+                spaceBetween: 30,
+              },
+              768: {
+                slidesPerView: 4,
+                spaceBetween: 30,
+              },
+              1024: {
+                slidesPerView: 5,
+                spaceBetween: 30,
+              },
+              1280: {
+                slidesPerView: 6,
+                spaceBetween: 30,
+              },
+            }}
+            loop={true}
+            className="numbers-swiper"
+          >
+            {numbersData.map((item, index) => (
+              <SwiperSlide key={index}>
+                <CounterBox end={item.end} label={item.label} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       </div>
+
+      <style jsx>{`
+        .numbers-swiper {
+          padding: 20px 0;
+        }
+        .numbers-swiper .swiper-slide {
+          height: auto;
+        }
+      `}</style>
     </section>
   );
 };

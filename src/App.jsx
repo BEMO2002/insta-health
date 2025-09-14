@@ -11,6 +11,8 @@ import ResetPassword from "./Authinction/ResetPassword";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MainHome from "./HomePage/MainHome";
+import MainServices from "./ServicesProviders/MainServices";
+import ProvidersDetails from "./ServicesProviders/ProvidersDetails";
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<MainHome />} />
+          <Route path="/providers" element={<MainServices />} />
+          <Route path="/providers/:id" element={<ProvidersDetails />} />
         </Route>
 
         <Route path="/login" element={<Login />} />
