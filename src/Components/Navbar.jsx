@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { FaChevronDown, FaChevronUp, FaBars, FaTimes } from "react-icons/fa";
 import {
   FiLock,
@@ -11,6 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext";
 import navlogo from "../assets/Home/LOGO(INSTA HEALTH).svg";
 import { toast } from "react-toastify";
+import baseApi from "../api/baseApi";
 
 const Navbar = () => {
   const { isAuthenticated, logout } = useContext(AuthContext);
@@ -20,7 +21,43 @@ const Navbar = () => {
   const [authDropdownTimeout, setAuthDropdownTimeout] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openMobileDropdown, setOpenMobileDropdown] = useState(null);
+  const [medicalSpecialities, setMedicalSpecialities] = useState([]);
   const navigate = useNavigate();
+
+  // Fetch medical specialities from API
+  useEffect(() => {
+    const fetchMedicalSpecialities = async () => {
+      try {
+        const response = await baseApi.get("/MedicalSpecialities");
+
+        if (response.data.success) {
+          setMedicalSpecialities(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching medical specialities:", error);
+        // Fallback to static data if API fails
+        setMedicalSpecialities([
+          { id: 3, name: "معامل التحاليل" },
+          { id: 4, name: "مراكز الأشعة" },
+          { id: 5, name: "الصيدليات" },
+          { id: 6, name: "المستشفيات" },
+          { id: 7, name: "العيادات" },
+          { id: 8, name: "العلاج الطبيعي" },
+          { id: 9, name: "صحة الأسنان" },
+          { id: 10, name: "البصريات" },
+          { id: 11, name: "الأجهزة السمعية" },
+        ]);
+      }
+    };
+
+    fetchMedicalSpecialities();
+  }, []);
+
+  const handleSpecialityClick = (specialityId) => {
+    // Navigate to providers page with speciality filter
+    navigate(`/providers?speciality=${specialityId}`);
+    setMobileMenuOpen(false);
+  };
 
   const handleMouseEnter = (itemName) => {
     clearTimeout(dropdownTimeout);
@@ -84,24 +121,14 @@ const Navbar = () => {
   };
 
   const navItems = [
-    { name: "الصفحة الرئيسية", path: "/" },
     { name: "مقدمي الخدمات", path: "/providers" },
     {
       name: "احجز اونلاين",
-      subItems: [
-        { name: "مستشفيات", path: "/member" },
-        { name: "عيادات", path: "/renew" },
-        { name: "معامل", path: "/title" },
-        { name: "صيدليات", path: "/title" },
-        {
-          name: "اشعه",
-          path: "/practice-license",
-        },
-        { name: "ممرض", path: "/title" },
-        { name: "طبيب", path: "/title" },
-        { name: "مراكز متخصصه", path: "/title" },
-        { name: "علاج طبيعي وتجميل", path: "/title" },
-      ],
+      subItems: medicalSpecialities.map((speciality) => ({
+        name: speciality.name,
+        specialityId: speciality.id,
+        isSpeciality: true,
+      })),
     },
     {
       name: "المتجر ",
@@ -182,15 +209,27 @@ const Navbar = () => {
                     onMouseLeave={handleDropdownMouseLeave}
                   >
                     <div className="py-1">
-                      {item.subItems.map((subItem) => (
-                        <Link
-                          key={subItem.name}
-                          to={subItem.path}
-                          className="block p-2 text-sm text-second hover:bg-second hover:text-white transition-colors duration-150"
-                        >
-                          {subItem.name}
-                        </Link>
-                      ))}
+                      {item.subItems.map((subItem) =>
+                        subItem.isSpeciality ? (
+                          <button
+                            key={subItem.name}
+                            onClick={() =>
+                              handleSpecialityClick(subItem.specialityId)
+                            }
+                            className="block w-full text-right p-2 text-sm text-second hover:bg-second hover:text-white transition-colors duration-150"
+                          >
+                            {subItem.name}
+                          </button>
+                        ) : (
+                          <Link
+                            key={subItem.name}
+                            to={subItem.path}
+                            className="block p-2 text-sm text-second hover:bg-second hover:text-white transition-colors duration-150"
+                          >
+                            {subItem.name}
+                          </Link>
+                        )
+                      )}
                     </div>
                   </div>
                 </div>
@@ -302,16 +341,28 @@ const Navbar = () => {
                     </button>
                     {openMobileDropdown === item.name && (
                       <div className="pl-4">
-                        {item.subItems.map((subItem) => (
-                          <Link
-                            key={subItem.name}
-                            to={subItem.path}
-                            className="block px-3 py-2 text-sm bg-gray-100 text-primary hover:bg-second hover:text-white rounded-md"
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            {subItem.name}
-                          </Link>
-                        ))}
+                        {item.subItems.map((subItem) =>
+                          subItem.isSpeciality ? (
+                            <button
+                              key={subItem.name}
+                              onClick={() =>
+                                handleSpecialityClick(subItem.specialityId)
+                              }
+                              className="block w-full text-right px-3 py-2 text-sm bg-gray-100 text-primary hover:bg-second hover:text-white rounded-md"
+                            >
+                              {subItem.name}
+                            </button>
+                          ) : (
+                            <Link
+                              key={subItem.name}
+                              to={subItem.path}
+                              className="block px-3 py-2 text-sm bg-gray-100 text-primary hover:bg-second hover:text-white rounded-md"
+                              onClick={() => setMobileMenuOpen(false)}
+                            >
+                              {subItem.name}
+                            </Link>
+                          )
+                        )}
                       </div>
                     )}
                   </div>

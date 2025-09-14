@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   FaMapMarkerAlt,
   FaCity,
@@ -12,6 +12,7 @@ import Filtration from "../Components/Filtration";
 
 const Providers = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [providers, setProviders] = useState([]);
   const [filteredProviders, setFilteredProviders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +23,21 @@ const Providers = () => {
     specialityId: null,
     searchTerm: "",
   });
+
+  // Initialize filters from URL parameters
+  useEffect(() => {
+    const specialityId = searchParams.get("speciality");
+    const governorateId = searchParams.get("governorate");
+    const cityId = searchParams.get("city");
+    const searchTerm = searchParams.get("search");
+
+    setFilters({
+      specialityId: specialityId ? parseInt(specialityId) : null,
+      governorateId: governorateId ? parseInt(governorateId) : null,
+      cityId: cityId ? parseInt(cityId) : null,
+      searchTerm: searchTerm || "",
+    });
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchProviders = async () => {
@@ -147,7 +163,13 @@ const Providers = () => {
           </p>
         </div>
 
-        <Filtration onFilterChange={handleFilterChange} />
+        <Filtration
+          onFilterChange={handleFilterChange}
+          initialSpecialityId={filters.specialityId}
+          initialGovernorateId={filters.governorateId}
+          initialCityId={filters.cityId}
+          initialSearchTerm={filters.searchTerm}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProviders.map((provider) => (
@@ -235,7 +257,7 @@ const Providers = () => {
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .line-clamp-2 {
           display: -webkit-box;
           -webkit-line-clamp: 2;

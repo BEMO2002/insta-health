@@ -1,8 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FaChevronDown, FaSearch, FaTimes } from "react-icons/fa";
 import baseApi from "../api/baseApi";
 
-const Filtration = ({ onFilterChange }) => {
+const Filtration = ({
+  onFilterChange,
+  initialSpecialityId,
+  initialGovernorateId,
+  initialCityId,
+  initialSearchTerm,
+}) => {
   const [governorates, setGovernorates] = useState([]);
   const [cities, setCities] = useState([]);
   const [specialities, setSpecialities] = useState([]);
@@ -13,15 +19,22 @@ const Filtration = ({ onFilterChange }) => {
   });
 
   // Filter states
-  const [selectedGovernorate, setSelectedGovernorate] = useState(null);
-  const [selectedCity, setSelectedCity] = useState(null);
-  const [selectedSpeciality, setSelectedSpeciality] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedGovernorate, setSelectedGovernorate] = useState(
+    initialGovernorateId || null
+  );
+  const [selectedCity, setSelectedCity] = useState(initialCityId || null);
+  const [selectedSpeciality, setSelectedSpeciality] = useState(
+    initialSpecialityId || null
+  );
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm || "");
 
   // Dropdown states
   const [isGovernorateOpen, setIsGovernorateOpen] = useState(false);
   const [isCityOpen, setIsCityOpen] = useState(false);
   const [isSpecialityOpen, setIsSpecialityOpen] = useState(false);
+
+  // Use ref to prevent infinite loops
+  const isUpdatingFromProps = useRef(false);
 
   // Fetch Governorates
   useEffect(() => {
@@ -59,6 +72,39 @@ const Filtration = ({ onFilterChange }) => {
     fetchSpecialities();
   }, []);
 
+  // Update filters when initial values change
+  useEffect(() => {
+    isUpdatingFromProps.current = true;
+
+    if (initialSpecialityId !== selectedSpeciality?.id) {
+      setSelectedSpeciality(
+        initialSpecialityId ? { id: initialSpecialityId } : null
+      );
+    }
+    if (initialGovernorateId !== selectedGovernorate?.id) {
+      setSelectedGovernorate(
+        initialGovernorateId ? { id: initialGovernorateId } : null
+      );
+    }
+    if (initialCityId !== selectedCity?.id) {
+      setSelectedCity(initialCityId ? { id: initialCityId } : null);
+    }
+    if (initialSearchTerm !== searchTerm) {
+      setSearchTerm(initialSearchTerm || "");
+    }
+
+    // Reset flag after a short delay
+    setTimeout(() => {
+      isUpdatingFromProps.current = false;
+    }, 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    initialSpecialityId,
+    initialGovernorateId,
+    initialCityId,
+    initialSearchTerm,
+  ]);
+
   // Fetch Cities when governorate changes
   useEffect(() => {
     if (selectedGovernorate) {
@@ -87,6 +133,11 @@ const Filtration = ({ onFilterChange }) => {
 
   // Apply filters when any filter changes
   useEffect(() => {
+    // Don't send filters if we're updating from props
+    if (isUpdatingFromProps.current) {
+      return;
+    }
+
     const filters = {
       governorateId: selectedGovernorate?.id || null,
       cityId: selectedCity?.id || null,

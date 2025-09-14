@@ -57,7 +57,7 @@ const SliderOne = () => {
             loop={true}
             freeMode={true}
             speed={1850}
-            loopedSlides={images.length}
+            loopedSlides={images.length || 0}
             autoplay={{
               delay: 0,
               disableOnInteraction: false,
