@@ -34,11 +34,11 @@ const Filtration = ({
 
   // Refs
   const searchTimeoutRef = useRef(null);
-  const isInitialized = useRef(false);
   const onFilterChangeRef = useRef(onFilterChange);
 
   // Update ref when onFilterChange changes
   useEffect(() => {
+    console.log("onFilterChange updated:", onFilterChange);
     onFilterChangeRef.current = onFilterChange;
   }, [onFilterChange]);
 
@@ -104,9 +104,18 @@ const Filtration = ({
     }
   }, [selectedGovernorate]);
 
-  // Initialize filters from props - only when data is loaded and not already initialized
+  // Initialize filters from props - only when data is loaded
   useEffect(() => {
-    if (loading.governorates || loading.specialities || isInitialized.current) {
+    console.log("Initialization effect triggered");
+    console.log("Loading states:", loading);
+    console.log("Initial props:", {
+      initialSpecialityId,
+      initialGovernorateId,
+      initialSearchTerm,
+    });
+
+    if (loading.governorates || loading.specialities) {
+      console.log("Still loading, skipping initialization");
       return;
     }
 
@@ -116,6 +125,7 @@ const Filtration = ({
         (item) => item.id === initialSpecialityId
       );
       if (speciality) {
+        console.log("Setting speciality:", speciality);
         setSelectedSpeciality(speciality);
       }
     }
@@ -126,22 +136,22 @@ const Filtration = ({
         (item) => item.id === initialGovernorateId
       );
       if (governorate) {
+        console.log("Setting governorate:", governorate);
         setSelectedGovernorate(governorate);
       }
     }
 
     // Set search term
     if (initialSearchTerm) {
+      console.log("Setting search term:", initialSearchTerm);
       setSearchTerm(initialSearchTerm);
     }
-
-    isInitialized.current = true;
   }, [
     initialSpecialityId,
     initialGovernorateId,
     initialSearchTerm,
-    specialities,
-    governorates,
+    specialities.length,
+    governorates.length,
     loading.governorates,
     loading.specialities,
   ]);
@@ -156,10 +166,46 @@ const Filtration = ({
     }
   }, [initialCityId, cities]);
 
-  // Apply filters with debounce - only when not initializing
+  // Handle updates when props change
   useEffect(() => {
-    if (!isInitialized.current) return;
+    // Update speciality if it changed
+    if (initialSpecialityId && specialities.length > 0) {
+      const speciality = specialities.find(
+        (item) => item.id === initialSpecialityId
+      );
+      if (speciality && speciality.id !== selectedSpeciality?.id) {
+        setSelectedSpeciality(speciality);
+      }
+    } else if (!initialSpecialityId && selectedSpeciality) {
+      setSelectedSpeciality(null);
+    }
 
+    // Update governorate if it changed
+    if (initialGovernorateId && governorates.length > 0) {
+      const governorate = governorates.find(
+        (item) => item.id === initialGovernorateId
+      );
+      if (governorate && governorate.id !== selectedGovernorate?.id) {
+        setSelectedGovernorate(governorate);
+      }
+    } else if (!initialGovernorateId && selectedGovernorate) {
+      setSelectedGovernorate(null);
+    }
+
+    // Update search term if it changed
+    if (initialSearchTerm !== searchTerm) {
+      setSearchTerm(initialSearchTerm || "");
+    }
+  }, [
+    initialSpecialityId,
+    initialGovernorateId,
+    initialSearchTerm,
+    specialities.length,
+    governorates.length,
+  ]);
+
+  // Apply filters with debounce
+  useEffect(() => {
     const filters = {
       governorateId: selectedGovernorate?.id || null,
       cityId: selectedCity?.id || null,
@@ -167,29 +213,42 @@ const Filtration = ({
       searchTerm: searchTerm.trim(),
     };
 
+    console.log("Filter effect triggered with:", filters);
+
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
 
     // Show loading with smooth transition
     setIsFiltering(true);
-    setTimeout(() => setShowLoading(true), 100); // Small delay for smooth appearance
+    setTimeout(() => setShowLoading(true), 100);
 
     searchTimeoutRef.current = setTimeout(() => {
-      onFilterChangeRef.current(filters);
+      console.log("Applying filters:", filters);
+      console.log("onFilterChangeRef.current:", onFilterChangeRef.current);
+      if (onFilterChangeRef.current) {
+        onFilterChangeRef.current(filters);
+      } else {
+        console.error("onFilterChangeRef.current is null!");
+      }
       // Hide loading with smooth transition
       setTimeout(() => {
         setShowLoading(false);
-        setTimeout(() => setIsFiltering(false), 300); // Wait for fade out
-      }, 600); // Show loading for a bit longer
-    }, 1000); // Increased debounce time to 1000ms (1 second)
+        setTimeout(() => setIsFiltering(false), 300);
+      }, 600);
+    }, 500);
 
     return () => {
       if (searchTimeoutRef.current) {
         clearTimeout(searchTimeoutRef.current);
       }
     };
-  }, [selectedGovernorate, selectedCity, selectedSpeciality, searchTerm]);
+  }, [
+    selectedGovernorate?.id,
+    selectedCity?.id,
+    selectedSpeciality?.id,
+    searchTerm,
+  ]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -229,6 +288,9 @@ const Filtration = ({
     setSelectedCity(null);
     setSelectedSpeciality(null);
     setSearchTerm("");
+    setIsGovernorateOpen(false);
+    setIsCityOpen(false);
+    setIsSpecialityOpen(false);
   }, []);
 
   // Dropdown component
@@ -417,7 +479,10 @@ const Filtration = ({
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-second text-white">
                   {selectedSpeciality.name}
                   <button
-                    onClick={() => setSelectedSpeciality(null)}
+                    onClick={() => {
+                      setSelectedSpeciality(null);
+                      setIsSpecialityOpen(false);
+                    }}
                     className="mr-2 hover:text-red-200"
                   >
                     <FaTimes size={12} />
@@ -429,7 +494,11 @@ const Filtration = ({
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary text-white">
                   {selectedGovernorate.arabicName}
                   <button
-                    onClick={() => setSelectedGovernorate(null)}
+                    onClick={() => {
+                      setSelectedGovernorate(null);
+                      setSelectedCity(null);
+                      setIsGovernorateOpen(false);
+                    }}
                     className="mr-2 hover:text-red-200"
                   >
                     <FaTimes size={12} />
@@ -441,7 +510,10 @@ const Filtration = ({
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-600 text-white">
                   {selectedCity.arabicName}
                   <button
-                    onClick={() => setSelectedCity(null)}
+                    onClick={() => {
+                      setSelectedCity(null);
+                      setIsCityOpen(false);
+                    }}
                     className="mr-2 hover:text-red-200"
                   >
                     <FaTimes size={12} />
@@ -453,7 +525,9 @@ const Filtration = ({
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-600 text-white">
                   "{searchTerm}"
                   <button
-                    onClick={() => setSearchTerm("")}
+                    onClick={() => {
+                      setSearchTerm("");
+                    }}
                     className="mr-2 hover:text-red-200"
                   >
                     <FaTimes size={12} />

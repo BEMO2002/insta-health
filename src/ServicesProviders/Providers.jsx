@@ -16,12 +16,12 @@ const Providers = () => {
 
   // States
   const [providers, setProviders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [providersLoading, setProvidersLoading] = useState(false);
   const [error, setError] = useState(null);
   const [pageIndex, setPageIndex] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [isDataChanging, setIsDataChanging] = useState(false);
-  const pageSize = 5;
+  const pageSize = 8;
 
   // Ref for fetchProviders to prevent re-creation
   const fetchProvidersRef = useRef();
@@ -52,7 +52,8 @@ const Providers = () => {
   // Fetch providers function
   const fetchProviders = useCallback(async () => {
     try {
-      setLoading(true);
+      console.log("fetchProviders called with filters:", filters);
+      setProvidersLoading(true);
       setIsDataChanging(true);
 
       const params = {
@@ -74,6 +75,7 @@ const Providers = () => {
         params.SearchName = filters.searchTerm;
       }
 
+      console.log("API params:", params);
       const response = await baseApi.get("/ServicesProviders", { params });
 
       if (response.data.success) {
@@ -92,16 +94,9 @@ const Providers = () => {
       console.error("Error fetching providers:", err);
       setIsDataChanging(false);
     } finally {
-      setLoading(false);
+      setProvidersLoading(false);
     }
-  }, [
-    pageIndex,
-    filters.specialityId,
-    filters.governorateId,
-    filters.cityId,
-    filters.searchTerm,
-    pageSize,
-  ]);
+  }, [pageIndex, filters, pageSize]);
 
   // Update ref when fetchProviders changes
   useEffect(() => {
@@ -110,7 +105,9 @@ const Providers = () => {
 
   // Fetch data when filters or page changes
   useEffect(() => {
-    fetchProvidersRef.current();
+    if (fetchProvidersRef.current) {
+      fetchProvidersRef.current();
+    }
   }, [
     pageIndex,
     filters.specialityId,
@@ -123,12 +120,17 @@ const Providers = () => {
   // Handle filter changes
   const handleFilterChange = useCallback(
     (newFilters) => {
+      console.log("handleFilterChange called with:", newFilters);
+      console.log("Current filters:", filters);
+
       // Check if filters actually changed
       const filtersChanged =
         newFilters.specialityId !== filters.specialityId ||
         newFilters.governorateId !== filters.governorateId ||
         newFilters.cityId !== filters.cityId ||
         newFilters.searchTerm !== filters.searchTerm;
+
+      console.log("Filters changed:", filtersChanged);
 
       setFilters(newFilters);
 
@@ -152,15 +154,15 @@ const Providers = () => {
         newParams.search = newFilters.searchTerm;
       }
 
+      // Reset page to 1 when filters change
+      if (filtersChanged) {
+        newParams.page = "1";
+      }
+
+      console.log("New URL params:", newParams);
       setSearchParams(newParams, { replace: true });
     },
-    [
-      setSearchParams,
-      filters.specialityId,
-      filters.governorateId,
-      filters.cityId,
-      filters.searchTerm,
-    ]
+    [setSearchParams, filters]
   );
 
   // Handle page change
@@ -168,10 +170,16 @@ const Providers = () => {
     (newPage) => {
       if (newPage >= 1 && newPage <= Math.ceil(totalCount / pageSize)) {
         setPageIndex(newPage);
+
+        // Update URL with new page
+        const newParams = new URLSearchParams(searchParams);
+        newParams.set("page", newPage.toString());
+        setSearchParams(newParams, { replace: true });
+
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
     },
-    [totalCount, pageSize]
+    [totalCount, pageSize, searchParams, setSearchParams]
   );
 
   // Generate page numbers for pagination
@@ -192,17 +200,7 @@ const Providers = () => {
     return pages;
   }, [pageIndex, totalCount, pageSize]);
 
-  if (loading) {
-    return (
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-second"></div>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  // Remove initial loading check since we now use providersLoading
 
   if (error) {
     return (
@@ -223,7 +221,7 @@ const Providers = () => {
     filters.cityId ||
     filters.searchTerm;
 
-  if (providers.length === 0 && !loading && !hasActiveFilters) {
+  if (providers.length === 0 && !providersLoading && !hasActiveFilters) {
     return (
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
@@ -257,10 +255,17 @@ const Providers = () => {
           initialSearchTerm={filters.searchTerm}
         />
 
+        {/* Loading overlay for providers only */}
+        {providersLoading && (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          </div>
+        )}
+
         <div
           className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-all duration-500 ${
             isDataChanging ? "opacity-50 scale-95" : "opacity-100 scale-100"
-          }`}
+          } ${providersLoading ? "hidden" : "block"}`}
         >
           {providers.map((provider, index) => (
             <div
@@ -342,7 +347,7 @@ const Providers = () => {
           ))}
         </div>
 
-        {providers.length === 0 && !loading && (
+        {providers.length === 0 && !providersLoading && (
           <div className="text-center py-12">
             <p className="text-gray-600 text-lg">
               لا توجد نتائج مطابقة للفلاتر المحددة
@@ -351,7 +356,7 @@ const Providers = () => {
         )}
 
         {/* Pagination Controls */}
-        {totalCount > pageSize && (
+        {totalCount > pageSize && !providersLoading && (
           <div className="flex justify-center items-center mt-8 space-x-2">
             <button
               onClick={() => handlePageChange(pageIndex - 1)}
