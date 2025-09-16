@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper/modules";
 import {
   MdOutlineKeyboardArrowRight,
   MdOutlineKeyboardArrowLeft,
@@ -66,7 +67,7 @@ const ServiceItemCard = ({ service }) => {
   };
 
   return (
-    <div className="bg-white mb-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group">
+    <div className="bg-white mb-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group h-full flex flex-col">
       {/* Image Container */}
       <div className="relative h-48 overflow-hidden">
         <img
@@ -82,7 +83,7 @@ const ServiceItemCard = ({ service }) => {
       </div>
 
       {/* Content */}
-      <div className="p-4" dir="rtl">
+      <div className="p-4 flex flex-col grow" dir="rtl">
         {/* Service Name */}
         <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">
           {service.name}
@@ -109,7 +110,7 @@ const ServiceItemCard = ({ service }) => {
         </div>
 
         {/* Price */}
-        <div className="flex items-center justify-between">
+        <div className="mt-auto flex items-center justify-between">
           <span className="text-xl font-bold text-primary">
             {service.price.toFixed(2)}ج.م
           </span>
@@ -133,9 +134,18 @@ const ServiceItems = () => {
       try {
         setLoading(true);
         setError("");
-        const response = await baseApi.get("/ServiceItems");
+        const response = await baseApi.get("/ServiceItems", {
+          params: {
+            PageIndex: 1,
+            PageSize: 4000,
+          },
+        });
         if (response.data.success) {
-          setServices(response.data.data.items);
+          setServices(
+            (response.data.data.items || []).filter(
+              (item) => item.isBestSeller === true
+            )
+          );
         } else {
           setError("تعذر تحميل الخدمات");
         }
@@ -213,6 +223,13 @@ const ServiceItems = () => {
             ref={swiperRef}
             spaceBetween={24}
             slidesPerView={1}
+            loop={true}
+            autoplay={{
+              delay: 3000,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
+            }}
+            modules={[Autoplay]}
             breakpoints={{
               640: { slidesPerView: 1 },
               768: { slidesPerView: 2 },
@@ -222,7 +239,7 @@ const ServiceItems = () => {
             className="mySwiper"
           >
             {services.map((service) => (
-              <SwiperSlide key={service.id}>
+              <SwiperSlide key={service.id} className="h-full">
                 <ServiceItemCard service={service} />
               </SwiperSlide>
             ))}

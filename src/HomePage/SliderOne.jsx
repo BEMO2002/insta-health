@@ -56,7 +56,7 @@ const SliderOne = () => {
             modules={[Autoplay, FreeMode]}
             loop={true}
             freeMode={true}
-            speed={1850}
+            speed={4000}
             loopedSlides={images.length || 0}
             autoplay={{
               delay: 0,
@@ -64,19 +64,14 @@ const SliderOne = () => {
             }}
             spaceBetween={12}
             slidesPerView={1}
-            breakpoints={{
-              480: { slidesPerView: 2 },
-              640: { slidesPerView: 3 },
-              1024: { slidesPerView: 4 },
-            }}
           >
             {images.map((img, idx) => (
               <SwiperSlide key={idx}>
-                <div className="h-50 sm:h-48 md:h-56 lg:h-60 xl:h-90 flex items-center justify-center p-1">
+                <div className="h-80 w-full flex items-center justify-center p-1">
                   <img
                     src={img}
                     alt={`partner-${idx + 1}`}
-                    className=" object-contain w-90  bg-white"
+                    className="w-full h-full object-contain bg-white"
                     style={{ display: "block" }}
                   />
                 </div>
