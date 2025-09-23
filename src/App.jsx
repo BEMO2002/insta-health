@@ -13,7 +13,9 @@ import "react-toastify/dist/ReactToastify.css";
 import MainHome from "./HomePage/MainHome";
 import MainServices from "./ServicesProviders/MainServices";
 import ProvidersDetails from "./ServicesProviders/ProvidersDetails";
-
+import MainProducts from "./ProductsPage/MainProducts";
+import ProductsDetails from "./ProductsPage/ProductsDetails";
+import MainCart from "./CartPage.jsx/MainCart";
 function App() {
   return (
     <BrowserRouter>
@@ -23,6 +25,9 @@ function App() {
           <Route index element={<MainHome />} />
           <Route path="/providers" element={<MainServices />} />
           <Route path="/providers/:id" element={<ProvidersDetails />} />
+          <Route path="/products" element={<MainProducts />} />
+          <Route path="/products/:id" element={<ProductsDetails />} />
+          <Route path="/cart" element={<MainCart />} />
         </Route>
 
         <Route path="/login" element={<Login />} />

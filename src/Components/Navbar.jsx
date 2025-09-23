@@ -22,19 +22,26 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openMobileDropdown, setOpenMobileDropdown] = useState(null);
   const [medicalSpecialities, setMedicalSpecialities] = useState([]);
+  const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
 
-  // Fetch medical specialities from API
+  // Fetch medical specialities and categories from API
   useEffect(() => {
-    const fetchMedicalSpecialities = async () => {
+    const fetchData = async () => {
       try {
-        const response = await baseApi.get("/MedicalSpecialities");
+        // Fetch medical specialities
+        const specialitiesResponse = await baseApi.get("/MedicalSpecialities");
+        if (specialitiesResponse.data.success) {
+          setMedicalSpecialities(specialitiesResponse.data.data);
+        }
 
-        if (response.data.success) {
-          setMedicalSpecialities(response.data.data);
+        // Fetch categories
+        const categoriesResponse = await baseApi.get("/Categories");
+        if (categoriesResponse.data.success) {
+          setCategories(categoriesResponse.data.data);
         }
       } catch (error) {
-        console.error("Error fetching medical specialities:", error);
+        console.error("Error fetching data:", error);
         // Fallback to static data if API fails
         setMedicalSpecialities([
           { id: 3, name: "معامل التحاليل" },
@@ -47,15 +54,26 @@ const Navbar = () => {
           { id: 10, name: "البصريات" },
           { id: 11, name: "الأجهزة السمعية" },
         ]);
+        setCategories([
+          { id: 1, name: "اجزاء تعويضيه" },
+          { id: 2, name: "مستحضرات التجميل" },
+          { id: 3, name: "اجهزة طبيه" },
+        ]);
       }
     };
 
-    fetchMedicalSpecialities();
+    fetchData();
   }, []);
 
   const handleSpecialityClick = (specialityId) => {
     // Navigate to providers page with speciality filter
     navigate(`/providers?speciality=${specialityId}`);
+    setMobileMenuOpen(false);
+  };
+
+  const handleCategoryClick = (categoryId) => {
+    // Navigate to products page with category filter
+    navigate(`/products?category=${categoryId}`);
     setMobileMenuOpen(false);
   };
 
@@ -121,7 +139,14 @@ const Navbar = () => {
   };
 
   const navItems = [
-    // { name: "مقدمي الخدمات", path: "/providers" },
+    {
+      name: "المتجر",
+      subItems: categories.map((category) => ({
+        name: category.name,
+        categoryId: category.id,
+        isCategory: true,
+      })),
+    },
     {
       name: "احجز اونلاين",
       subItems: medicalSpecialities.map((speciality) => ({
@@ -129,14 +154,6 @@ const Navbar = () => {
         specialityId: speciality.id,
         isSpeciality: true,
       })),
-    },
-    {
-      name: "المتجر ",
-      subItems: [
-        { name: "المستلزمات الطبية", path: "/member" },
-        { name: "الاجهزة الطبية", path: "/renew" },
-        { name: "الاجهزه التعويضيه", path: "/title" },
-      ],
     },
     {
       name: " الملف الطبي",
@@ -161,7 +178,7 @@ const Navbar = () => {
     <nav className="bg-white shadow-md  z-50 sticky top-0">
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-2">
         {/* Logo + Menu Toggle (for xl and below) */}
-        <div className="flex justify-between  items-center h-24 xl:hidden">
+        <div className="flex justify-between  items-center h-24 lg:hidden">
           <Link to={"/"}>
             <img src={navlogo} alt="navlogo" className="w-[90px]" />
           </Link>
@@ -174,7 +191,7 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Nav (visible on xl+) */}
-        <div className="hidden xl:flex justify-around p-2 h-[80px]  items-center ">
+        <div className="hidden lg:flex justify-around p-2 h-[80px]  items-center ">
           <div className="flex items-center gap-10">
             <Link to={"/"}>
               <img src={navlogo} alt="navlogo" className="w-[80px]" />
@@ -215,6 +232,16 @@ const Navbar = () => {
                             key={subItem.name}
                             onClick={() =>
                               handleSpecialityClick(subItem.specialityId)
+                            }
+                            className="block w-full text-right p-2 text-sm text-second hover:bg-second hover:text-white transition-colors duration-150"
+                          >
+                            {subItem.name}
+                          </button>
+                        ) : subItem.isCategory ? (
+                          <button
+                            key={subItem.name}
+                            onClick={() =>
+                              handleCategoryClick(subItem.categoryId)
                             }
                             className="block w-full text-right p-2 text-sm text-second hover:bg-second hover:text-white transition-colors duration-150"
                           >
@@ -347,6 +374,16 @@ const Navbar = () => {
                               key={subItem.name}
                               onClick={() =>
                                 handleSpecialityClick(subItem.specialityId)
+                              }
+                              className="block w-full text-right px-3 py-2 text-sm bg-gray-100 text-primary hover:bg-second hover:text-white rounded-md"
+                            >
+                              {subItem.name}
+                            </button>
+                          ) : subItem.isCategory ? (
+                            <button
+                              key={subItem.name}
+                              onClick={() =>
+                                handleCategoryClick(subItem.categoryId)
                               }
                               className="block w-full text-right px-3 py-2 text-sm bg-gray-100 text-primary hover:bg-second hover:text-white rounded-md"
                             >
