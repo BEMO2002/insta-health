@@ -36,6 +36,7 @@ export const CartProvider = ({ children }) => {
   useEffect(() => {
     try {
       const storedCurrent = localStorage.getItem(cartKey);
+
       const legacyKey = "cart_items"; // old global key
       const storedLegacy = localStorage.getItem(legacyKey);
       // Old token-based key migration (some sessions saved with token)
@@ -47,9 +48,15 @@ export const CartProvider = ({ children }) => {
       const tokenKey = oldToken ? `cart_items_${oldToken}` : null;
       const storedTokenKey = tokenKey ? localStorage.getItem(tokenKey) : null;
 
+      // Check for guest cart if user is authenticated
+      const guestKey = "cart_items_guest";
+      const storedGuestKey = localStorage.getItem(guestKey);
+
       if (storedCurrent) {
         const parsed = JSON.parse(storedCurrent);
-        if (Array.isArray(parsed)) setItems(parsed);
+        if (Array.isArray(parsed)) {
+          setItems(parsed);
+        }
         didHydrateRef.current = true;
       } else if (storedTokenKey) {
         const parsedToken = JSON.parse(storedTokenKey);
@@ -67,11 +74,27 @@ export const CartProvider = ({ children }) => {
           localStorage.removeItem(legacyKey);
           didHydrateRef.current = true;
         }
+      } else if (isAuthenticated && storedGuestKey) {
+        // Migrate guest cart to authenticated user
+        const parsedGuest = JSON.parse(storedGuestKey);
+        if (Array.isArray(parsedGuest) && parsedGuest.length > 0) {
+          setItems(parsedGuest);
+          localStorage.setItem(cartKey, storedGuestKey);
+          localStorage.removeItem(guestKey);
+          didHydrateRef.current = true;
+        } else {
+          didHydrateRef.current = true;
+        }
+      } else if (isAuthenticated) {
+        // User is authenticated but no local cart found - will fetch from API
+        didHydrateRef.current = true;
+      } else {
+        didHydrateRef.current = true;
       }
     } catch {
       // ignore
     }
-  }, [cartKey]);
+  }, [cartKey, isAuthenticated]);
 
   // Persist cart whenever it changes
   useEffect(() => {
@@ -91,6 +114,30 @@ export const CartProvider = ({ children }) => {
     () => items.reduce((sum, it) => sum + (it.quantity || 0), 0),
     [items]
   );
+
+  // Fetch cart from API when user logs in
+  const fetchCartFromAPI = useCallback(async () => {
+    if (!isAuthenticated) return;
+
+    try {
+      const response = await baseApi.get("/Carts");
+      if (response.data && Array.isArray(response.data)) {
+        setItems(response.data);
+        // Save to localStorage for persistence
+        const cartKey = `cart_items_${stableUserKey}`;
+        localStorage.setItem(cartKey, JSON.stringify(response.data));
+      }
+    } catch {
+      // ignore
+    }
+  }, [isAuthenticated, stableUserKey]);
+
+  // Fetch cart from API when user becomes authenticated
+  useEffect(() => {
+    if (isAuthenticated && didHydrateRef.current) {
+      fetchCartFromAPI();
+    }
+  }, [isAuthenticated, fetchCartFromAPI]);
 
   const addToCart = useCallback(
     async (product, quantity = 1) => {
