@@ -4,11 +4,8 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
-  useRef,
   useState,
 } from "react";
-import baseApi from "../api/baseApi";
 import { toast } from "react-toastify";
 import { AuthContext } from "./AuthContext";
 
@@ -18,127 +15,69 @@ export const CartProvider = ({ children }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const { isAuthenticated, user } = useContext(AuthContext);
+  const { isAuthenticated } = useContext(AuthContext);
 
-  // Stable user key: prefer email or a stable user id; fallback to guest
-  const stableUserKey = useMemo(
-    () =>
-      isAuthenticated && (user?.email || user?.id)
-        ? user.email || `user_${user.id}`
-        : "guest",
-    [isAuthenticated, user?.email, user?.id]
-  );
+  // API base URL
+  const API_BASE = "https://instahealthy.runasp.net/api";
 
-  const cartKey = useMemo(() => `cart_items_${stableUserKey}`, [stableUserKey]);
-  const didHydrateRef = useRef(false);
+  // Get token from localStorage
+  const getToken = () => {
+    return localStorage.getItem("token") || sessionStorage.getItem("token");
+  };
 
-  // Rehydrate cart from storage on first load / when user changes (with legacy key migration)
-  useEffect(() => {
-    try {
-      const storedCurrent = localStorage.getItem(cartKey);
+  // Calculate total count
+  const totalCount = items.reduce((sum, item) => sum + (item.quantity || 0), 0);
 
-      const legacyKey = "cart_items"; // old global key
-      const storedLegacy = localStorage.getItem(legacyKey);
-      // Old token-based key migration (some sessions saved with token)
-      const oldToken = (
-        localStorage.getItem("token") ||
-        sessionStorage.getItem("token") ||
-        ""
-      ).trim();
-      const tokenKey = oldToken ? `cart_items_${oldToken}` : null;
-      const storedTokenKey = tokenKey ? localStorage.getItem(tokenKey) : null;
-
-      // Check for guest cart if user is authenticated
-      const guestKey = "cart_items_guest";
-      const storedGuestKey = localStorage.getItem(guestKey);
-
-      if (storedCurrent) {
-        const parsed = JSON.parse(storedCurrent);
-        if (Array.isArray(parsed)) {
-          setItems(parsed);
-        }
-        didHydrateRef.current = true;
-      } else if (storedTokenKey) {
-        const parsedToken = JSON.parse(storedTokenKey);
-        if (Array.isArray(parsedToken)) {
-          setItems(parsedToken);
-          localStorage.setItem(cartKey, storedTokenKey);
-        }
-        didHydrateRef.current = true;
-      } else if (storedLegacy) {
-        const parsedLegacy = JSON.parse(storedLegacy);
-        if (Array.isArray(parsedLegacy)) {
-          setItems(parsedLegacy);
-          // migrate to new key and clean legacy
-          localStorage.setItem(cartKey, storedLegacy);
-          localStorage.removeItem(legacyKey);
-          didHydrateRef.current = true;
-        }
-      } else if (isAuthenticated && storedGuestKey) {
-        // Migrate guest cart to authenticated user
-        const parsedGuest = JSON.parse(storedGuestKey);
-        if (Array.isArray(parsedGuest) && parsedGuest.length > 0) {
-          setItems(parsedGuest);
-          localStorage.setItem(cartKey, storedGuestKey);
-          localStorage.removeItem(guestKey);
-          didHydrateRef.current = true;
-        } else {
-          didHydrateRef.current = true;
-        }
-      } else if (isAuthenticated) {
-        // User is authenticated but no local cart found - will fetch from API
-        didHydrateRef.current = true;
-      } else {
-        didHydrateRef.current = true;
-      }
-    } catch {
-      // ignore
-    }
-  }, [cartKey, isAuthenticated]);
-
-  // Persist cart whenever it changes
-  useEffect(() => {
-    try {
-      if (!didHydrateRef.current) return;
-      const current = localStorage.getItem(cartKey);
-      const next = JSON.stringify(items);
-      if (current !== next) {
-        localStorage.setItem(cartKey, next);
-      }
-    } catch {
-      // ignore
-    }
-  }, [items, cartKey]);
-
-  const totalCount = useMemo(
-    () => items.reduce((sum, it) => sum + (it.quantity || 0), 0),
-    [items]
-  );
-
-  // Fetch cart from API when user logs in
-  const fetchCartFromAPI = useCallback(async () => {
+  // Get cart from API
+  const getCart = useCallback(async () => {
     if (!isAuthenticated) return;
 
     try {
-      const response = await baseApi.get("/Carts");
-      if (response.data && Array.isArray(response.data)) {
-        setItems(response.data);
-        // Save to localStorage for persistence
-        const cartKey = `cart_items_${stableUserKey}`;
-        localStorage.setItem(cartKey, JSON.stringify(response.data));
+      setLoading(true);
+      const token = getToken();
+      if (!token) {
+        console.log("No token found");
+        return;
       }
-    } catch {
-      // ignore
-    }
-  }, [isAuthenticated, stableUserKey]);
 
-  // Fetch cart from API when user becomes authenticated
-  useEffect(() => {
-    if (isAuthenticated && didHydrateRef.current) {
-      fetchCartFromAPI();
-    }
-  }, [isAuthenticated, fetchCartFromAPI]);
+      console.log("Fetching cart with token:", token.substring(0, 20) + "...");
 
+      const response = await fetch(`${API_BASE}/Carts`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("Cart response status:", response.status);
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log("Cart data received:", responseData);
+        if (
+          responseData &&
+          responseData.success &&
+          responseData.data &&
+          Array.isArray(responseData.data.items)
+        ) {
+          setItems(responseData.data.items);
+        }
+      } else if (response.status === 401 || response.status === 403) {
+        console.log("Unauthorized - clearing cart");
+        setItems([]);
+        toast.error("يجب تسجيل الدخول");
+      } else {
+        console.log("Error response:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching cart:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [isAuthenticated]);
+
+  // Add product to cart
   const addToCart = useCallback(
     async (product, quantity = 1) => {
       if (!product?.id) return { ok: false, message: "Invalid product" };
@@ -148,19 +87,39 @@ export const CartProvider = ({ children }) => {
         toast.error(msg);
         return { ok: false };
       }
+
       try {
         setLoading(true);
         setError("");
+        const token = getToken();
+        if (!token) {
+          throw new Error("No token found");
+        }
+
         const payload = {
           productId: product.id,
           name: product.name,
           price: product.price,
           quantity,
         };
-        const res = await baseApi.post("/Carts", payload);
-        if (res.status >= 200 && res.status < 300) {
+
+        console.log("Adding to cart:", payload);
+
+        const response = await fetch(`${API_BASE}/Carts`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        console.log("Add to cart response status:", response.status);
+
+        if (response.ok) {
+          // Update local state
           setItems((prev) => {
-            const map = new Map(prev.map((i) => [i.productId, i]));
+            const map = new Map(prev.map((item) => [item.productId, item]));
             const current = map.get(product.id);
             const nextQty = (current?.quantity || 0) + quantity;
             map.set(product.id, {
@@ -170,23 +129,24 @@ export const CartProvider = ({ children }) => {
               quantity: nextQty,
               imageUrl: product.imageUrl,
             });
-            return Array.from(map.values());
+            const newItems = Array.from(map.values());
+            console.log("Cart updated locally:", newItems.length, "items");
+            return newItems;
           });
           toast.success("تمت إضافة المنتج إلى السلة");
           return { ok: true };
+        } else if (response.status === 401 || response.status === 403) {
+          console.log("Unauthorized when adding to cart");
+          toast.error("يجب تسجيل الدخول لإضافة منتجات إلى السلة");
+          return { ok: false };
+        } else {
+          console.log("Error adding to cart:", response.status);
+          toast.error("فشل إضافة المنتج إلى السلة");
+          return { ok: false };
         }
-        setError("فشل إضافة المنتج إلى السلة");
-        toast.error("فشل إضافة المنتج إلى السلة");
-        return { ok: false };
-      } catch (e) {
-        const status = e?.response?.status;
-        const msg =
-          e?.response?.data?.message ||
-          (status === 401 || status === 403
-            ? "يجب تسجيل الدخول لإضافة منتجات إلى السلة"
-            : "حدث خطأ غير متوقع");
-        setError(msg);
-        toast.error(msg);
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+        toast.error("حدث خطأ غير متوقع");
         return { ok: false };
       } finally {
         setLoading(false);
@@ -195,6 +155,7 @@ export const CartProvider = ({ children }) => {
     [isAuthenticated]
   );
 
+  // Update product quantity
   const updateQuantity = useCallback(
     async (productId, quantity) => {
       if (!productId) return { ok: false };
@@ -204,31 +165,42 @@ export const CartProvider = ({ children }) => {
         toast.error(msg);
         return { ok: false };
       }
+
       try {
         setLoading(true);
         setError("");
-        const res = await baseApi.put("/Carts", { productId, quantity });
-        if (res.status >= 200 && res.status < 300) {
+        const token = getToken();
+        if (!token) {
+          throw new Error("No token found");
+        }
+
+        const response = await fetch(`${API_BASE}/Carts`, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ productId, quantity }),
+        });
+
+        if (response.ok) {
           setItems((prev) =>
-            prev.map((i) =>
-              i.productId === productId ? { ...i, quantity } : i
+            prev.map((item) =>
+              item.productId === productId ? { ...item, quantity } : item
             )
           );
           toast.success("تم تحديث الكمية");
           return { ok: true };
+        } else if (response.status === 401 || response.status === 403) {
+          toast.error("يجب تسجيل الدخول");
+          return { ok: false };
+        } else {
+          toast.error("فشل تحديث الكمية");
+          return { ok: false };
         }
-        setError("فشل تحديث الكمية");
-        toast.error("فشل تحديث الكمية");
-        return { ok: false };
-      } catch (e) {
-        const status = e?.response?.status;
-        const msg =
-          e?.response?.data?.message ||
-          (status === 401 || status === 403
-            ? "يجب تسجيل الدخول"
-            : "حدث خطأ غير متوقع");
-        setError(msg);
-        toast.error(msg);
+      } catch (error) {
+        console.error("Error updating quantity:", error);
+        toast.error("حدث خطأ غير متوقع");
         return { ok: false };
       } finally {
         setLoading(false);
@@ -237,6 +209,7 @@ export const CartProvider = ({ children }) => {
     [isAuthenticated]
   );
 
+  // Remove product from cart
   const removeFromCart = useCallback(
     async (productId) => {
       if (!productId) return { ok: false };
@@ -246,27 +219,39 @@ export const CartProvider = ({ children }) => {
         toast.error(msg);
         return { ok: false };
       }
+
       try {
         setLoading(true);
         setError("");
-        const res = await baseApi.delete(`/Carts/${productId}`);
-        if (res.status >= 200 && res.status < 300) {
-          setItems((prev) => prev.filter((i) => i.productId !== productId));
+        const token = getToken();
+        if (!token) {
+          throw new Error("No token found");
+        }
+
+        const response = await fetch(`${API_BASE}/Carts/${productId}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          setItems((prev) =>
+            prev.filter((item) => item.productId !== productId)
+          );
           toast.success("تم حذف المنتج من السلة");
           return { ok: true };
+        } else if (response.status === 401 || response.status === 403) {
+          toast.error("يجب تسجيل الدخول");
+          return { ok: false };
+        } else {
+          toast.error("فشل حذف المنتج من السلة");
+          return { ok: false };
         }
-        setError("فشل حذف المنتج من السلة");
-        toast.error("فشل حذف المنتج من السلة");
-        return { ok: false };
-      } catch (e) {
-        const status = e?.response?.status;
-        const msg =
-          e?.response?.data?.message ||
-          (status === 401 || status === 403
-            ? "يجب تسجيل الدخول"
-            : "حدث خطأ غير متوقع");
-        setError(msg);
-        toast.error(msg);
+      } catch (error) {
+        console.error("Error removing from cart:", error);
+        toast.error("حدث خطأ غير متوقع");
         return { ok: false };
       } finally {
         setLoading(false);
@@ -275,19 +260,38 @@ export const CartProvider = ({ children }) => {
     [isAuthenticated]
   );
 
-  return (
-    <CartContext.Provider
-      value={{
-        items,
-        totalCount,
-        loading,
-        error,
-        addToCart,
-        updateQuantity,
-        removeFromCart,
-      }}
-    >
-      {children}
-    </CartContext.Provider>
-  );
+  // Fetch cart when user becomes authenticated
+  useEffect(() => {
+    console.log("Auth state changed:", isAuthenticated);
+    if (isAuthenticated) {
+      console.log("User authenticated, fetching cart...");
+      getCart();
+    } else {
+      console.log("User not authenticated, clearing cart");
+      setItems([]);
+    }
+  }, [isAuthenticated, getCart]);
+
+  // Fetch cart on component mount if user is already authenticated
+  useEffect(() => {
+    console.log("Component mounted, checking auth...");
+    const token = getToken();
+    if (token && isAuthenticated) {
+      console.log("Token found on mount, fetching cart...");
+      getCart();
+    }
+  }, [isAuthenticated, getCart]);
+
+  const value = {
+    items,
+    totalCount,
+    loading,
+    error,
+    addToCart,
+    updateQuantity,
+    removeFromCart,
+    getCart,
+  };
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
