@@ -6,6 +6,7 @@ const baseApi = axios.create({
   headers: {
     Accept: "application/json",
   },
+  withCredentials: true,
 });
 
 export default baseApi;

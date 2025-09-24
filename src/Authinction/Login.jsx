@@ -84,24 +84,7 @@ const Login = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await baseApi.post("/Accounts/login", {
-        email: formData.email,
-        password: formData.password,
-      });
-
-      const apiData = response?.data?.data ?? response?.data ?? {};
-      const token =
-        apiData.token || apiData.accessToken || apiData.jwt || apiData.id_token;
-      const userData = apiData.user || apiData.profile || null;
-
-      if (!token) {
-        throw new Error("Token not returned by API");
-      }
-
-      // Attach token to baseApi for subsequent requests
-      baseApi.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-      login(token, userData, formData.rememberMe);
+      await login(formData.email, formData.password);
 
       toast.success("تم تسجيل الدخول بنجاح", {
         position: "top-center",

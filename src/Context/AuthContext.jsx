@@ -8,60 +8,41 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
-  const normalizeToken = (rawToken) => {
-    if (!rawToken) return "";
-    return rawToken.startsWith("Bearer ") ? rawToken.slice(7) : rawToken;
-  };
-
   useEffect(() => {
-    const token =
-      localStorage.getItem("token") || sessionStorage.getItem("token");
     const userData =
       localStorage.getItem("user") || sessionStorage.getItem("user");
-
-    if (token && userData) {
+    if (userData) {
       try {
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
         setIsAuthenticated(true);
-        const normalized = normalizeToken(token);
-        if (normalized) {
-          baseApi.defaults.headers.common[
-            "Authorization"
-          ] = `Bearer ${normalized}`;
-        }
       } catch (error) {
         console.error("Invalid user data in storage:", error);
         setUser(null);
         setIsAuthenticated(false);
       }
-    } else if (token && !userData) {
-      // If token exists but no user payload, still mark authenticated
-      setIsAuthenticated(true);
-      const normalized = normalizeToken(token);
-      if (normalized) {
-        baseApi.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${normalized}`;
-      }
+    } else {
+      setUser(null);
+      setIsAuthenticated(false);
     }
   }, []);
 
-  const login = (token, userData, rememberMe) => {
-    // Persist in both storages; mark preferred persistence
-    const normalized = normalizeToken(token);
-    localStorage.setItem("token", normalized);
-    localStorage.setItem("user", JSON.stringify(userData || {}));
-    sessionStorage.setItem("token", normalized);
-    sessionStorage.setItem("user", JSON.stringify(userData || {}));
-    // track user's choice for potential future logic
-    const persistChoice = rememberMe ? "local" : "session";
-    localStorage.setItem("auth_persist", persistChoice);
-    sessionStorage.setItem("auth_persist", persistChoice);
-    // Set header for subsequent API calls
-    baseApi.defaults.headers.common["Authorization"] = `Bearer ${normalized}`;
-    setIsAuthenticated(true);
-    setUser(userData);
+  const login = async (email, password) => {
+    const res = await baseApi.post(
+      "/Accounts/login",
+      { email, password },
+      { withCredentials: true }
+    );
+    if (res.data && res.data.success) {
+      const userData = res.data.data || null;
+      if (userData) {
+        localStorage.setItem("user", JSON.stringify(userData));
+        sessionStorage.setItem("user", JSON.stringify(userData));
+      }
+      setUser(userData);
+      setIsAuthenticated(true);
+    }
+    return res.data;
   };
 
   const logout = () => {

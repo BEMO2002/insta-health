@@ -20,10 +20,7 @@ export const CartProvider = ({ children }) => {
   // API base URL
   const API_BASE = "https://instahealthy.runasp.net/api";
 
-  // Get token from localStorage
-  const getToken = () => {
-    return localStorage.getItem("token") || sessionStorage.getItem("token");
-  };
+  // Cookie-based auth (HttpOnly). No token on client.
 
   // Calculate total count
   const totalCount = items.reduce((sum, item) => sum + (item.quantity || 0), 0);
@@ -34,18 +31,10 @@ export const CartProvider = ({ children }) => {
 
     try {
       setLoading(true);
-      const token = getToken();
-      if (!token) {
-        console.log("No token found");
-        return;
-      }
-
-      console.log("Fetching cart with token:", token.substring(0, 20) + "...");
-
       const response = await fetch(`${API_BASE}/Carts`, {
         method: "GET",
+        credentials: "include",
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
@@ -91,11 +80,6 @@ export const CartProvider = ({ children }) => {
       try {
         setLoading(true);
         setError("");
-        const token = getToken();
-        if (!token) {
-          throw new Error("No token found");
-        }
-
         const payload = {
           productId: product.id,
           name: product.name,
@@ -108,8 +92,8 @@ export const CartProvider = ({ children }) => {
 
         const response = await fetch(`${API_BASE}/Carts`, {
           method: "POST",
+          credentials: "include",
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(payload),
@@ -170,15 +154,10 @@ export const CartProvider = ({ children }) => {
       try {
         setLoading(true);
         setError("");
-        const token = getToken();
-        if (!token) {
-          throw new Error("No token found");
-        }
-
         const response = await fetch(`${API_BASE}/Carts`, {
           method: "PUT",
+          credentials: "include",
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ productId, quantity }),
@@ -224,15 +203,10 @@ export const CartProvider = ({ children }) => {
       try {
         setLoading(true);
         setError("");
-        const token = getToken();
-        if (!token) {
-          throw new Error("No token found");
-        }
-
         const response = await fetch(`${API_BASE}/Carts/${productId}`, {
           method: "DELETE",
+          credentials: "include",
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });
@@ -276,9 +250,7 @@ export const CartProvider = ({ children }) => {
   // Fetch cart on component mount if user is already authenticated
   useEffect(() => {
     console.log("Component mounted, checking auth...");
-    const token = getToken();
-    if (token && isAuthenticated) {
-      console.log("Token found on mount, fetching cart...");
+    if (isAuthenticated) {
       getCart();
     }
   }, [isAuthenticated, getCart]);
