@@ -1,6 +1,7 @@
 import React, { useContext, useMemo, useState } from "react";
 import { CartContext } from "../Context/CartContext";
 import { FiTrash2, FiMinus, FiPlus, FiShoppingBag } from "react-icons/fi";
+import OrderButton from "../Components/OrderButton";
 
 const MainCart = () => {
   const { items, updateQuantity, removeFromCart, error } =
@@ -180,14 +181,14 @@ const MainCart = () => {
                     </div>
                   </div>
 
-                  <button
-                    disabled={items.length === 0}
-                    className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    <FiShoppingBag className="w-5 h-5" />
-                    متابعة الدفع
-                  </button>
-
+                  {/* <button
+                      disabled={items.length === 0}
+                      className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      <FiShoppingBag className="w-5 h-5" />
+                      متابعة الدفع
+                        </button>  */}
+                  <OrderButton className="" />
                   <p className="text-xs text-gray-500 text-center mt-4">
                     سيتم توجيهك لصفحة الدفع عند توفرها
                   </p>
