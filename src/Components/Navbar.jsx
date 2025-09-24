@@ -329,13 +329,39 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <button
-                  onClick={handleLogout}
-                  className="min-w-[156px]  min-h-[48px] text-red-700 border-2 border-red-700 px-[16px] py-[8px] rounded-[8px] text-[15px] font-[700] flex items-center justify-center hover:bg-red-700 duration-300 hover:text-white"
+                <div
+                  className="relative"
+                  onMouseEnter={handleAuthMouseEnter}
+                  onMouseLeave={handleAuthMouseLeave}
                 >
-                  <FiLogOut className="ml-2" size={23} />
-                  تسجيل الخروج
-                </button>
+                  <button
+                    className="w-12 h-12 text-center text-second border-2 border-second  rounded-full p-3 text-[15px] font-[700] flex items-center justify-center hover:bg-second hover:text-white duration-300"
+                    aria-expanded={isAuthDropdownOpen}
+                  >
+                    <FiUser size={20} />
+                  </button>
+
+                  <div
+                    className={`absolute z-20 rtl:-right-0 rtl:top-15 ltr:left-0 w-48 origin-top-right rounded-[12px] bg-white shadow-[0px_4px_20px_0px_rgba(0,0,0,0.15)] transition-all duration-300 ease-out ${
+                      isAuthDropdownOpen
+                        ? "opacity-100 scale-100"
+                        : "opacity-0 scale-95 pointer-events-none"
+                    }`}
+                    role="menu"
+                    onMouseEnter={handleAuthDropdownMouseEnter}
+                    onMouseLeave={handleAuthDropdownMouseLeave}
+                  >
+                    <div className="py-2">
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center w-full text-right px-4 py-3 text-sm text-red-700 hover:bg-red-700 hover:text-white transition-colors duration-150"
+                      >
+                        <FiLogOut className="ml-3" size={18} />
+                        تسجيل الخروج
+                      </button>
+                    </div>
+                  </div>
+                </div>
                 <Link
                   to="/provider"
                   className="min-w-[156px] min-h-[48px] text-center bg-second text-white px-[16px] py-[8px] rounded-[8px] text-[15px] font-[700] flex items-center justify-center hover:bg-primary duration-300"

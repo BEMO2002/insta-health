@@ -10,7 +10,7 @@ const CartIcon = ({ count = 0, onClick }) => {
       style={{ backdropFilter: "blur(6px)" }}
     >
       <div className="">
-        <FiShoppingBag className="text-gray-800" size={28} />
+        <FiShoppingBag className="text-gray-800 " size={28} />
         {count > 0 && (
           <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-7 h-7 inline-flex items-center justify-center">
             {count}
