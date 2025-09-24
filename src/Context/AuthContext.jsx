@@ -41,28 +41,20 @@ export const AuthProvider = ({ children }) => {
     localStorage.getItem("token") || sessionStorage.getItem("token") || null;
 
   // Refresh token using cookies (withCredentials=true on baseApi)
+  // Returns true if refresh succeeded (even when API does not return a token)
   const refreshAccessToken = async () => {
     try {
       const res = await baseApi.post("/Accounts/refresh-token", {});
-      // Try multiple common shapes for token location
+      const ok = res && (res.status === 200 || res.status === 204);
+      // Some backends may also return a token; persist if present
       const data = res?.data?.data || res?.data || {};
       const token =
         data?.accessToken || data?.token || data?.jwt || data?.access_token;
-      if (token) {
-        persistToken(token);
-        // Optionally update user if backend returns it alongside the token
-        if (data?.user) {
-          setUser(data.user);
-          localStorage.setItem("user", JSON.stringify(data.user));
-          sessionStorage.setItem("user", JSON.stringify(data.user));
-        }
-        return token;
-      }
-      throw new Error("No token in refresh response");
+      if (token) persistToken(token);
+      if (ok) return true;
+      return false;
     } catch {
-      // Invalid or expired refresh -> force logout
-      logout();
-      return null;
+      return false;
     }
   };
 

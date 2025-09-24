@@ -15,42 +15,35 @@ export const CartProvider = ({ children }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const { isAuthenticated, getAccessToken, refreshAccessToken } =
-    useContext(AuthContext);
+  const { isAuthenticated, refreshAccessToken } = useContext(AuthContext);
 
   // API base URL
   const API_BASE = "https://instahealthy.runasp.net/api";
 
-  // Authorized fetch with automatic token refresh and retry once
+  // Cookie-based fetch with automatic refresh and retry once
   const fetchWithAuth = useCallback(
     async (input, init = {}) => {
-      const token = getAccessToken();
       const withAuth = {
         ...init,
         credentials: "include",
         headers: {
           ...(init.headers || {}),
-          Authorization: token ? `Bearer ${token}` : undefined,
           "Content-Type": "application/json",
         },
       };
 
       let res = await fetch(input, withAuth);
       if (res.status === 401 || res.status === 403) {
-        const newToken = await refreshAccessToken();
-        if (!newToken) return res;
+        const ok = await refreshAccessToken();
+        if (!ok) return res;
         const retryInit = {
           ...withAuth,
-          headers: {
-            ...(withAuth.headers || {}),
-            Authorization: `Bearer ${newToken}`,
-          },
         };
         res = await fetch(input, retryInit);
       }
       return res;
     },
-    [getAccessToken, refreshAccessToken]
+    [refreshAccessToken]
   );
 
   // Calculate total count
