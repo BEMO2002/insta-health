@@ -140,7 +140,7 @@ const ProfessionalCarousel = ({ items }) => {
                       <img
                         src={item.image}
                         alt={item.alt || `Slide ${index + 1}`}
-                        className="w-full md:h-auto h-[400px]   object-contain rounded-xl"
+                        className="w-full md:h-auto  h-[400px]   object-contain rounded-xl"
                       />
                     </div>
                   </MotionDiv>

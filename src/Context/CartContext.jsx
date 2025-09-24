@@ -15,12 +15,43 @@ export const CartProvider = ({ children }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, getAccessToken, refreshAccessToken } =
+    useContext(AuthContext);
 
   // API base URL
   const API_BASE = "https://instahealthy.runasp.net/api";
 
-  // Cookie-based auth (HttpOnly). No token on client.
+  // Authorized fetch with automatic token refresh and retry once
+  const fetchWithAuth = useCallback(
+    async (input, init = {}) => {
+      const token = getAccessToken();
+      const withAuth = {
+        ...init,
+        credentials: "include",
+        headers: {
+          ...(init.headers || {}),
+          Authorization: token ? `Bearer ${token}` : undefined,
+          "Content-Type": "application/json",
+        },
+      };
+
+      let res = await fetch(input, withAuth);
+      if (res.status === 401 || res.status === 403) {
+        const newToken = await refreshAccessToken();
+        if (!newToken) return res;
+        const retryInit = {
+          ...withAuth,
+          headers: {
+            ...(withAuth.headers || {}),
+            Authorization: `Bearer ${newToken}`,
+          },
+        };
+        res = await fetch(input, retryInit);
+      }
+      return res;
+    },
+    [getAccessToken, refreshAccessToken]
+  );
 
   // Calculate total count
   const totalCount = items.reduce((sum, item) => sum + (item.quantity || 0), 0);
@@ -31,12 +62,8 @@ export const CartProvider = ({ children }) => {
 
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE}/Carts`, {
+      const response = await fetchWithAuth(`${API_BASE}/Carts`, {
         method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
       });
 
       console.log("Cart response status:", response.status);
@@ -52,10 +79,6 @@ export const CartProvider = ({ children }) => {
         ) {
           setItems(responseData.data.items);
         }
-      } else if (response.status === 401 || response.status === 403) {
-        console.log("Unauthorized - clearing cart");
-        setItems([]);
-        toast.error("يجب تسجيل الدخول");
       } else {
         console.log("Error response:", response.status);
       }
@@ -64,7 +87,7 @@ export const CartProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, fetchWithAuth]);
 
   // Add product to cart
   const addToCart = useCallback(
@@ -90,12 +113,8 @@ export const CartProvider = ({ children }) => {
 
         console.log("Adding to cart:", payload);
 
-        const response = await fetch(`${API_BASE}/Carts`, {
+        const response = await fetchWithAuth(`${API_BASE}/Carts`, {
           method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify(payload),
         });
 
@@ -120,10 +139,6 @@ export const CartProvider = ({ children }) => {
           });
           toast.success("تمت إضافة المنتج إلى السلة");
           return { ok: true };
-        } else if (response.status === 401 || response.status === 403) {
-          console.log("Unauthorized when adding to cart");
-          toast.error("يجب تسجيل الدخول لإضافة منتجات إلى السلة");
-          return { ok: false };
         } else {
           console.log("Error adding to cart:", response.status);
           toast.error("فشل إضافة المنتج إلى السلة");
@@ -137,7 +152,7 @@ export const CartProvider = ({ children }) => {
         setLoading(false);
       }
     },
-    [isAuthenticated]
+    [isAuthenticated, fetchWithAuth]
   );
 
   // Update product quantity
@@ -154,12 +169,8 @@ export const CartProvider = ({ children }) => {
       try {
         setLoading(true);
         setError("");
-        const response = await fetch(`${API_BASE}/Carts`, {
+        const response = await fetchWithAuth(`${API_BASE}/Carts`, {
           method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({ productId, quantity }),
         });
 
@@ -171,9 +182,6 @@ export const CartProvider = ({ children }) => {
           );
           toast.success("تم تحديث الكمية");
           return { ok: true };
-        } else if (response.status === 401 || response.status === 403) {
-          toast.error("يجب تسجيل الدخول");
-          return { ok: false };
         } else {
           toast.error("فشل تحديث الكمية");
           return { ok: false };
@@ -186,7 +194,7 @@ export const CartProvider = ({ children }) => {
         setLoading(false);
       }
     },
-    [isAuthenticated]
+    [isAuthenticated, fetchWithAuth]
   );
 
   // Remove product from cart
@@ -203,12 +211,8 @@ export const CartProvider = ({ children }) => {
       try {
         setLoading(true);
         setError("");
-        const response = await fetch(`${API_BASE}/Carts/${productId}`, {
+        const response = await fetchWithAuth(`${API_BASE}/Carts/${productId}`, {
           method: "DELETE",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
         });
 
         if (response.ok) {
@@ -217,9 +221,6 @@ export const CartProvider = ({ children }) => {
           );
           toast.success("تم حذف المنتج من السلة");
           return { ok: true };
-        } else if (response.status === 401 || response.status === 403) {
-          toast.error("يجب تسجيل الدخول");
-          return { ok: false };
         } else {
           toast.error("فشل حذف المنتج من السلة");
           return { ok: false };
@@ -232,7 +233,7 @@ export const CartProvider = ({ children }) => {
         setLoading(false);
       }
     },
-    [isAuthenticated]
+    [isAuthenticated, fetchWithAuth]
   );
 
   // Fetch cart when user becomes authenticated

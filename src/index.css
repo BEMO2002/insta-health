@@ -14,20 +14,6 @@ body {
   --color-second: #2685c7;
 }
 
-/* .auth-container { */
-/* min-height: 60vh; */
-/* background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../src/assets/Home/copy-space-phone-desk.jpg'); */
-/* background-size: cover; */
-/* background-position: center; */
-/* background-repeat: no-repeat; */
-/* background-attachment: fixed; */
-/* } */
-
-/* .form-container { */
-/* background: rgba(255, 255, 255, 0.41); */
-/* backdrop-filter: blur(10px); */
-/* } */
-
 
 .list-image div {
   width: calc(40% - 6px) !important;
