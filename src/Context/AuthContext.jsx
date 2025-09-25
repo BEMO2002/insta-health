@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useEffect, useState } from "react";
-import axios from "axios";
+import baseApi from "../api/baseApi";
 
 export const AuthContext = createContext();
 
@@ -9,8 +9,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE = "https://instahealthy.runasp.net/api";
-
   // ✅ Check auth on page refresh
   // ✅ Check auth on page refresh
   const checkAuth = async () => {
@@ -18,23 +16,15 @@ export const AuthProvider = ({ children }) => {
       console.log("🔄 Checking auth...");
 
       // Step 1: refresh token
-      const res = await axios.post(
-        `${API_BASE}/Accounts/refresh-token`,
-        {},
-        { withCredentials: true }
-      );
+      const res = await baseApi.post("/Accounts/refresh-token", {});
       console.log("✅ refresh-token response:", res.data);
 
       if (res.data?.statusCode === 200) {
         // Step 2: get user profile
         try {
-          const profileRes = await axios.get(
-            `${API_BASE}/Accounts/UserProfile`,
-            {
-              withCredentials: true,
-              validateStatus: () => true, // 👈 important: don't throw on 400
-            }
-          );
+          const profileRes = await baseApi.get("/Accounts/UserProfile", {
+            validateStatus: () => true, // 👈 important: don't throw on 400
+          });
 
           console.log("👤 UserProfile raw response:", profileRes);
 
@@ -75,11 +65,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     console.log("🚀 Logging in with:", email);
 
-    const res = await axios.post(
-      `${API_BASE}/Accounts/login`,
-      { email, password },
-      { withCredentials: true }
-    );
+    const res = await baseApi.post("/Accounts/login", { email, password });
 
     console.log("📌 Login response:", res.data);
 

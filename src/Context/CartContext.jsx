@@ -8,47 +8,14 @@ import React, {
 } from "react";
 import { toast } from "react-toastify";
 import { AuthContext } from "./AuthContext";
+import baseApi from "../api/baseApi";
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { isAuthenticated, checkAuth } = useContext(AuthContext);
-
-  const API_BASE = "https://instahealthy.runasp.net/api";
-
-  // Wrapper fetch with auto refresh
-  const fetchWithAuth = useCallback(
-    async (url, options = {}) => {
-      let res = await fetch(url, {
-        ...options,
-        credentials: "include",
-        headers: {
-          ...(options.headers || {}),
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (res.status === 401 || res.status === 403) {
-        console.log("⚠️ Unauthorized, trying refresh...");
-        const ok = await checkAuth();
-        if (ok) {
-          res = await fetch(url, {
-            ...options,
-            credentials: "include",
-            headers: {
-              ...(options.headers || {}),
-              "Content-Type": "application/json",
-            },
-          });
-        }
-      }
-
-      return res;
-    },
-    [checkAuth]
-  );
+  const { isAuthenticated } = useContext(AuthContext);
 
   // Total count
   const totalCount = items.reduce((sum, item) => sum + (item.quantity || 0), 0);
@@ -59,11 +26,10 @@ export const CartProvider = ({ children }) => {
 
     try {
       setLoading(true);
-      const res = await fetchWithAuth(`${API_BASE}/Carts`, { method: "GET" });
+      const res = await baseApi.get("/Carts", { validateStatus: () => true });
       console.log("🛒 Cart response:", res.status);
-
-      if (res.ok) {
-        const data = await res.json();
+      const data = res.data;
+      if (res.status >= 200 && res.status < 300) {
         console.log("🛒 Cart data:", data);
         if (data?.success && Array.isArray(data.data?.items)) {
           setItems(data.data.items);
@@ -74,7 +40,7 @@ export const CartProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [isAuthenticated, fetchWithAuth]);
+  }, [isAuthenticated]);
 
   // Add to cart
   const addToCart = useCallback(
@@ -96,14 +62,14 @@ export const CartProvider = ({ children }) => {
         if (product?.name) payload.name = product.name;
         if (product?.price != null) payload.price = product.price;
 
-        const res = await fetchWithAuth(`${API_BASE}/Carts`, {
-          method: "POST",
-          body: JSON.stringify(payload),
+        const res = await baseApi.post("/Carts", payload, {
+          validateStatus: () => true,
         });
 
         console.log("➕ Add to cart response:", res.status);
 
-        if (res.ok) {
+        const ok = res.status >= 200 && res.status < 300;
+        if (ok) {
           setItems((prev) => {
             const exists = prev.find((i) => i.productId === product.id);
             if (exists) {
@@ -120,8 +86,8 @@ export const CartProvider = ({ children }) => {
           toast.error("فشل إضافة المنتج");
         }
 
-        // Return the response so callers can branch on ok/status
-        return res;
+        // Return a response-like object so callers can branch on ok/status
+        return { ok, status: res.status, data: res.data };
       } catch (err) {
         console.error("❌ Error addToCart:", err);
         toast.error("حدث خطأ");
@@ -130,7 +96,7 @@ export const CartProvider = ({ children }) => {
         setLoading(false);
       }
     },
-    [isAuthenticated, fetchWithAuth]
+    [isAuthenticated]
   );
 
   // Update quantity
@@ -140,14 +106,15 @@ export const CartProvider = ({ children }) => {
 
       try {
         setLoading(true);
-        const res = await fetchWithAuth(`${API_BASE}/Carts`, {
-          method: "PUT",
-          body: JSON.stringify({ productId, quantity }),
-        });
+        const res = await baseApi.put(
+          "/Carts",
+          { productId, quantity },
+          { validateStatus: () => true }
+        );
 
         console.log("✏️ Update quantity response:", res.status);
 
-        if (res.ok) {
+        if (res.status >= 200 && res.status < 300) {
           setItems((prev) =>
             prev.map((i) =>
               i.productId === productId ? { ...i, quantity } : i
@@ -161,7 +128,7 @@ export const CartProvider = ({ children }) => {
         setLoading(false);
       }
     },
-    [isAuthenticated, fetchWithAuth]
+    [isAuthenticated]
   );
 
   // Remove
@@ -171,12 +138,12 @@ export const CartProvider = ({ children }) => {
 
       try {
         setLoading(true);
-        const res = await fetchWithAuth(`${API_BASE}/Carts/${productId}`, {
-          method: "DELETE",
+        const res = await baseApi.delete(`/Carts/${productId}`, {
+          validateStatus: () => true,
         });
         console.log("🗑 Remove response:", res.status);
 
-        if (res.ok) {
+        if (res.status >= 200 && res.status < 300) {
           setItems((prev) => prev.filter((i) => i.productId !== productId));
           toast.success("تم الحذف");
         }
@@ -186,7 +153,7 @@ export const CartProvider = ({ children }) => {
         setLoading(false);
       }
     },
-    [isAuthenticated, fetchWithAuth]
+    [isAuthenticated]
   );
 
   // Load cart on auth change
