@@ -14,133 +14,118 @@ export const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const { isAuthenticated, refreshAccessToken } = useContext(AuthContext);
+  const { isAuthenticated, checkAuth } = useContext(AuthContext);
 
-  // API base URL
   const API_BASE = "https://instahealthy.runasp.net/api";
 
-  // Cookie-based fetch with automatic refresh and retry once
+  // Wrapper fetch with auto refresh
   const fetchWithAuth = useCallback(
-    async (input, init = {}) => {
-      const withAuth = {
-        ...init,
+    async (url, options = {}) => {
+      let res = await fetch(url, {
+        ...options,
         credentials: "include",
         headers: {
-          ...(init.headers || {}),
+          ...(options.headers || {}),
           "Content-Type": "application/json",
         },
-      };
+      });
 
-      let res = await fetch(input, withAuth);
       if (res.status === 401 || res.status === 403) {
-        const ok = await refreshAccessToken();
-        if (!ok) return res;
-        const retryInit = {
-          ...withAuth,
-        };
-        res = await fetch(input, retryInit);
+        console.log("⚠️ Unauthorized, trying refresh...");
+        const ok = await checkAuth();
+        if (ok) {
+          res = await fetch(url, {
+            ...options,
+            credentials: "include",
+            headers: {
+              ...(options.headers || {}),
+              "Content-Type": "application/json",
+            },
+          });
+        }
       }
+
       return res;
     },
-    [refreshAccessToken]
+    [checkAuth]
   );
 
-  // Calculate total count
+  // Total count
   const totalCount = items.reduce((sum, item) => sum + (item.quantity || 0), 0);
 
-  // Get cart from API
+  // Get cart
   const getCart = useCallback(async () => {
     if (!isAuthenticated) return;
 
     try {
       setLoading(true);
-      const response = await fetchWithAuth(`${API_BASE}/Carts`, {
-        method: "GET",
-      });
+      const res = await fetchWithAuth(`${API_BASE}/Carts`, { method: "GET" });
+      console.log("🛒 Cart response:", res.status);
 
-      console.log("Cart response status:", response.status);
-
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log("Cart data received:", responseData);
-        if (
-          responseData &&
-          responseData.success &&
-          responseData.data &&
-          Array.isArray(responseData.data.items)
-        ) {
-          setItems(responseData.data.items);
+      if (res.ok) {
+        const data = await res.json();
+        console.log("🛒 Cart data:", data);
+        if (data?.success && Array.isArray(data.data?.items)) {
+          setItems(data.data.items);
         }
-      } else {
-        console.log("Error response:", response.status);
       }
-    } catch (error) {
-      console.error("Error fetching cart:", error);
+    } catch (err) {
+      console.error("❌ Error fetching cart:", err);
     } finally {
       setLoading(false);
     }
   }, [isAuthenticated, fetchWithAuth]);
 
-  // Add product to cart
+  // Add to cart
   const addToCart = useCallback(
     async (product, quantity = 1) => {
-      if (!product?.id) return { ok: false, message: "Invalid product" };
       if (!isAuthenticated) {
-        const msg = "يجب تسجيل الدخول لإضافة منتجات إلى السلة";
-        setError(msg);
-        toast.error(msg);
-        return { ok: false };
+        toast.error("يجب تسجيل الدخول لإضافة منتجات");
+        // Ensure a consistent return shape for callers
+        return { ok: false, status: 401 };
       }
 
       try {
         setLoading(true);
-        setError("");
+        // Build payload to satisfy backend requirements (ImageUrl is required)
         const payload = {
           productId: product.id,
-          name: product.name,
-          price: product.price,
-          imageUrl: product.imageUrl,
           quantity,
         };
+        if (product?.imageUrl) payload.ImageUrl = product.imageUrl;
+        if (product?.name) payload.name = product.name;
+        if (product?.price != null) payload.price = product.price;
 
-        console.log("Adding to cart:", payload);
-
-        const response = await fetchWithAuth(`${API_BASE}/Carts`, {
+        const res = await fetchWithAuth(`${API_BASE}/Carts`, {
           method: "POST",
           body: JSON.stringify(payload),
         });
 
-        console.log("Add to cart response status:", response.status);
+        console.log("➕ Add to cart response:", res.status);
 
-        if (response.ok) {
-          // Update local state
+        if (res.ok) {
           setItems((prev) => {
-            const map = new Map(prev.map((item) => [item.productId, item]));
-            const current = map.get(product.id);
-            const nextQty = (current?.quantity || 0) + quantity;
-            map.set(product.id, {
-              productId: product.id,
-              name: product.name,
-              price: product.price,
-              quantity: nextQty,
-              imageUrl: product.imageUrl,
-            });
-            const newItems = Array.from(map.values());
-            console.log("Cart updated locally:", newItems.length, "items");
-            return newItems;
+            const exists = prev.find((i) => i.productId === product.id);
+            if (exists) {
+              return prev.map((i) =>
+                i.productId === product.id
+                  ? { ...i, quantity: i.quantity + quantity }
+                  : i
+              );
+            }
+            return [...prev, { ...product, productId: product.id, quantity }];
           });
-          toast.success("تمت إضافة المنتج إلى السلة");
-          return { ok: true };
+          toast.success("تمت إضافة المنتج");
         } else {
-          console.log("Error adding to cart:", response.status);
-          toast.error("فشل إضافة المنتج إلى السلة");
-          return { ok: false };
+          toast.error("فشل إضافة المنتج");
         }
-      } catch (error) {
-        console.error("Error adding to cart:", error);
-        toast.error("حدث خطأ غير متوقع");
-        return { ok: false };
+
+        // Return the response so callers can branch on ok/status
+        return res;
+      } catch (err) {
+        console.error("❌ Error addToCart:", err);
+        toast.error("حدث خطأ");
+        return { ok: false, status: 0, error: err };
       } finally {
         setLoading(false);
       }
@@ -148,41 +133,30 @@ export const CartProvider = ({ children }) => {
     [isAuthenticated, fetchWithAuth]
   );
 
-  // Update product quantity
+  // Update quantity
   const updateQuantity = useCallback(
     async (productId, quantity) => {
-      if (!productId) return { ok: false };
-      if (!isAuthenticated) {
-        const msg = "يجب تسجيل الدخول";
-        setError(msg);
-        toast.error(msg);
-        return { ok: false };
-      }
+      if (!isAuthenticated) return;
 
       try {
         setLoading(true);
-        setError("");
-        const response = await fetchWithAuth(`${API_BASE}/Carts`, {
+        const res = await fetchWithAuth(`${API_BASE}/Carts`, {
           method: "PUT",
           body: JSON.stringify({ productId, quantity }),
         });
 
-        if (response.ok) {
+        console.log("✏️ Update quantity response:", res.status);
+
+        if (res.ok) {
           setItems((prev) =>
-            prev.map((item) =>
-              item.productId === productId ? { ...item, quantity } : item
+            prev.map((i) =>
+              i.productId === productId ? { ...i, quantity } : i
             )
           );
           toast.success("تم تحديث الكمية");
-          return { ok: true };
-        } else {
-          toast.error("فشل تحديث الكمية");
-          return { ok: false };
         }
-      } catch (error) {
-        console.error("Error updating quantity:", error);
-        toast.error("حدث خطأ غير متوقع");
-        return { ok: false };
+      } catch (err) {
+        console.error("❌ Error updateQuantity:", err);
       } finally {
         setLoading(false);
       }
@@ -190,38 +164,24 @@ export const CartProvider = ({ children }) => {
     [isAuthenticated, fetchWithAuth]
   );
 
-  // Remove product from cart
+  // Remove
   const removeFromCart = useCallback(
     async (productId) => {
-      if (!productId) return { ok: false };
-      if (!isAuthenticated) {
-        const msg = "يجب تسجيل الدخول";
-        setError(msg);
-        toast.error(msg);
-        return { ok: false };
-      }
+      if (!isAuthenticated) return;
 
       try {
         setLoading(true);
-        setError("");
-        const response = await fetchWithAuth(`${API_BASE}/Carts/${productId}`, {
+        const res = await fetchWithAuth(`${API_BASE}/Carts/${productId}`, {
           method: "DELETE",
         });
+        console.log("🗑 Remove response:", res.status);
 
-        if (response.ok) {
-          setItems((prev) =>
-            prev.filter((item) => item.productId !== productId)
-          );
-          toast.success("تم حذف المنتج من السلة");
-          return { ok: true };
-        } else {
-          toast.error("فشل حذف المنتج من السلة");
-          return { ok: false };
+        if (res.ok) {
+          setItems((prev) => prev.filter((i) => i.productId !== productId));
+          toast.success("تم الحذف");
         }
-      } catch (error) {
-        console.error("Error removing from cart:", error);
-        toast.error("حدث خطأ غير متوقع");
-        return { ok: false };
+      } catch (err) {
+        console.error("❌ Error removeFromCart:", err);
       } finally {
         setLoading(false);
       }
@@ -229,36 +189,26 @@ export const CartProvider = ({ children }) => {
     [isAuthenticated, fetchWithAuth]
   );
 
-  // Fetch cart when user becomes authenticated
+  // Load cart on auth change
   useEffect(() => {
-    console.log("Auth state changed:", isAuthenticated);
-    if (isAuthenticated) {
-      console.log("User authenticated, fetching cart...");
-      getCart();
-    } else {
-      console.log("User not authenticated, clearing cart");
-      setItems([]);
-    }
+    console.log("📌 Auth changed:", isAuthenticated);
+    if (isAuthenticated) getCart();
+    else setItems([]);
   }, [isAuthenticated, getCart]);
 
-  // Fetch cart on component mount if user is already authenticated
-  useEffect(() => {
-    console.log("Component mounted, checking auth...");
-    if (isAuthenticated) {
-      getCart();
-    }
-  }, [isAuthenticated, getCart]);
-
-  const value = {
-    items,
-    totalCount,
-    loading,
-    error,
-    addToCart,
-    updateQuantity,
-    removeFromCart,
-    getCart,
-  };
-
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  return (
+    <CartContext.Provider
+      value={{
+        items,
+        totalCount,
+        loading,
+        addToCart,
+        updateQuantity,
+        removeFromCart,
+        getCart,
+      }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
 };

@@ -1,116 +1,117 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useState, useEffect } from "react";
-import baseApi from "../api/baseApi";
+import React, { createContext, useEffect, useState } from "react";
+import axios from "axios";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
-  const [accessToken, setAccessToken] = useState(
-    localStorage.getItem("token") || sessionStorage.getItem("token") || null
-  );
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const userData =
-      localStorage.getItem("user") || sessionStorage.getItem("user");
-    if (userData) {
-      try {
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
-      } catch {
-        setUser(null);
-      }
-    } else {
-      setUser(null);
-    }
-    setIsAuthenticated(Boolean(userData || accessToken));
-  }, [accessToken]);
+  const API_BASE = "https://instahealthy.runasp.net/api";
 
-  // Helper: persist token consistently
-  const persistToken = (token) => {
-    if (!token) return;
-    localStorage.setItem("token", token);
-    sessionStorage.setItem("token", token);
-    setAccessToken(token);
-    setIsAuthenticated(true);
-  };
-
-  // Public helper for consumers that need the access token
-  const getAccessToken = () =>
-    localStorage.getItem("token") || sessionStorage.getItem("token") || null;
-
-  // Refresh token using cookies (withCredentials=true on baseApi)
-  // Returns true if refresh succeeded (even when API does not return a token)
-  const refreshAccessToken = async () => {
+  // ✅ Check auth on page refresh
+  // ✅ Check auth on page refresh
+  const checkAuth = async () => {
     try {
-      const res = await baseApi.post("/Accounts/refresh-token", {});
-      const ok = res && (res.status === 200 || res.status === 204);
-      // Some backends may also return a token; persist if present
-      const data = res?.data?.data || res?.data || {};
-      const token =
-        data?.accessToken || data?.token || data?.jwt || data?.access_token;
-      if (token) persistToken(token);
-      if (ok) return true;
+      console.log("🔄 Checking auth...");
+
+      // Step 1: refresh token
+      const res = await axios.post(
+        `${API_BASE}/Accounts/refresh-token`,
+        {},
+        { withCredentials: true }
+      );
+      console.log("✅ refresh-token response:", res.data);
+
+      if (res.data?.statusCode === 200) {
+        // Step 2: get user profile
+        try {
+          const profileRes = await axios.get(
+            `${API_BASE}/Accounts/UserProfile`,
+            {
+              withCredentials: true,
+              validateStatus: () => true, // 👈 important: don't throw on 400
+            }
+          );
+
+          console.log("👤 UserProfile raw response:", profileRes);
+
+          const profileData = profileRes.data;
+
+          if (profileData?.data) {
+            setUser(profileData.data);
+            setIsAuthenticated(true);
+            localStorage.setItem("user", JSON.stringify(profileData.data));
+          } else {
+            console.warn("⚠️ No user data in profile response");
+            setUser(null);
+            setIsAuthenticated(false);
+          }
+        } catch (profileErr) {
+          console.error("❌ Error fetching profile:", profileErr);
+          setUser(null);
+          setIsAuthenticated(false);
+        }
+
+        return true;
+      }
+
+      setUser(null);
+      setIsAuthenticated(false);
       return false;
-    } catch {
+    } catch (err) {
+      console.error("❌ checkAuth error:", err);
+      setUser(null);
+      setIsAuthenticated(false);
       return false;
+    } finally {
+      setLoading(false);
     }
   };
 
+  // ✅ Login
   const login = async (email, password) => {
-    const res = await baseApi.post(
-      "/Accounts/login",
+    console.log("🚀 Logging in with:", email);
+
+    const res = await axios.post(
+      `${API_BASE}/Accounts/login`,
       { email, password },
       { withCredentials: true }
     );
-    if (res.data) {
-      const payload = res.data.data || {};
-      // Persist user if present
-      if (payload?.user) {
-        localStorage.setItem("user", JSON.stringify(payload.user));
-        sessionStorage.setItem("user", JSON.stringify(payload.user));
-        setUser(payload.user);
-      } else if (
-        payload &&
-        Object.keys(payload).length &&
-        !payload.accessToken
-      ) {
-        // Some backends return user directly as data
-        localStorage.setItem("user", JSON.stringify(payload));
-        sessionStorage.setItem("user", JSON.stringify(payload));
-        setUser(payload);
-      }
-      // Persist token if the login returns it
-      const token =
-        payload?.accessToken || payload?.token || payload?.jwt || null;
-      if (token) persistToken(token);
+
+    console.log("📌 Login response:", res.data);
+
+    if (res.data?.data) {
+      setUser(res.data.data);
       setIsAuthenticated(true);
+      localStorage.setItem("user", JSON.stringify(res.data.data));
     }
+
     return res.data;
   };
 
+  // ✅ Logout
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("user");
+    console.log("🚪 Logging out...");
     setIsAuthenticated(false);
     setUser(null);
-    setAccessToken(null);
+    localStorage.removeItem("user");
   };
+
+  // Run once on mount
+  useEffect(() => {
+    console.log(
+      "📌 useEffect init - current user:",
+      localStorage.getItem("user")
+    );
+    checkAuth();
+  }, []);
 
   return (
     <AuthContext.Provider
-      value={{
-        isAuthenticated,
-        user,
-        accessToken,
-        getAccessToken,
-        refreshAccessToken,
-        login,
-        logout,
-      }}
+      value={{ isAuthenticated, user, login, logout, checkAuth, loading }}
     >
       {children}
     </AuthContext.Provider>

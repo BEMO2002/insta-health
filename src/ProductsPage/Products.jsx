@@ -169,7 +169,7 @@ const Products = () => {
 
   const handleAddToCart = async (product) => {
     const res = await addToCart(product, 1);
-    if (res.ok) {
+    if (res?.ok) {
       setNotice(`تم إضافة ${product.name} إلى السلة`);
     } else {
       setNotice("تعذر إضافة المنتج. تأكد من تسجيل الدخول.");
