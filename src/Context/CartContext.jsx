@@ -61,6 +61,8 @@ export const CartProvider = ({ children }) => {
         if (product?.imageUrl) payload.ImageUrl = product.imageUrl;
         if (product?.name) payload.name = product.name;
         if (product?.price != null) payload.price = product.price;
+        if (product?.discountPrice != null)
+          payload.discountPrice = product.discountPrice;
 
         const res = await baseApi.post("/Carts", payload, {
           validateStatus: () => true,
@@ -79,7 +81,16 @@ export const CartProvider = ({ children }) => {
                   : i
               );
             }
-            return [...prev, { ...product, productId: product.id, quantity }];
+            return [
+              ...prev,
+              {
+                ...product,
+                productId: product.id,
+                quantity,
+                discountPrice: product.discountPrice,
+                price: product.price,
+              },
+            ];
           });
           toast.success("تمت إضافة المنتج");
         } else {
