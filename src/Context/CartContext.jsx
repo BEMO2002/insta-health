@@ -27,16 +27,16 @@ export const CartProvider = ({ children }) => {
     try {
       setLoading(true);
       const res = await baseApi.get("/Carts", { validateStatus: () => true });
-      console.log("🛒 Cart response:", res.status);
+      console.log("Cart response:", res.status);
       const data = res.data;
       if (res.status >= 200 && res.status < 300) {
-        console.log("🛒 Cart data:", data);
+        console.log("Cart data:", data);
         if (data?.success && Array.isArray(data.data?.items)) {
           setItems(data.data.items);
         }
       }
     } catch (err) {
-      console.error("❌ Error fetching cart:", err);
+      console.error("Error fetching cart:", err);
     } finally {
       setLoading(false);
     }
@@ -66,7 +66,7 @@ export const CartProvider = ({ children }) => {
           validateStatus: () => true,
         });
 
-        console.log("➕ Add to cart response:", res.status);
+        console.log("Add to cart response:", res.status);
 
         const ok = res.status >= 200 && res.status < 300;
         if (ok) {
@@ -89,7 +89,7 @@ export const CartProvider = ({ children }) => {
         // Return a response-like object so callers can branch on ok/status
         return { ok, status: res.status, data: res.data };
       } catch (err) {
-        console.error("❌ Error addToCart:", err);
+        console.error("Error addToCart:", err);
         toast.error("حدث خطأ");
         return { ok: false, status: 0, error: err };
       } finally {
@@ -112,7 +112,7 @@ export const CartProvider = ({ children }) => {
           { validateStatus: () => true }
         );
 
-        console.log("✏️ Update quantity response:", res.status);
+        console.log("Update quantity response:", res.status);
 
         if (res.status >= 200 && res.status < 300) {
           setItems((prev) =>
@@ -123,7 +123,7 @@ export const CartProvider = ({ children }) => {
           toast.success("تم تحديث الكمية");
         }
       } catch (err) {
-        console.error("❌ Error updateQuantity:", err);
+        console.error("Error updateQuantity:", err);
       } finally {
         setLoading(false);
       }
@@ -141,14 +141,14 @@ export const CartProvider = ({ children }) => {
         const res = await baseApi.delete(`/Carts/${productId}`, {
           validateStatus: () => true,
         });
-        console.log("🗑 Remove response:", res.status);
+        console.log("Remove response:", res.status);
 
         if (res.status >= 200 && res.status < 300) {
           setItems((prev) => prev.filter((i) => i.productId !== productId));
           toast.success("تم الحذف");
         }
       } catch (err) {
-        console.error("❌ Error removeFromCart:", err);
+        console.error("Error removeFromCart:", err);
       } finally {
         setLoading(false);
       }
@@ -158,7 +158,7 @@ export const CartProvider = ({ children }) => {
 
   // Load cart on auth change
   useEffect(() => {
-    console.log("📌 Auth changed:", isAuthenticated);
+    console.log("Auth changed:", isAuthenticated);
     if (isAuthenticated) getCart();
     else setItems([]);
   }, [isAuthenticated, getCart]);

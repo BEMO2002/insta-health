@@ -7,6 +7,15 @@ import { CartContext } from "../Context/CartContext";
 
 const ProductCard = ({ product, onAdd }) => {
   const navigate = useNavigate();
+  const hasDiscount =
+    product?.discountPrice != null &&
+    product?.price != null &&
+    Number(product.discountPrice) < Number(product.price);
+  const discountPercent = hasDiscount
+    ? Math.round(
+        100 - (Number(product.discountPrice) / Number(product.price)) * 100
+      )
+    : 0;
   return (
     <div className="bg-white rounded-xl shadow hover:shadow-lg transition-all duration-300 overflow-hidden h-full flex flex-col">
       <div className="relative h-48 overflow-hidden">
@@ -23,8 +32,13 @@ const ProductCard = ({ product, onAdd }) => {
           }}
         />
         {product.isBestSeller && (
-          <div className="absolute top-3 right-3 bg-second text-white px-2 py-1 rounded-full text-xs font-semibold">
+          <div className="absolute top-3 right-3 bg-second text-white px-2 py-1 rounded-full text-xs font-semibold shadow">
             الأكثر مبيعاً
+          </div>
+        )}
+        {hasDiscount && (
+          <div className="absolute top-3 left-3 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-extrabold shadow">
+            خصم {discountPercent}%
           </div>
         )}
       </div>
@@ -39,10 +53,31 @@ const ProductCard = ({ product, onAdd }) => {
         <p className="text-sm text-gray-500 mb-3">{product.categoryName}</p>
 
         <div className="mt-auto flex items-center justify-between">
-          <span className="text-xl font-bold text-primary">
-            {product.price?.toFixed ? product.price.toFixed(2) : product.price}{" "}
-            ج.م
-          </span>
+          <div className="flex flex-col">
+            {hasDiscount ? (
+              <>
+                <span className="text-xl font-extrabold text-red-600">
+                  {product.discountPrice?.toFixed
+                    ? product.discountPrice.toFixed(2)
+                    : product.discountPrice}{" "}
+                  ج.م
+                </span>
+                <span className="text-xs text-gray-500 line-through -mt-0.5">
+                  {product.price?.toFixed
+                    ? product.price.toFixed(2)
+                    : product.price}{" "}
+                  ج.م
+                </span>
+              </>
+            ) : (
+              <span className="text-xl font-bold text-primary">
+                {product.price?.toFixed
+                  ? product.price.toFixed(2)
+                  : product.price}{" "}
+                ج.م
+              </span>
+            )}
+          </div>
           <AddToCartButton product={product} onAdd={onAdd} />
         </div>
       </div>

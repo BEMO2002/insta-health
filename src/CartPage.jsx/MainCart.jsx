@@ -12,8 +12,21 @@ const MainCart = () => {
 
   // Calculate total price
   const totalPrice = useMemo(() => {
+    return items.reduce((total, item) => {
+      const price = item.discountPrice || item.price;
+      return total + price * item.quantity;
+    }, 0);
+  }, [items]);
+
+  // Calculate original total (before discount)
+  const originalTotal = useMemo(() => {
     return items.reduce((total, item) => total + item.price * item.quantity, 0);
   }, [items]);
+
+  // Calculate total savings
+  const totalSavings = useMemo(() => {
+    return originalTotal - totalPrice;
+  }, [originalTotal, totalPrice]);
 
   // Handle quantity update with individual loading
   const handleQuantityUpdate = async (productId, newQuantity) => {
@@ -88,9 +101,22 @@ const MainCart = () => {
                         <h3 className="font-semibold text-gray-900 truncate">
                           {item.name}
                         </h3>
-                        <p className="text-sm text-gray-500">
-                          {item.price.toFixed(2)} ج.م
-                        </p>
+                        <div className="flex flex-col">
+                          {item.discountPrice ? (
+                            <>
+                              <span className="text-lg font-bold text-red-600">
+                                {item.discountPrice.toFixed(2)} ج.م
+                              </span>
+                              <span className="text-sm text-gray-500 line-through">
+                                {item.price.toFixed(2)} ج.م
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-lg font-semibold text-gray-900">
+                              {item.price.toFixed(2)} ج.م
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="flex items-center border border-gray-300 rounded-lg">
@@ -161,6 +187,22 @@ const MainCart = () => {
                       <span className="text-gray-600">عدد العناصر:</span>
                       <span className="font-medium">{items.length}</span>
                     </div>
+                    {totalSavings > 0 && (
+                      <>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">المجموع الأصلي:</span>
+                          <span className="font-medium line-through text-gray-500">
+                            {originalTotal.toFixed(2)} ج.م
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-green-600">الخصم:</span>
+                          <span className="font-medium text-green-600">
+                            -{totalSavings.toFixed(2)} ج.م
+                          </span>
+                        </div>
+                      </>
+                    )}
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">المجموع الفرعي:</span>
                       <span className="font-medium">

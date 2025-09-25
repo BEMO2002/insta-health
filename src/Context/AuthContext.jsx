@@ -9,24 +9,24 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Check auth on page refresh
-  // ✅ Check auth on page refresh
+  // Check auth on page refresh
+  // Check auth on page refresh
   const checkAuth = async () => {
     try {
       console.log("🔄 Checking auth...");
 
       // Step 1: refresh token
       const res = await baseApi.post("/Accounts/refresh-token", {});
-      console.log("✅ refresh-token response:", res.data);
+      console.log("refresh-token response:", res.data);
 
       if (res.data?.statusCode === 200) {
         // Step 2: get user profile
         try {
           const profileRes = await baseApi.get("/Accounts/UserProfile", {
-            validateStatus: () => true, // 👈 important: don't throw on 400
+            validateStatus: () => true, // important: don't throw on 400
           });
 
-          console.log("👤 UserProfile raw response:", profileRes);
+          console.log("UserProfile raw response:", profileRes);
 
           const profileData = profileRes.data;
 
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenticated(false);
           }
         } catch (profileErr) {
-          console.error("❌ Error fetching profile:", profileErr);
+          console.error("Error fetching profile:", profileErr);
           setUser(null);
           setIsAuthenticated(false);
         }
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(false);
       return false;
     } catch (err) {
-      console.error("❌ checkAuth error:", err);
+      console.error("checkAuth error:", err);
       setUser(null);
       setIsAuthenticated(false);
       return false;
@@ -61,13 +61,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ✅ Login
+  // Login
   const login = async (email, password) => {
     console.log("🚀 Logging in with:", email);
 
     const res = await baseApi.post("/Accounts/login", { email, password });
 
-    console.log("📌 Login response:", res.data);
+    console.log("Login response:", res.data);
 
     if (res.data?.data) {
       setUser(res.data.data);
@@ -78,9 +78,9 @@ export const AuthProvider = ({ children }) => {
     return res.data;
   };
 
-  // ✅ Logout
+  // Logout
   const logout = () => {
-    console.log("🚪 Logging out...");
+    console.log("Logging out...");
     setIsAuthenticated(false);
     setUser(null);
     localStorage.removeItem("user");
@@ -88,10 +88,7 @@ export const AuthProvider = ({ children }) => {
 
   // Run once on mount
   useEffect(() => {
-    console.log(
-      "📌 useEffect init - current user:",
-      localStorage.getItem("user")
-    );
+    console.log("useEffect init - current user:", localStorage.getItem("user"));
     checkAuth();
   }, []);
 
