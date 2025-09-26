@@ -8,7 +8,6 @@ const ProductsDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-
   const [product, setProduct] = useState(null);
   const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState("");
@@ -46,9 +45,33 @@ const ProductsDetails = () => {
     });
   };
 
-  const priceText = useMemo(() => {
-    if (!product?.price && product?.price !== 0) return "";
+  const hasDiscount = useMemo(() => {
+    const discountPrice = product?.discountPrice;
+    const price = product?.price;
+    if (discountPrice == null || price == null) return false;
+    const discountNumber = Number(discountPrice);
+    const priceNumber = Number(price);
+    if (Number.isNaN(discountNumber) || Number.isNaN(priceNumber)) return false;
+    return discountNumber < priceNumber;
+  }, [product]);
+
+  const discountPercent = useMemo(() => {
+    if (!hasDiscount) return 0;
+    const discountNumber = Number(product.discountPrice);
+    const priceNumber = Number(product.price);
+    return Math.round(100 - (discountNumber / priceNumber) * 100);
+  }, [hasDiscount, product]);
+
+  const formattedPrice = useMemo(() => {
+    if (product?.price == null) return "";
     return product.price?.toFixed ? product.price.toFixed(2) : product.price;
+  }, [product]);
+
+  const formattedDiscountPrice = useMemo(() => {
+    if (product?.discountPrice == null) return "";
+    return product.discountPrice?.toFixed
+      ? product.discountPrice.toFixed(2)
+      : product.discountPrice;
   }, [product]);
 
   useEffect(() => {
@@ -163,6 +186,11 @@ const ProductsDetails = () => {
                     }}
                     onLoad={(e) => setImageSrc(e.currentTarget.src)}
                   />
+                  {hasDiscount && (
+                    <div className="absolute top-3 left-3 bg-red-600 text-white px-6 py-1 rounded-full text-sm font-extrabold shadow">
+                      خصم {discountPercent}%
+                    </div>
+                  )}
                   {isZooming && (
                     <div
                       className="pointer-events-none absolute rounded-full border-2 border-primary shadow-lg"
@@ -222,16 +250,26 @@ const ProductsDetails = () => {
                 </div>
 
                 <div className="mt-auto flex items-center flex-col gap-4 md:flex-row justify-between">
-                  <div>
-                    <div className="text-gray-500 text-sm">السعر</div>
-                    <div className="text-3xl font-extrabold text-primary">
-                      {priceText} ج.م
-                    </div>
+                  <div className="flex flex-col">
+                    {hasDiscount ? (
+                      <>
+                        <span className="text-3xl font-extrabold text-red-600">
+                          {formattedDiscountPrice} ج.م
+                        </span>
+                        <span className="text-sm text-gray-500 line-through -mt-1">
+                          {formattedPrice} ج.م
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-3xl font-bold text-primary">
+                        {formattedPrice} ج.م
+                      </span>
+                    )}
                   </div>
                   <button
                     onClick={handleAdd}
                     disabled={adding}
-                    className={`bg-second text-white px-7 py-3 rounded-lg hover:bg-primary transition-colors duration-200 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed`}
+                    className={`bg-second text-white px-10 py-3  hover:bg-primary transition-colors duration-200 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed`}
                   >
                     {adding ? (
                       <span className="inline-flex items-center gap-2">
