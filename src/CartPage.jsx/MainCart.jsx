@@ -4,7 +4,7 @@ import { FiTrash2, FiMinus, FiPlus, FiShoppingBag } from "react-icons/fi";
 import OrderButton from "../Components/OrderButton";
 
 const MainCart = () => {
-  const { items, updateQuantity, removeFromCart, error } =
+  const { items, updateQuantity, removeFromCart, error, loading } =
     useContext(CartContext);
 
   // Local loading states for each operation
@@ -49,7 +49,7 @@ const MainCart = () => {
   };
 
   return (
-    <section className="py-20 bg-gray-50 min-h-screen" dir="rtl">
+    <section className="py-20 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">سلة التسوق</h1>
@@ -62,7 +62,11 @@ const MainCart = () => {
           </div>
         )}
 
-        {items.length === 0 ? (
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-second"></div>
+          </div>
+        ) : items.length === 0 ? (
           <div className="text-center py-16">
             <FiShoppingBag className="mx-auto text-6xl text-gray-300 mb-4" />
             <h3 className="text-xl font-semibold text-gray-600 mb-2">
