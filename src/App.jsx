@@ -16,6 +16,7 @@ import ProvidersDetails from "./ServicesProviders/ProvidersDetails";
 import MainProducts from "./ProductsPage/MainProducts";
 import ProductsDetails from "./ProductsPage/ProductsDetails";
 import MainCart from "./CartPage.jsx/MainCart";
+import OrderStatus from "./Orders/OrderStatus";
 function App() {
   return (
     <BrowserRouter>
@@ -28,6 +29,8 @@ function App() {
           <Route path="/products" element={<MainProducts />} />
           <Route path="/products/:id" element={<ProductsDetails />} />
           <Route path="/cart" element={<MainCart />} />
+          <Route path="/orders/:merchantOrderId" element={<OrderStatus />} />
+          <Route path="/orders" element={<OrderStatus />} />
         </Route>
 
         <Route path="/login" element={<Login />} />

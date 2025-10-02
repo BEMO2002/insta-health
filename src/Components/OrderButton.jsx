@@ -1,11 +1,42 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import baseApi from "../api/baseApi";
+import { CartContext } from "../Context/CartContext";
 
 const OrderButton = () => {
   const [animate, setAnimate] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const { items } = useContext(CartContext);
 
-  const handleClick = () => {
-    if (!animate) {
-      setAnimate(true);
+  const handleClick = async () => {
+    if (animate || processing || items.length === 0) return;
+
+    setAnimate(true);
+    setProcessing(true);
+
+    try {
+      // Call the Orders API
+      const response = await baseApi.post("/Orders");
+
+      if (response.data?.success && response.data?.data?.sessionUrl) {
+        // Wait 8 seconds for animation then redirect
+        setTimeout(() => {
+          window.location.href = response.data.data.sessionUrl;
+        }, 8000);
+      } else {
+        console.error("Failed to create order:", response.data);
+        // Reset animation if failed
+        setTimeout(() => {
+          setAnimate(false);
+          setProcessing(false);
+        }, 1000);
+      }
+    } catch (error) {
+      console.error("Error creating order:", error);
+      // Reset animation if error
+      setTimeout(() => {
+        setAnimate(false);
+        setProcessing(false);
+      }, 1000);
     }
   };
 
@@ -14,6 +45,7 @@ const OrderButton = () => {
     if (animate) {
       timer = setTimeout(() => {
         setAnimate(false);
+        setProcessing(false);
       }, 10000); // reset after animation
     }
     return () => clearTimeout(timer);
@@ -379,6 +411,11 @@ const OrderButton = () => {
         <button
           className={`order ${animate ? "animate" : ""}`}
           onClick={handleClick}
+          disabled={processing || items.length === 0}
+          style={{
+            opacity: items.length === 0 ? 0.5 : 1,
+            cursor: items.length === 0 ? "not-allowed" : "pointer",
+          }}
         >
           <span className="default">متابعة الدفع</span>
           <span className="success">
