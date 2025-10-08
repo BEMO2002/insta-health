@@ -17,6 +17,7 @@ import MainProducts from "./ProductsPage/MainProducts";
 import ProductsDetails from "./ProductsPage/ProductsDetails";
 import MainCart from "./CartPage.jsx/MainCart";
 import OrderStatus from "./Orders/OrderStatus";
+import PrescriptionReservations from "./PrescriptionReservations/PrescriptionReservations";
 function App() {
   return (
     <BrowserRouter>
@@ -25,6 +26,10 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<MainHome />} />
           <Route path="/providers" element={<MainServices />} />
+          <Route
+            path="/prescription-reservations"
+            element={<PrescriptionReservations />}
+          />
           <Route path="/providers/:id" element={<ProvidersDetails />} />
           <Route path="/products" element={<MainProducts />} />
           <Route path="/products/:id" element={<ProductsDetails />} />

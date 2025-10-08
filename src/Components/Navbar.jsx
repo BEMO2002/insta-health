@@ -149,11 +149,14 @@ const Navbar = () => {
     },
     {
       name: "احجز اونلاين",
-      subItems: medicalSpecialities.map((speciality) => ({
-        name: speciality.name,
-        specialityId: speciality.id,
-        isSpeciality: true,
-      })),
+      subItems: [
+        { name: "الروشته الطبيه", path: "/prescription-reservations" },
+        ...medicalSpecialities.map((speciality) => ({
+          name: speciality.name,
+          specialityId: speciality.id,
+          isSpeciality: true,
+        })),
+      ],
     },
     {
       name: " الملف الطبي",
@@ -171,7 +174,9 @@ const Navbar = () => {
     },
     {
       name: "الروشته ",
-      subItems: [{ name: " المدونه الطبيه", path: "/member" }],
+      subItems: [
+        { name: " الروشته الطبيه", path: "/prescription-reservations" },
+      ],
     },
   ];
   return (
