@@ -31,28 +31,36 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [doctorsLoading, setDoctorsLoading] = useState(false);
 
-  const fetchAvailableDays = useCallback(async () => {
-    if (!serviceItem?.id) return;
+  const fetchAvailableDays = useCallback(
+    async (doctorId = null) => {
+      if (!serviceItem?.id) return;
 
-    try {
-      setDaysLoading(true);
-      const response = await baseApi.get("/Appointments/days", {
-        params: {
+      try {
+        setDaysLoading(true);
+        const params = {
           ServiceItemId: serviceItem.id,
           IsAvailable: true,
-        },
-      });
+        };
 
-      if (response.data.success) {
-        setAvailableDays(response.data.data.items || []);
+        // If it's a clinic and doctor is selected, filter by doctor
+        if (serviceItem.type === "Clinic" && doctorId) {
+          params.DoctorId = doctorId;
+        }
+
+        const response = await baseApi.get("/Appointments/days", { params });
+
+        if (response.data.success) {
+          setAvailableDays(response.data.data.items || []);
+        }
+      } catch (error) {
+        console.error("Error fetching available days:", error);
+        toast.error("فشل في تحميل الأيام المتاحة");
+      } finally {
+        setDaysLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching available days:", error);
-      toast.error("فشل في تحميل الأيام المتاحة");
-    } finally {
-      setDaysLoading(false);
-    }
-  }, [serviceItem?.id]);
+    },
+    [serviceItem?.id, serviceItem?.type]
+  );
 
   const fetchAvailableSlots = useCallback(async (dayId) => {
     try {
@@ -115,16 +123,28 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
     }
   }, [isOpen]);
 
-  // Fetch available days when modal opens
+  // Fetch data when modal opens
   useEffect(() => {
     if (isOpen && serviceItem?.id) {
-      fetchAvailableDays();
-      // If it's a clinic, also fetch doctors
       if (serviceItem.type === "Clinic") {
+        // For clinics, fetch doctors first
         fetchDoctors();
+      } else {
+        // For services, fetch available days directly
+        fetchAvailableDays();
       }
     }
   }, [isOpen, serviceItem, fetchAvailableDays, fetchDoctors]);
+
+  const handleDoctorSelect = (doctor) => {
+    setFormData((prev) => ({
+      ...prev,
+      selectedDoctor: doctor,
+    }));
+    // Fetch available days for this doctor
+    fetchAvailableDays(doctor.id);
+    setCurrentStep(2);
+  };
 
   const handleDaySelect = (day) => {
     setFormData((prev) => ({
@@ -132,7 +152,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
       selectedDay: day,
     }));
     fetchAvailableSlots(day.id);
-    setCurrentStep(2);
+    setCurrentStep(3);
   };
 
   const handleSlotSelect = (slot) => {
@@ -140,20 +160,6 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
       ...prev,
       selectedSlot: slot,
       appointmentId: slot.id,
-    }));
-
-    // If it's a clinic, go to doctor selection, otherwise go to user details
-    if (serviceItem.type === "Clinic") {
-      setCurrentStep(3);
-    } else {
-      setCurrentStep(4);
-    }
-  };
-
-  const handleDoctorSelect = (doctor) => {
-    setFormData((prev) => ({
-      ...prev,
-      selectedDoctor: doctor,
     }));
     setCurrentStep(4);
   };
@@ -291,13 +297,104 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
 
           {/* Step Content */}
           <div className="min-h-[300px]">
-            {/* Step 1: Select Day */}
+            {/* Step 1: Select Doctor (Only for Clinics) or Day (for Services) */}
             {currentStep === 1 && (
               <div>
-                <h3 className="text-lg font-semibold mb-4 flex items-center">
-                  <FiCalendar className="ml-2" />
-                  اختر اليوم
-                </h3>
+                {serviceItem?.type === "Clinic" ? (
+                  <>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center">
+                      <FiUser className="ml-2" />
+                      اختر الطبيب
+                    </h3>
+                    {doctorsLoading ? (
+                      <div className="flex justify-center items-center h-32">
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                      </div>
+                    ) : doctors.length > 0 ? (
+                      <div className="space-y-2">
+                        {doctors.map((doctor) => (
+                          <button
+                            key={doctor.id}
+                            onClick={() => handleDoctorSelect(doctor)}
+                            className="w-full p-3 text-right border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-colors"
+                          >
+                            <div className="font-medium">{doctor.name}</div>
+                            {doctor.expirence && (
+                              <div className="text-sm text-gray-500">
+                                خبرة: {doctor.expirence} سنوات
+                              </div>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-center text-gray-500 py-8">
+                        لا توجد أطباء متاحين حالياً
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center">
+                      <FiCalendar className="ml-2" />
+                      اختر اليوم
+                    </h3>
+                    {daysLoading ? (
+                      <div className="flex justify-center items-center h-32">
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                      </div>
+                    ) : availableDays.length > 0 ? (
+                      <div className="space-y-2">
+                        {availableDays.map((day) => (
+                          <button
+                            key={day.id}
+                            onClick={() => handleDaySelect(day)}
+                            className="w-full p-3 text-right border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-colors"
+                          >
+                            <div className="font-medium">
+                              {formatDate(day.date)}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {day.dayOfWeek}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-center text-gray-500 py-8">
+                        لا توجد أيام متاحة حالياً
+                      </p>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Step 2: Select Day (for Clinics) or Time Slot (for Services) */}
+            {currentStep === 2 && (
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <button
+                    onClick={goBack}
+                    className="flex items-center text-gray-600 hover:text-primary"
+                  >
+                    <FiArrowLeft className="ml-1" />
+                    العودة
+                  </button>
+                  <h3 className="text-lg font-semibold flex items-center">
+                    <FiCalendar className="ml-2" />
+                    اختر اليوم
+                  </h3>
+                </div>
+
+                {serviceItem?.type === "Clinic" && formData.selectedDoctor && (
+                  <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      الطبيب المختار: {formData.selectedDoctor.name}
+                    </p>
+                  </div>
+                )}
+
                 {daysLoading ? (
                   <div className="flex justify-center items-center h-32">
                     <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
@@ -327,8 +424,8 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
               </div>
             )}
 
-            {/* Step 2: Select Time Slot */}
-            {currentStep === 2 && (
+            {/* Step 3: Select Time Slot */}
+            {currentStep === 3 && (
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <button
@@ -348,6 +445,11 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                   <p className="text-sm text-blue-800">
                     اليوم المختار: {formatDate(formData.selectedDay?.date)}
                   </p>
+                  {formData.selectedDoctor && (
+                    <p className="text-sm text-blue-800">
+                      الطبيب: {formData.selectedDoctor.name}
+                    </p>
+                  )}
                 </div>
 
                 {slotsLoading ? (
@@ -374,56 +476,6 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                 ) : (
                   <p className="text-center text-gray-500 py-8">
                     لا توجد مواعيد متاحة في هذا اليوم
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Step 3: Select Doctor (Only for Clinics) */}
-            {currentStep === 3 && serviceItem?.type === "Clinic" && (
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <button
-                    onClick={goBack}
-                    className="flex items-center text-gray-600 hover:text-primary"
-                  >
-                    <FiArrowLeft className="ml-1" />
-                    العودة
-                  </button>
-                  <h3 className="text-lg font-semibold flex items-center">
-                    <FiUser className="ml-2" />
-                    اختر الطبيب
-                  </h3>
-                </div>
-
-                {doctorsLoading ? (
-                  <div className="flex justify-center items-center h-32">
-                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-                  </div>
-                ) : doctors.length > 0 ? (
-                  <div className="space-y-2">
-                    {doctors.map((doctor) => (
-                      <button
-                        key={doctor.id}
-                        onClick={() => handleDoctorSelect(doctor)}
-                        className={`w-full p-3 text-right border rounded-lg transition-colors ${
-                          formData.selectedDoctor?.id === doctor.id
-                            ? "border-primary bg-blue-50"
-                            : "border-gray-200 hover:border-primary hover:bg-blue-50"
-                        }`}
-                      >
-                        <div className="font-medium">{doctor.name}</div>
-                        {doctor.expirence && (
-                          <div className="text-sm text-gray-500">
-                            خبرة: {doctor.expirence} سنوات
-                          </div>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-center text-gray-500 py-8">
-                    لا توجد أطباء متاحين حالياً
                   </p>
                 )}
               </div>
