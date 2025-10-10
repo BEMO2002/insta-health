@@ -20,7 +20,6 @@ const ProvidersDetails = () => {
   const [services, setServices] = useState([]);
   const [clinics, setClinics] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [servicesLoading, setServicesLoading] = useState(true);
   const [error, setError] = useState(null);
   const [bookingModal, setBookingModal] = useState({
     isOpen: false,
@@ -35,7 +34,26 @@ const ProvidersDetails = () => {
         const response = await baseApi.get(`/ServicesProviders/${id}`);
 
         if (response.data.success) {
-          setProvider(response.data.data);
+          const providerData = response.data.data;
+          setProvider(providerData);
+          // Parse embedded items to services/clinics sections if present
+          if (Array.isArray(providerData.items)) {
+            const servicesGroup = providerData.items.find(
+              (g) => g?.type === "Service"
+            );
+            const clinicsGroup = providerData.items.find(
+              (g) => g?.type === "Clinic"
+            );
+            setServices(
+              Array.isArray(servicesGroup?.items) ? servicesGroup.items : []
+            );
+            setClinics(
+              Array.isArray(clinicsGroup?.items) ? clinicsGroup.items : []
+            );
+          } else {
+            setServices([]);
+            setClinics([]);
+          }
         } else {
           setError("فشل في تحميل تفاصيل مقدم الخدمة");
         }
@@ -52,47 +70,7 @@ const ProvidersDetails = () => {
     }
   }, [id]);
 
-  useEffect(() => {
-    const fetchServiceItems = async () => {
-      if (!id) return;
-
-      try {
-        setServicesLoading(true);
-
-        // Fetch Services
-        const servicesResponse = await baseApi.get(`/ServiceItems`, {
-          params: {
-            ServiceProviderId: id,
-            Type: "Service",
-          },
-        });
-
-        // Fetch Clinics
-        const clinicsResponse = await baseApi.get(`/ServiceItems`, {
-          params: {
-            ServiceProviderId: id,
-            Type: "Clinic",
-          },
-        });
-
-        if (servicesResponse.data.success) {
-          setServices(servicesResponse.data.data.items || []);
-        }
-
-        if (clinicsResponse.data.success) {
-          setClinics(clinicsResponse.data.data.items || []);
-        }
-      } catch (err) {
-        console.error("Error fetching service items:", err);
-      } finally {
-        setServicesLoading(false);
-      }
-    };
-
-    if (id) {
-      fetchServiceItems();
-    }
-  }, [id]);
+  // Items now come embedded within provider response; no separate fetch needed
 
   const renderStars = (rating) => {
     const stars = [];
@@ -266,142 +244,148 @@ const ProvidersDetails = () => {
         {/* Services and Clinics Section */}
         {(services.length > 0 || clinics.length > 0) && (
           <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-primary mb-6">
-              الخدمات والعيادات المتاحة
-            </h2>
-
-            {servicesLoading ? (
-              <div className="flex justify-center items-center h-32">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-second"></div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Services */}
-                {services.map((item) => (
-                  <div
-                    key={`service-${item.id}`}
-                    className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
-                  >
-                    <div className="relative">
-                      <img
-                        src={item.imageCover}
-                        alt={item.name}
-                        className="w-full h-48 object-cover"
-                        onError={(e) => {
-                          e.target.src =
-                            "https://via.placeholder.com/400x200?text=No+Image";
-                        }}
-                      />
-                      <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded text-xs font-medium">
-                        خدمة
-                      </div>
-                      {item.isBestSeller && (
-                        <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
-                          الأكثر مبيعاً
+            {services.length > 0 && (
+              <>
+                <h2 className="text-2xl md:text-3xl font-bold text-primary mb-6">
+                  الخدمات
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                  {/* Services */}
+                  {services.map((item) => (
+                    <div
+                      key={`service-${item.id}`}
+                      className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+                    >
+                      <div className="relative">
+                        <img
+                          src={item.imageCover}
+                          alt={item.name}
+                          className="w-full h-48 object-cover"
+                          onError={(e) => {
+                            e.target.src =
+                              "https://via.placeholder.com/400x200?text=No+Image";
+                          }}
+                        />
+                        <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded text-xs font-medium">
+                          خدمة
                         </div>
-                      )}
-                    </div>
-
-                    <div className="p-4">
-                      <h3 className="text-lg font-bold text-primary mb-2 line-clamp-2">
-                        {item.name}
-                      </h3>
-
-                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                        {item.description}
-                      </p>
-
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center">
-                          <div className="flex items-center">
-                            {renderStars(item.averageRating)}
+                        {item.isBestSeller && (
+                          <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
+                            الأكثر مبيعاً
                           </div>
-                          <span className="text-sm text-gray-500 mr-2">
-                            ({item.totalRatings})
+                        )}
+                      </div>
+
+                      <div className="p-4">
+                        <h3 className="text-lg font-bold text-primary mb-2 line-clamp-2">
+                          {item.name}
+                        </h3>
+
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                          {item.description}
+                        </p>
+
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center">
+                            <div className="flex items-center">
+                              {renderStars(item.averageRating)}
+                            </div>
+                            <span className="text-sm text-gray-500 mr-2">
+                              ({item.totalRatings})
+                            </span>
+                          </div>
+                          <span className="text-lg font-bold text-second">
+                            {item.price} ج.م
                           </span>
                         </div>
-                        <span className="text-lg font-bold text-second">
-                          {item.price} ج.م
-                        </span>
-                      </div>
 
-                      <button
-                        onClick={() => handleBookingClick(item, "Service")}
-                        className="w-full bg-second text-white py-2 rounded-lg text-sm font-medium hover:bg-primary transition-colors flex items-center justify-center"
-                      >
-                        احجز الخدمة
-                        <MdOutlineKeyboardArrowRight
-                          className="mr-2"
-                          size={16}
+                        <button
+                          onClick={() => handleBookingClick(item, "Service")}
+                          className="w-full bg-second text-white py-2 rounded-lg text-sm font-medium hover:bg-primary transition-colors flex items-center justify-center"
+                        >
+                          احجز الخدمة
+                          <MdOutlineKeyboardArrowRight
+                            className="mr-2"
+                            size={16}
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {clinics.length > 0 && (
+              <>
+                <h2 className="text-2xl md:text-3xl font-bold text-primary mb-6">
+                  العيادات
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {/* Clinics */}
+                  {clinics.map((item) => (
+                    <div
+                      key={`clinic-${item.id}`}
+                      className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+                    >
+                      <div className="relative">
+                        <img
+                          src={item.imageCover}
+                          alt={item.name}
+                          className="w-full h-48 object-cover"
+                          onError={(e) => {
+                            e.target.src =
+                              "https://via.placeholder.com/400x200?text=No+Image";
+                          }}
                         />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-
-                {/* Clinics */}
-                {clinics.map((item) => (
-                  <div
-                    key={`clinic-${item.id}`}
-                    className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
-                  >
-                    <div className="relative">
-                      <img
-                        src={item.imageCover}
-                        alt={item.name}
-                        className="w-full h-48 object-cover"
-                        onError={(e) => {
-                          e.target.src =
-                            "https://via.placeholder.com/400x200?text=No+Image";
-                        }}
-                      />
-                      <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
-                        عيادة
-                      </div>
-                      {item.isBestSeller && (
-                        <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
-                          الأكثر مبيعاً
+                        <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
+                          عيادة
                         </div>
-                      )}
-                    </div>
-
-                    <div className="p-4">
-                      <h3 className="text-lg font-bold text-primary mb-2 line-clamp-2">
-                        {item.name}
-                      </h3>
-
-                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                        {item.description}
-                      </p>
-
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center">
-                          <div className="flex items-center">
-                            {renderStars(item.averageRating)}
+                        {item.isBestSeller && (
+                          <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
+                            الأكثر مبيعاً
                           </div>
-                          <span className="text-sm text-gray-500 mr-2">
-                            ({item.totalRatings})
+                        )}
+                      </div>
+
+                      <div className="p-4">
+                        <h3 className="text-lg font-bold text-primary mb-2 line-clamp-2">
+                          {item.name}
+                        </h3>
+
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                          {item.description}
+                        </p>
+
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center">
+                            <div className="flex items-center">
+                              {renderStars(item.averageRating)}
+                            </div>
+                            <span className="text-sm text-gray-500 mr-2">
+                              ({item.totalRatings})
+                            </span>
+                          </div>
+                          <span className="text-lg font-bold text-second">
+                            {item.price} ج.م
                           </span>
                         </div>
-                        <span className="text-lg font-bold text-second">
-                          {item.price} ج.م
-                        </span>
-                      </div>
 
-                      <button
-                        onClick={() => handleBookingClick(item, "Clinic")}
-                        className="w-full bg-second text-white py-2 rounded-lg text-sm font-medium hover:bg-primary transition-colors flex items-center justify-center"
-                      >
-                        احجز العيادة
-                        <MdOutlineKeyboardArrowRight
-                          className="mr-2"
-                          size={16}
-                        />
-                      </button>
+                        <button
+                          onClick={() => handleBookingClick(item, "Clinic")}
+                          className="w-full bg-second text-white py-2 rounded-lg text-sm font-medium hover:bg-primary transition-colors flex items-center justify-center"
+                        >
+                          احجز العيادة
+                          <MdOutlineKeyboardArrowRight
+                            className="mr-2"
+                            size={16}
+                          />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </>
             )}
           </div>
         )}

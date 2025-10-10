@@ -316,14 +316,55 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                           <button
                             key={doctor.id}
                             onClick={() => handleDoctorSelect(doctor)}
-                            className="w-full p-3 text-right border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-colors"
+                            className="w-full p-4 text-right border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-colors"
                           >
-                            <div className="font-medium">{doctor.name}</div>
-                            {doctor.expirence && (
-                              <div className="text-sm text-gray-500">
-                                خبرة: {doctor.expirence} سنوات
+                            <div className="flex items-center gap-4">
+                              <img
+                                src={doctor.imageUrl}
+                                alt={doctor.name}
+                                className="w-16 h-16 rounded-full object-cover"
+                                onError={(e) => {
+                                  e.target.src =
+                                    "https://via.placeholder.com/64x64?text=د.م";
+                                }}
+                              />
+                              <div className="flex-1 text-right">
+                                <div className="font-medium text-lg">
+                                  {doctor.name}
+                                </div>
+                                {doctor.speciality && (
+                                  <div className="text-sm text-second font-medium">
+                                    {doctor.speciality}
+                                  </div>
+                                )}
+                                {doctor.expirence && (
+                                  <div className="text-sm text-gray-500 mt-1">
+                                    {doctor.expirence}
+                                  </div>
+                                )}
+                                {doctor.rate && (
+                                  <div className="flex items-center mt-2">
+                                    <div className="flex">
+                                      {[1, 2, 3, 4, 5].map((star) => (
+                                        <span
+                                          key={star}
+                                          className={`text-sm ${
+                                            star <= doctor.rate
+                                              ? "text-yellow-400"
+                                              : "text-gray-300"
+                                          }`}
+                                        >
+                                          ★
+                                        </span>
+                                      ))}
+                                    </div>
+                                    <span className="text-xs text-gray-500 mr-2">
+                                      ({doctor.rate}/5)
+                                    </span>
+                                  </div>
+                                )}
                               </div>
-                            )}
+                            </div>
                           </button>
                         ))}
                       </div>
