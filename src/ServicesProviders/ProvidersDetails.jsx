@@ -10,6 +10,11 @@ import {
   FaArrowLeft,
 } from "react-icons/fa";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 import baseApi from "../api/baseApi";
 import BookingModal from "../Components/BookingModal";
 
@@ -241,6 +246,68 @@ const ProvidersDetails = () => {
           </div>
         </div>
 
+        {/* Provider Gallery */}
+        {provider.attachments && provider.attachments.length > 0 && (
+          <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-primary mb-6">
+              معرض الصور
+            </h2>
+            <div className="relative">
+              <Swiper
+                modules={[Autoplay, Navigation, Pagination]}
+                spaceBetween={20}
+                slidesPerView={1}
+                loop={true}
+                autoplay={{
+                  delay: 2000,
+                  disableOnInteraction: false,
+                  pauseOnMouseEnter: true,
+                  reverseDirection: true,
+                }}
+                navigation={{
+                  nextEl: ".swiper-button-next",
+                  prevEl: ".swiper-button-prev",
+                }}
+                pagination={{
+                  clickable: true,
+                  dynamicBullets: true,
+                }}
+                breakpoints={{
+                  640: {
+                    slidesPerView: 2,
+                    spaceBetween: 20,
+                  },
+                  768: {
+                    slidesPerView: 3,
+                    spaceBetween: 30,
+                  },
+                  1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 30,
+                  },
+                }}
+                className="gallery-swiper"
+              >
+                {provider.attachments.map((attachment) => (
+                  <SwiperSlide key={attachment.id}>
+                    <div className="relative group cursor-pointer overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                      <img
+                        src={attachment.imageUrl}
+                        alt={`صورة ${attachment.id}`}
+                        className="w-full h-48 md:h-56 object-cover transition-transform duration-300 group-hover:scale-105"
+                        onError={(e) => {
+                          e.target.src =
+                            "https://via.placeholder.com/400x300?text=No+Image";
+                        }}
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+          </div>
+        )}
+
         {/* Services and Clinics Section */}
         {(services.length > 0 || clinics.length > 0) && (
           <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
@@ -397,6 +464,35 @@ const ProvidersDetails = () => {
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
+        }
+        
+        .gallery-swiper {
+          padding: 0 50px;
+        }
+        
+        .gallery-swiper .swiper-pagination {
+          bottom: -40px;
+        }
+        
+        .gallery-swiper .swiper-pagination-bullet {
+          background-color: #3B82F6;
+          opacity: 0.5;
+        }
+        
+        .gallery-swiper .swiper-pagination-bullet-active {
+          opacity: 1;
+          background-color: #1D4ED8;
+        }
+        
+        .gallery-swiper .swiper-button-prev,
+        .gallery-swiper .swiper-button-next {
+          color: #1D4ED8;
+          font-weight: bold;
+        }
+        
+        .gallery-swiper .swiper-button-prev:after,
+        .gallery-swiper .swiper-button-next:after {
+          font-size: 20px;
         }
       `}</style>
 
