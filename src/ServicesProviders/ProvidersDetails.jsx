@@ -8,6 +8,8 @@ import {
   FaUser,
   FaStar,
   FaArrowLeft,
+  FaPhone,
+  FaEnvelope,
 } from "react-icons/fa";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -244,7 +246,24 @@ const ProvidersDetails = () => {
                   <p className="text-gray-600">{provider.goverorateName}</p>
                 </div>
               </div>
-
+              <div className="flex items-center">
+                <FaPhone className="text-second ml-3" size={18} />
+                <div>
+                  <span className="font-medium text-gray-700">الهاتف:</span>
+                  <p className="text-gray-600">
+                    {provider.providerPhoneNumber}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center">
+                <FaEnvelope className="text-second ml-3" size={18} />
+                <div>
+                  <span className="font-medium text-gray-700">
+                    البريد الإلكتروني:
+                  </span>
+                  <p className="text-gray-600">{provider.providerEmail}</p>
+                </div>
+              </div>
               {provider.branches && (
                 <div className="flex items-center">
                   <FaCodeBranch className="text-second ml-3" size={18} />
