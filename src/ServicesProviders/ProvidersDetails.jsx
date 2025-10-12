@@ -17,7 +17,8 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import baseApi from "../api/baseApi";
 import BookingModal from "../Components/BookingModal";
-
+import PrescriptionBookingModal from "../Components/PrescriptionBookingModal";
+import { CiMedicalClipboard } from "react-icons/ci";
 const ProvidersDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -29,6 +30,11 @@ const ProvidersDetails = () => {
   const [bookingModal, setBookingModal] = useState({
     isOpen: false,
     serviceItem: null,
+    providerName: "",
+  });
+  const [prescriptionModal, setPrescriptionModal] = useState({
+    isOpen: false,
+    providerId: null,
     providerName: "",
   });
 
@@ -112,6 +118,22 @@ const ProvidersDetails = () => {
     setBookingModal({
       isOpen: false,
       serviceItem: null,
+      providerName: "",
+    });
+  };
+
+  const handlePrescriptionClick = () => {
+    setPrescriptionModal({
+      isOpen: true,
+      providerId: provider?.id,
+      providerName: provider?.name || "",
+    });
+  };
+
+  const closePrescriptionModal = () => {
+    setPrescriptionModal({
+      isOpen: false,
+      providerId: null,
       providerName: "",
     });
   };
@@ -242,6 +264,13 @@ const ProvidersDetails = () => {
                   {provider.ownerName}
                 </span>
               </div>
+              <button
+                onClick={handlePrescriptionClick}
+                className="bg-second text-white px-4 py-3  text-md font-medium hover:bg-primary transition-colors duration-300 flex items-center justify-center gap-2"
+              >
+                حجز روشته
+                <CiMedicalClipboard size={20} />
+              </button>
             </div>
           </div>
         </div>
@@ -502,6 +531,14 @@ const ProvidersDetails = () => {
         onClose={closeBookingModal}
         serviceItem={bookingModal.serviceItem}
         providerName={bookingModal.providerName}
+      />
+
+      {/* Prescription Booking Modal */}
+      <PrescriptionBookingModal
+        isOpen={prescriptionModal.isOpen}
+        onClose={closePrescriptionModal}
+        providerId={prescriptionModal.providerId}
+        providerName={prescriptionModal.providerName}
       />
     </div>
   );

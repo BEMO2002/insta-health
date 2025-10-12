@@ -6,18 +6,23 @@ import {
   FiMapPin,
   FiFileText,
   FiCheck,
+  FiX,
 } from "react-icons/fi";
 import baseApi from "../api/baseApi";
 import { toast } from "react-toastify";
 
-const PrescriptionReservations = () => {
+const PrescriptionBookingModal = ({
+  isOpen,
+  onClose,
+  providerId,
+  providerName,
+}) => {
   const [formData, setFormData] = useState({
     userName: "",
     userMobile: "",
     userAddress: "",
     medicinesNames: "",
     prescriptionImage: null,
-    providerId: "",
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -114,7 +119,8 @@ const PrescriptionReservations = () => {
       formDataToSend.append("UserMobile", formData.userMobile);
       formDataToSend.append("UserAddress", formData.userAddress);
       formDataToSend.append("MedicinesNames", formData.medicinesNames);
-      formDataToSend.append("ProviderId", formData.providerId);
+      formDataToSend.append("ProviderId", providerId);
+
       if (formData.prescriptionImage) {
         formDataToSend.append("PrescriptionImage", formData.prescriptionImage);
       }
@@ -138,11 +144,12 @@ const PrescriptionReservations = () => {
           userAddress: "",
           medicinesNames: "",
           prescriptionImage: null,
-          providerId: "",
         });
         // Clear file input
         const fileInput = document.getElementById("prescriptionImage");
         if (fileInput) fileInput.value = "";
+        // Close modal
+        onClose();
       } else {
         toast.error("فشل في إرسال الطلب");
       }
@@ -154,24 +161,59 @@ const PrescriptionReservations = () => {
     }
   };
 
+  const resetForm = () => {
+    setFormData({
+      userName: "",
+      userMobile: "",
+      userAddress: "",
+      medicinesNames: "",
+      prescriptionImage: null,
+    });
+    setErrors({});
+    const fileInput = document.getElementById("prescriptionImage");
+    if (fileInput) fileInput.value = "";
+  };
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
   return (
-    <section className="py-16 bg-gray-50 min-h-screen" dir="rtl">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-primary mb-4">
-            حجز الوصفة الطبية
-          </h1>
-          <p className="text-gray-600 text-lg">
-            أرسل وصفتك الطبية واحصل على الأدوية المطلوبة بسهولة
-          </p>
+    <div
+      className="fixed inset-0 bg-black/30 bg-opacity-50 flex items-center justify-center z-50 p-4"
+      dir="rtl"
+    >
+      <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <h2 className="text-2xl font-bold text-primary">حجز الوصفة الطبية</h2>
+          <button
+            onClick={handleClose}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <FiX size={24} />
+          </button>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Provider Info */}
+        {providerName && (
+          <div className="px-6 py-4 bg-blue-50 border-b border-blue-200">
+            <p className="text-blue-800 font-medium">
+              مقدم الخدمة: {providerName}
+            </p>
+          </div>
+        )}
+
+        {/* Form */}
+        <div className="p-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Personal Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
                   <FiUser className="text-primary" />
                   اسم المستخدم *
                 </label>
@@ -180,7 +222,7 @@ const PrescriptionReservations = () => {
                   name="userName"
                   value={formData.userName}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
                     errors.userName ? "border-red-500" : "border-gray-300"
                   }`}
                   placeholder="أدخل اسمك الكامل"
@@ -191,7 +233,7 @@ const PrescriptionReservations = () => {
               </div>
 
               <div>
-                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
                   <FiPhone className="text-primary" />
                   رقم الهاتف *
                 </label>
@@ -200,7 +242,7 @@ const PrescriptionReservations = () => {
                   name="userMobile"
                   value={formData.userMobile}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
                     errors.userMobile ? "border-red-500" : "border-gray-300"
                   }`}
                   placeholder="01xxxxxxxxx"
@@ -215,7 +257,7 @@ const PrescriptionReservations = () => {
 
             {/* Address */}
             <div>
-              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
                 <FiMapPin className="text-primary" />
                 العنوان *
               </label>
@@ -224,7 +266,7 @@ const PrescriptionReservations = () => {
                 name="userAddress"
                 value={formData.userAddress}
                 onChange={handleInputChange}
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
                   errors.userAddress ? "border-red-500" : "border-gray-300"
                 }`}
                 placeholder="أدخل عنوانك الكامل"
@@ -238,7 +280,7 @@ const PrescriptionReservations = () => {
 
             {/* Medicines Names */}
             <div>
-              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
                 <FiFileText className="text-primary" />
                 أسماء الأدوية *
               </label>
@@ -246,8 +288,8 @@ const PrescriptionReservations = () => {
                 name="medicinesNames"
                 value={formData.medicinesNames}
                 onChange={handleInputChange}
-                rows={4}
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors resize-none ${
+                rows={3}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors resize-none ${
                   errors.medicinesNames ? "border-red-500" : "border-gray-300"
                 }`}
                 placeholder="اكتب أسماء الأدوية المطلوبة، كل دواء في سطر منفصل"
@@ -261,11 +303,11 @@ const PrescriptionReservations = () => {
 
             {/* Prescription Image Upload */}
             <div>
-              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
                 <FiUpload className="text-primary" />
                 صورة الوصفة الطبية
               </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors">
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary transition-colors">
                 <input
                   type="file"
                   id="prescriptionImage"
@@ -274,13 +316,13 @@ const PrescriptionReservations = () => {
                   className="hidden"
                 />
                 <label htmlFor="prescriptionImage" className="cursor-pointer">
-                  <FiUpload className="mx-auto text-3xl text-gray-400 mb-2" />
-                  <p className="text-gray-600 mb-2">
+                  <FiUpload className="mx-auto text-2xl text-gray-400 mb-2" />
+                  <p className="text-gray-600 mb-1 text-sm">
                     {formData.prescriptionImage
                       ? formData.prescriptionImage.name
                       : "اضغط لاختيار صورة الوصفة الطبية"}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-xs text-gray-500">
                     JPG, PNG أو WebP - الحد الأقصى 5 ميجابايت
                   </p>
                 </label>
@@ -298,18 +340,23 @@ const PrescriptionReservations = () => {
               )}
             </div>
 
-            {/* Provider Id */}
-
             {/* Submit Button */}
-            <div className="pt-6">
+            <div className="flex flex-col md:flex-row gap-3 pt-4">
+              <button
+                type="button"
+                onClick={handleClose}
+                className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors duration-200"
+              >
+                إلغاء
+              </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-4 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
                     جاري الإرسال...
                   </>
                 ) : (
@@ -323,9 +370,11 @@ const PrescriptionReservations = () => {
           </form>
 
           {/* Info Box */}
-          <div className="mt-8 p-6 bg-blue-50 rounded-lg border border-blue-200">
-            <h3 className="font-semibold text-blue-800 mb-2">معلومات مهمة:</h3>
-            <ul className="text-sm text-blue-700 space-y-1">
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <h3 className="font-semibold text-blue-800 mb-2 text-sm">
+              معلومات مهمة:
+            </h3>
+            <ul className="text-xs text-blue-700 space-y-1">
               <li>• تأكد من وضوح صورة الوصفة الطبية</li>
               <li>• اكتب أسماء الأدوية بوضوح</li>
               <li>• سيتم التواصل معك خلال 24 ساعة</li>
@@ -334,8 +383,8 @@ const PrescriptionReservations = () => {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 
-export default PrescriptionReservations;
+export default PrescriptionBookingModal;
