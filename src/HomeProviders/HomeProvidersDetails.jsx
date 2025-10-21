@@ -274,7 +274,7 @@ const HomeProvidersDetails = () => {
               {provider.subSpecialities.map((subSpeciality) => (
                 <div
                   key={subSpeciality.id}
-                  className="flex items-center justify-between p-4 bg-second text-white rounded-lg transition-colors"
+                  className="flex items-center justify-between flex-col md:flex-row gap-4 p-4 bg-second text-white rounded-lg transition-colors"
                 >
                   <div className="flex items-center">
                     <div className="w-3 h-3 bg-white rounded-full ml-3"></div>
