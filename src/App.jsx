@@ -18,6 +18,8 @@ import ProductsDetails from "./ProductsPage/ProductsDetails";
 import MainCart from "./CartPage.jsx/MainCart";
 import OrderStatus from "./Orders/OrderStatus";
 import PrescriptionReservations from "./PrescriptionReservations/PrescriptionReservations";
+import MainHomeProviders from "./HomeProviders/MainHomeProviders";
+import HomeProvidersDetails from "./HomeProviders/HomeProvidersDetails";
 function App() {
   return (
     <BrowserRouter>
@@ -31,6 +33,11 @@ function App() {
             element={<PrescriptionReservations />}
           />
           <Route path="/providers/:id" element={<ProvidersDetails />} />
+          <Route path="/home-providers" element={<MainHomeProviders />} />
+          <Route
+            path="/home-providers/:id"
+            element={<HomeProvidersDetails />}
+          />
           <Route path="/products" element={<MainProducts />} />
           <Route path="/products/:id" element={<ProductsDetails />} />
           <Route path="/cart" element={<MainCart />} />

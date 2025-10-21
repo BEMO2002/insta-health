@@ -10,13 +10,11 @@ import Testimonials from "./Testimonials";
 import Faq from "./Faq";
 import ServiceItems from "./ServiceItems";
 import NumbersTwo from "./NumbersTwo";
-// import Search from "./Search";
 
 const MainHome = () => {
   return (
     <>
       <Slider />
-      {/* <Search /> */}
       <WhyUs />
       <Services />
       <SliderOne />

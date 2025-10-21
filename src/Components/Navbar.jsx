@@ -22,6 +22,7 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openMobileDropdown, setOpenMobileDropdown] = useState(null);
   const [medicalSpecialities, setMedicalSpecialities] = useState([]);
+  const [medicalSpecialitiesHome, setMedicalSpecialitiesHome] = useState([]);
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
 
@@ -33,6 +34,12 @@ const Navbar = () => {
         const specialitiesResponse = await baseApi.get("/MedicalSpecialities");
         if (specialitiesResponse.data.success) {
           setMedicalSpecialities(specialitiesResponse.data.data);
+        }
+        const HomeSpecialitiesResponse = await baseApi.get(
+          "/MedicalSpecialities/Home"
+        );
+        if (HomeSpecialitiesResponse.data.success) {
+          setMedicalSpecialitiesHome(HomeSpecialitiesResponse.data.data);
         }
 
         // Fetch categories
@@ -68,6 +75,12 @@ const Navbar = () => {
   const handleSpecialityClick = (specialityId) => {
     // Navigate to providers page with speciality filter
     navigate(`/providers?speciality=${specialityId}`);
+    setMobileMenuOpen(false);
+  };
+
+  const handleHomeSpecialityClick = (specialityId) => {
+    // Navigate to home providers page with speciality filter
+    navigate(`/home-providers?speciality=${specialityId}`);
     setMobileMenuOpen(false);
   };
 
@@ -159,6 +172,16 @@ const Navbar = () => {
       ],
     },
     {
+      name: "الخدمات المنزليه",
+      subItems: [
+        ...medicalSpecialitiesHome.map((HomeSpeciality) => ({
+          name: HomeSpeciality.name,
+          specialityId: HomeSpeciality.id,
+          isSpeciality: true,
+        })),
+      ],
+    },
+    {
       name: " الملف الطبي",
       subItems: [
         { name: "استماره طلب الكارت الذكي وفتح ملف طبي  ", path: "/member" },
@@ -236,7 +259,11 @@ const Navbar = () => {
                           <button
                             key={subItem.name}
                             onClick={() =>
-                              handleSpecialityClick(subItem.specialityId)
+                              item.name === "الخدمات المنزليه"
+                                ? handleHomeSpecialityClick(
+                                    subItem.specialityId
+                                  )
+                                : handleSpecialityClick(subItem.specialityId)
                             }
                             className="block w-full text-right p-2 text-sm text-second hover:bg-second hover:text-white transition-colors duration-150"
                           >
@@ -404,7 +431,11 @@ const Navbar = () => {
                             <button
                               key={subItem.name}
                               onClick={() =>
-                                handleSpecialityClick(subItem.specialityId)
+                                item.name === "الخدمات المنزليه"
+                                  ? handleHomeSpecialityClick(
+                                      subItem.specialityId
+                                    )
+                                  : handleSpecialityClick(subItem.specialityId)
                               }
                               className="block w-full text-right px-3 py-2 text-sm bg-gray-100 text-primary hover:bg-second hover:text-white rounded-md"
                             >
