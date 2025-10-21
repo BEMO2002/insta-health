@@ -9,10 +9,11 @@ import {
   FaPhone,
   FaArrowLeft,
   FaCity,
+  FaArrowRight,
 } from "react-icons/fa";
 import baseApi from "../api/baseApi";
 import HomeBookingModal from "../Components/HomeBookingModal";
-
+import { BsJournalBookmark } from "react-icons/bs";
 const HomeProvidersDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -23,6 +24,8 @@ const HomeProvidersDetails = () => {
     isOpen: false,
     providerId: null,
     providerName: "",
+    subSpecialityId: null,
+    subSpecialityName: null,
   });
 
   useEffect(() => {
@@ -72,11 +75,16 @@ const HomeProvidersDetails = () => {
     return stars;
   };
 
-  const handleBookingClick = () => {
+  const handleBookingClick = (
+    subSpecialityId = null,
+    subSpecialityName = null
+  ) => {
     setBookingModal({
       isOpen: true,
       providerId: provider?.id,
       providerName: provider?.name || "",
+      subSpecialityId: subSpecialityId,
+      subSpecialityName: subSpecialityName,
     });
   };
 
@@ -85,6 +93,8 @@ const HomeProvidersDetails = () => {
       isOpen: false,
       providerId: null,
       providerName: "",
+      subSpecialityId: null,
+      subSpecialityName: null,
     });
   };
 
@@ -258,16 +268,27 @@ const HomeProvidersDetails = () => {
         {provider.subSpecialities && provider.subSpecialities.length > 0 && (
           <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-primary mb-6">
-              التخصصات الفرعية
+              الخدمات المتوفرة
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {provider.subSpecialities.map((subSpeciality) => (
                 <div
                   key={subSpeciality.id}
-                  className="flex items-center p-4 bg-second text-white rounded-lg hover:bg-primary transition-colors"
+                  className="flex items-center justify-between p-4 bg-second text-white rounded-lg transition-colors"
                 >
-                  <div className="w-3 h-3 bg-white rounded-full ml-3"></div>
-                  <span className="font-medium">{subSpeciality.name}</span>
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 bg-white rounded-full ml-3"></div>
+                    <span className="font-medium">{subSpeciality.name}</span>
+                  </div>
+                  <button
+                    onClick={() =>
+                      handleBookingClick(subSpeciality.id, subSpeciality.name)
+                    }
+                    className="bg-white flex items-center gap-2 cursor-pointer text-second px-3 py-2 rounded text-md font-bold transition-colors"
+                  >
+                    احجز
+                    <BsJournalBookmark className="ml-2" size={20} />
+                  </button>
                 </div>
               ))}
             </div>
@@ -306,6 +327,8 @@ const HomeProvidersDetails = () => {
         onClose={closeBookingModal}
         providerId={bookingModal.providerId}
         providerName={bookingModal.providerName}
+        subSpecialityId={bookingModal.subSpecialityId}
+        subSpecialityName={bookingModal.subSpecialityName}
       />
     </div>
   );

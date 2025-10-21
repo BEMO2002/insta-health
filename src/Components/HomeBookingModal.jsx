@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaTimes,
   FaUpload,
@@ -10,16 +10,32 @@ import {
 import { toast } from "react-toastify";
 import baseApi from "../api/baseApi";
 
-const HomeBookingModal = ({ isOpen, onClose, providerId, providerName }) => {
+const HomeBookingModal = ({
+  isOpen,
+  onClose,
+  providerId,
+  providerName,
+  subSpecialityId = null,
+  subSpecialityName = null,
+}) => {
   const [formData, setFormData] = useState({
     UserName: "",
     UserPhoneNumber: "",
     UserAddress: "",
     Content: "",
     PrescriptionImage: null,
+    SubSpecialityId: subSpecialityId,
   });
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+
+  // Update SubSpecialityId when prop changes
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      SubSpecialityId: subSpecialityId,
+    }));
+  }, [subSpecialityId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -81,6 +97,11 @@ const HomeBookingModal = ({ isOpen, onClose, providerId, providerName }) => {
       submitData.append("Content", formData.Content);
       submitData.append("ServiceProviderId", providerId);
 
+      // Add SubSpecialityId if available
+      if (formData.SubSpecialityId) {
+        submitData.append("SubSpecialityId", formData.SubSpecialityId);
+      }
+
       if (formData.PrescriptionImage) {
         submitData.append("PrescriptionImage", formData.PrescriptionImage);
       }
@@ -106,6 +127,7 @@ const HomeBookingModal = ({ isOpen, onClose, providerId, providerName }) => {
           UserAddress: "",
           Content: "",
           PrescriptionImage: null,
+          SubSpecialityId: subSpecialityId,
         });
         setImagePreview(null);
         onClose();
@@ -140,7 +162,15 @@ const HomeBookingModal = ({ isOpen, onClose, providerId, providerName }) => {
           <div>
             <h2 className="text-2xl font-bold text-primary">حجز خدمة منزلية</h2>
             <p className="text-gray-600 mt-1">مقدم الخدمة: {providerName}</p>
+            {subSpecialityName && (
+              <div>
+                <p className="text-gray-600 mt-1">
+                  الخدمة المختارة: {subSpecialityName}
+                </p>
+              </div>
+            )}
           </div>
+
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -218,6 +248,15 @@ const HomeBookingModal = ({ isOpen, onClose, providerId, providerName }) => {
                 placeholder="أدخل أي ملاحظات أو تفاصيل إضافية"
               />
             </div>
+
+            {/* SubSpecialityId - Hidden field */}
+            {formData.SubSpecialityId && (
+              <input
+                type="hidden"
+                name="SubSpecialityId"
+                value={formData.SubSpecialityId}
+              />
+            )}
 
             {/* Image Upload */}
             <div>

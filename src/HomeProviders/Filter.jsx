@@ -87,9 +87,9 @@ const Filter = ({
       const fetchSubSpecialities = async () => {
         try {
           setLoading((prev) => ({ ...prev, subSpecialities: true }));
-          // Get sub specialities from the selected speciality
+          // Get sub specialities from the MedicalSpecialities endpoint
           const response = await baseApi.get(
-            `/HomeProviders/${selectedSpeciality.id}`
+            `/MedicalSpecialities/${selectedSpeciality.id}`
           );
           if (response.data.success && response.data.data.subSpecialities) {
             setSubSpecialities(response.data.data.subSpecialities);
