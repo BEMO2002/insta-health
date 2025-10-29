@@ -14,10 +14,8 @@ export const AuthProvider = ({ children }) => {
   const checkAuth = async () => {
     try {
 
-
       // Step 1: refresh token
       const res = await baseApi.post("/Accounts/refresh-token", {});
-
 
       if (res.data?.statusCode === 200) {
         // Step 2: get user profile
@@ -25,6 +23,7 @@ export const AuthProvider = ({ children }) => {
           const profileRes = await baseApi.get("/Accounts/UserProfile", {
             validateStatus: () => true, // important: don't throw on 400
           });
+
 
 
           const profileData = profileRes.data;
@@ -39,7 +38,7 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenticated(false);
           }
         } catch (profileErr) {
-          console.error("Error fetching profile:", profileErr);
+
           setUser(null);
           setIsAuthenticated(false);
         }
@@ -51,7 +50,7 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(false);
       return false;
     } catch (err) {
-      console.error("checkAuth error:", err);
+
       setUser(null);
       setIsAuthenticated(false);
       return false;
@@ -63,7 +62,10 @@ export const AuthProvider = ({ children }) => {
   // Login
   const login = async (email, password) => {
 
+
     const res = await baseApi.post("/Accounts/login", { email, password });
+
+
 
     if (res.data?.data) {
       setUser(res.data.data);
@@ -76,13 +78,15 @@ export const AuthProvider = ({ children }) => {
 
   // Logout
   const logout = () => {
-    setIsAuthenticated(false);
+
+      setIsAuthenticated(false);
     setUser(null);
     localStorage.removeItem("user");
   };
 
   // Run once on mount
   useEffect(() => {
+
     checkAuth();
   }, []);
 

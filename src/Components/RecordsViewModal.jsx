@@ -199,13 +199,13 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <div
-        className="bg-white rounded-xl w-full max-w-5xl overflow-hidden"
+        className="bg-white rounded-xl w-full max-w-5xl max-h-[85vh] overflow-hidden flex flex-col"
         dir="rtl"
       >
-        <div className="flex items-center justify-between p-4 border-b">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
+          <div className="flex items-center flex-col md:flex-row gap-3">
             <h3 className="text-lg font-bold">السجلات السابقة</h3>
-            <div className="relative">
+            {/* <div className="relative">
               <FaSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 value={q}
@@ -213,7 +213,7 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
                 placeholder="بحث"
                 className="border border-gray-300 rounded pl-3 pr-8 py-2"
               />
-            </div>
+            </div> */}
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -227,7 +227,7 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
             </button>
           </div>
         </div>
-        <div className="p-4" ref={printRef}>
+        <div className="p-4 overflow-y-auto flex-1" ref={printRef}>
           {items.length === 0 ? (
             <p className="text-gray-600">لا توجد سجلات</p>
           ) : (
@@ -263,16 +263,17 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
                   <hr className="my-2 text-gray-300 " />
                   <div className="text-sm whitespace-pre-wrap">{it.content}</div>
                   {img ? (
-                    <a href={img} target="_blank" rel="noreferrer">
-                      <img
-                        src={img}
-                        alt="attachment"
-                        className="mt-2 max-h-56 w-full object-contain rounded border border-gray-300 cursor-pointer "
-                      />
+                    <a
+                      href={img}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 mt-2 px-3 py-2 bg-second text-white rounded"
+                    >
+                      تنزيل المرفق
                     </a>
                   ) : (
-                    <div className="mt-2 h-40 w-full flex items-center justify-center rounded border border-dashed text-gray-400 bg-gray-50">
-                      لا يوجد صورة مرفقة
+                    <div className="mt-2 h-12 w-full flex items-center justify-center rounded border border-dashed text-gray-400 bg-gray-50">
+                      لا يوجد مرفق
                     </div>
                   )}
                 </div>
@@ -282,7 +283,7 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
           )}
         </div>
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 p-3 border-t">
+          <div className="flex items-center justify-center gap-2 p-3 border-t flex-shrink-0">
             <button
               disabled={pageIndex === 1}
               onClick={() => setPageIndex((p) => p - 1)}

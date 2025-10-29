@@ -27,15 +27,16 @@ export const CartProvider = ({ children }) => {
     try {
       setLoading(true);
       const res = await baseApi.get("/Carts", { validateStatus: () => true });
-
+  
       const data = res.data;
       if (res.status >= 200 && res.status < 300) {
+   
         if (data?.success && Array.isArray(data.data?.items)) {
           setItems(data.data.items);
         }
       }
     } catch (err) {
-      console.error("Error fetching cart:", err);
+  
     } finally {
       setLoading(false);
     }
@@ -67,6 +68,8 @@ export const CartProvider = ({ children }) => {
           validateStatus: () => true,
         });
 
+        
+
         const ok = res.status >= 200 && res.status < 300;
         if (ok) {
           setItems((prev) => {
@@ -97,7 +100,7 @@ export const CartProvider = ({ children }) => {
         // Return a response-like object so callers can branch on ok/status
         return { ok, status: res.status, data: res.data };
       } catch (err) {
-        console.error("Error addToCart:", err);
+       
         toast.error("حدث خطأ");
         return { ok: false, status: 0, error: err };
       } finally {
@@ -120,6 +123,8 @@ export const CartProvider = ({ children }) => {
           { validateStatus: () => true }
         );
 
+      
+
         if (res.status >= 200 && res.status < 300) {
           setItems((prev) =>
             prev.map((i) =>
@@ -129,7 +134,7 @@ export const CartProvider = ({ children }) => {
           toast.success("تم تحديث الكمية");
         }
       } catch (err) {
-        console.error("Error updateQuantity:", err);
+
       } finally {
         setLoading(false);
       }
@@ -148,12 +153,13 @@ export const CartProvider = ({ children }) => {
           validateStatus: () => true,
         });
 
+
         if (res.status >= 200 && res.status < 300) {
           setItems((prev) => prev.filter((i) => i.productId !== productId));
           toast.success("تم الحذف");
         }
       } catch (err) {
-        console.error("Error removeFromCart:", err);
+
       } finally {
         setLoading(false);
       }
@@ -163,6 +169,7 @@ export const CartProvider = ({ children }) => {
 
   // Load cart on auth change
   useEffect(() => {
+
     if (isAuthenticated) getCart();
     else setItems([]);
   }, [isAuthenticated, getCart]);

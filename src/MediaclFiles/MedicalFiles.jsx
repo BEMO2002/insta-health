@@ -28,19 +28,66 @@ const enums = {
   ],
 };
 
+// Arabic labels for user file fields shown in the summary table
+const fieldLabels = {
+  id: "رقم الملف",
+  userName: "الاسم",
+  userPhone: "الهاتف",
+  userEmail: "البريد الإلكتروني",
+  jobTitle: "الوظيفة",
+  paymentStatus: "الحالة",
+  paymentType: "طريقة الدفع",
+  userTall: "الطول",
+  userWeight: "الوزن",
+  bloodType: "فصيلة الدم",
+  userSight: "النظر",
+  userHearing: "السمع",
+  bloodPressure: "ضغط الدم",
+  diabetes: "السكر",
+  otherDiseases: "أمراض أخرى",
+  createdAt: "تاريخ الإنشاء",
+  updatedAt: "تاريخ التحديث",
+};
+
+// Helpers to localize enum values in the summary table
+const enumLabel = (list, v) => {
+  if (!list) return v;
+  const target = String(v ?? "").toLowerCase();
+  const hit = list.find((o) => String(o.value).toLowerCase() === target);
+  return hit ? hit.label : v;
+};
+const toArabicValue = (key, val) => {
+  const k = String(key || "").toLowerCase();
+  switch (k) {
+    case "paymenttype":
+    case "payment":
+    case "paymentmethod":
+      return enumLabel(enums.paymentType, val);
+    case "usersight":
+      return enumLabel(enums.sight, val);
+    case "userhearing":
+      return enumLabel(enums.hearing, val);
+    case "bloodpressure":
+    case "diabetes":
+      return enumLabel(enums.disease, val);
+    default:
+      return val;
+  }
+};
+
 const initialForm = {
   userName: "",
   userPhone: "",
   userEmail: "",
   jobTitle: "",
-  paymentType: "Cash",
+  paymentStatus: "",
   userTall: "",
   userWeight: "",
   bloodType: "",
-  userSight: "Good",
-  userHearing: "Good",
-  bloodPressure: "None",
-  diabetes: "None",
+  userSight: "",
+  userHearing: "",
+  bloodPressure: "",
+  diabetes: "",
   otherDiseases: "",
 };
 
@@ -283,8 +330,8 @@ const MedicalFiles = () => {
                         key={k}
                         className="border-b border-gray-300 last:border-b-0  "
                       >
-                        <td className="py-2 font-medium">{k}</td>
-                        <td className="py-2">{String(v)}</td>
+                        <td className="py-2 font-medium">{fieldLabels[k] ?? k}</td>
+                        <td className="py-2">{String(toArabicValue(k, v ?? "-"))}</td>
                       </tr>
                     ))}
                   </tbody>

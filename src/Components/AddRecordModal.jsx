@@ -67,18 +67,19 @@ const AddRecordModal = ({ isOpen, onClose, fileId, recordTypeId, recordTypeName 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <div
-        className="bg-white rounded-xl w-full max-w-2xl overflow-hidden"
+        className="bg-white rounded-xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col"
         dir="rtl"
       >
-        <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
           <h3 className="text-lg font-bold">إضافة سجل طبي</h3>
           <button onClick={() => onClose(false)} className="text-gray-500">
             <FaTimes />
           </button>
         </div>
+        <div className="p-4 overflow-y-auto flex-1">
         <form
           onSubmit={submit}
-          className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4"
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
           <Input
             label="اسم الطبيب"
@@ -138,7 +139,11 @@ const AddRecordModal = ({ isOpen, onClose, fileId, recordTypeId, recordTypeName 
             <label className="block text-sm font-medium text-gray-700 mb-1">
               مرفق
             </label>
-            <input type="file" onChange={handleFile} />
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx,image/*"
+              onChange={handleFile}
+            />
           </div>
           <div className="md:col-span-2 flex justify-end gap-3">
             <button
@@ -157,6 +162,7 @@ const AddRecordModal = ({ isOpen, onClose, fileId, recordTypeId, recordTypeName 
             </button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   );
