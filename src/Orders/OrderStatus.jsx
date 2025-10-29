@@ -24,7 +24,7 @@ const OrderStatus = () => {
       try {
         setLoading(true);
         setError("");
-        const res = await baseApi.get(`/Orders/${resolvedMerchantOrderId}`);
+        const res = await baseApi.get(`/image.png/${resolvedMerchantOrderId}`);
         if (res.data?.success && res.data?.data) {
           setOrder(res.data.data);
         } else {

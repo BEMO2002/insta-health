@@ -13,11 +13,11 @@ export const AuthProvider = ({ children }) => {
   // Check auth on page refresh
   const checkAuth = async () => {
     try {
-      console.log("🔄 Checking auth...");
+
 
       // Step 1: refresh token
       const res = await baseApi.post("/Accounts/refresh-token", {});
-      console.log("refresh-token response:", res.data);
+
 
       if (res.data?.statusCode === 200) {
         // Step 2: get user profile
@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }) => {
             validateStatus: () => true, // important: don't throw on 400
           });
 
-          console.log("UserProfile raw response:", profileRes);
 
           const profileData = profileRes.data;
 
@@ -63,11 +62,8 @@ export const AuthProvider = ({ children }) => {
 
   // Login
   const login = async (email, password) => {
-    console.log("🚀 Logging in with:", email);
 
     const res = await baseApi.post("/Accounts/login", { email, password });
-
-    console.log("Login response:", res.data);
 
     if (res.data?.data) {
       setUser(res.data.data);
@@ -80,7 +76,6 @@ export const AuthProvider = ({ children }) => {
 
   // Logout
   const logout = () => {
-    console.log("Logging out...");
     setIsAuthenticated(false);
     setUser(null);
     localStorage.removeItem("user");
@@ -88,7 +83,6 @@ export const AuthProvider = ({ children }) => {
 
   // Run once on mount
   useEffect(() => {
-    console.log("useEffect init - current user:", localStorage.getItem("user"));
     checkAuth();
   }, []);
 

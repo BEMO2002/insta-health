@@ -20,6 +20,8 @@ import OrderStatus from "./Orders/OrderStatus";
 import PrescriptionReservations from "./PrescriptionReservations/PrescriptionReservations";
 import MainHomeProviders from "./HomeProviders/MainHomeProviders";
 import HomeProvidersDetails from "./HomeProviders/HomeProvidersDetails";
+import MainMediaclFiles from "./MediaclFiles/MainMediaclFiles";
+import MedicalFileStatus from "./MediaclFiles/MedicalFileStatus";
 function App() {
   return (
     <BrowserRouter>
@@ -43,6 +45,8 @@ function App() {
           <Route path="/cart" element={<MainCart />} />
           <Route path="/orders/:merchantOrderId" element={<OrderStatus />} />
           <Route path="/orders" element={<OrderStatus />} />
+          <Route path="/medical-file" element={<MainMediaclFiles />} />
+          <Route path="/medical-file/status" element={<MedicalFileStatus />} />
         </Route>
 
         <Route path="/login" element={<Login />} />
