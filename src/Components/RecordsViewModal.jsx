@@ -24,6 +24,68 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
     [total, pageSize]
   );
 
+  // More reliable print on mobile: print via hidden iframe instead of window.open
+  const printHtmlViaIframe = (html) => {
+    try {
+      const iframe = document.createElement("iframe");
+      iframe.style.position = "fixed";
+      iframe.style.right = "0";
+      iframe.style.bottom = "0";
+      iframe.style.width = "0";
+      iframe.style.height = "0";
+      iframe.style.border = "0";
+      document.body.appendChild(iframe);
+
+      const doc = iframe.contentWindow || iframe.contentDocument;
+      const idoc = doc.document || doc;
+      idoc.open();
+      idoc.write(html);
+      idoc.close();
+
+      const doPrint = () => {
+        const imgs = Array.from(idoc.images || []);
+        if (!imgs.length) {
+          // On iOS Safari, give the engine a tick before printing
+          setTimeout(() => {
+            doc.focus?.();
+            doc.print?.();
+            setTimeout(() => document.body.removeChild(iframe), 500);
+          }, 0);
+          return;
+        }
+        let loaded = 0;
+        const done = () => {
+          loaded++;
+          if (loaded >= imgs.length) {
+            setTimeout(() => {
+              doc.focus?.();
+              doc.print?.();
+              setTimeout(() => document.body.removeChild(iframe), 500);
+            }, 0);
+          }
+        };
+        imgs.forEach((im) => {
+          if (im.complete) return done();
+          im.onload = done;
+          im.onerror = done;
+        });
+      };
+
+      if (idoc.readyState === "complete") doPrint();
+      else idoc.addEventListener("DOMContentLoaded", doPrint);
+    } catch (e) {
+      // fallback
+      const w = window.open("", "_blank");
+      if (w) {
+        w.document.write(html);
+        w.document.close();
+        w.focus();
+        w.print();
+        w.close();
+      }
+    }
+  };
+
   useEffect(() => {
     if (!isOpen) return;
     const fetchData = async () => {
@@ -96,40 +158,11 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
   };
 
   const printAll = () => {
-    const w = window.open("", "_blank");
-    w.document.write(renderAllHtml());
-    w.document.close();
-    const doPrint = () => {
-      const imgs = Array.from(w.document.images || []);
-      if (!imgs.length) {
-        w.focus();
-        w.print();
-        w.close();
-        return;
-      }
-      let doneCount = 0;
-      const done = () => {
-        doneCount++;
-        if (doneCount >= imgs.length) {
-          w.focus();
-          w.print();
-          w.close();
-        }
-      };
-      imgs.forEach((img) => {
-        if (img.complete) return done();
-        img.onload = done;
-        img.onerror = done;
-      });
-    };
-    if (w.document.readyState === "complete") doPrint();
-    else w.addEventListener("load", doPrint);
+    printHtmlViaIframe(renderAllHtml());
   };
 
   const printOne = (it) => {
-    const w = window.open("", "_blank");
-    w.document.write(
-      `<html dir="rtl"><head><title>طباعة</title>
+    const html = `<html dir="rtl"><head><title>طباعة</title>
         <style>
           @page { size: A4; margin: 16mm; }
           *{ box-sizing: border-box }
@@ -144,36 +177,8 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
           .imgwrap img{ max-width:100%; max-height:420px; object-fit:contain; border:1px solid #e5e7eb; border-radius:8px; }
           .caption{ font-size:12px; color:#6b7280; margin-top:4px }
         </style>
-      </head><body>${renderRecordHtml(
-        it
-      )}</body></html>`
-    );
-    w.document.close();
-    const doPrint = () => {
-      const imgs = Array.from(w.document.images || []);
-      if (!imgs.length) {
-        w.focus();
-        w.print();
-        w.close();
-        return;
-      }
-      let doneCount = 0;
-      const done = () => {
-        doneCount++;
-        if (doneCount >= imgs.length) {
-          w.focus();
-          w.print();
-          w.close();
-        }
-      };
-      imgs.forEach((img) => {
-        if (img.complete) return done();
-        img.onload = done;
-        img.onerror = done;
-      });
-    };
-    if (w.document.readyState === "complete") doPrint();
-    else w.addEventListener("load", doPrint);
+      </head><body>${renderRecordHtml(it)}</body></html>`;
+    printHtmlViaIframe(html);
   };
 
   const renderRecordHtml = (it) => {

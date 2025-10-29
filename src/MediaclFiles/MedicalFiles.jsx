@@ -28,6 +28,20 @@ const enums = {
   ],
 };
 
+// Keys to hide from the summary table
+const hiddenKeys = new Set([
+  "userId",
+  "fileId",
+  "UserId",
+  "FileId",
+  "medicalFileId",
+  "MedicalFileId",
+  "paymentType",
+  "PaymentType",
+  "paymentStatus",
+  "PaymentStatus",
+]);
+
 // Arabic labels for user file fields shown in the summary table
 const fieldLabels = {
   id: "رقم الملف",
@@ -325,7 +339,9 @@ const MedicalFiles = () => {
               {userFile ? (
                 <table className="min-w-full text-right">
                   <tbody className="text-sm text-gray-700">
-                    {Object.entries(userFile).map(([k, v]) => (
+                    {Object.entries(userFile)
+                      .filter(([k]) => !hiddenKeys.has(k))
+                      .map(([k, v]) => (
                       <tr
                         key={k}
                         className="border-b border-gray-300 last:border-b-0  "
