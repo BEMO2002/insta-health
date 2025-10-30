@@ -86,6 +86,10 @@ const toArabicValue = (key, val) => {
     case "bloodpressure":
     case "diabetes":
       return enumLabel(enums.disease, val);
+    case "usertall":
+      return val ? `${val} سم` : val;
+    case "userweight":
+      return val ? `${val} كجم` : val;
     default:
       return val;
   }
@@ -204,7 +208,7 @@ const MedicalFiles = () => {
       <div className="container mx-auto px-4">
         <h1 className="text-3xl font-bold text-primary mb-6">الملف الطبي</h1>
 
-        {showInstructions && (
+        {showInstructions && !submitted && (
           <div className="bg-white rounded-xl shadow p-5 mb-6">
             <h3 className="text-xl font-bold text-second mb-2">تعليمات هامة</h3>
             <p className="text-gray-600 mb-3">
@@ -262,13 +266,13 @@ const MedicalFiles = () => {
             />
 
             <Input
-              label="الطول"
+              label="الطول (سم)"
               name="userTall"
               value={form.userTall}
               onChange={handleChange}
             />
             <Input
-              label="الوزن"
+              label="الوزن (كجم)"
               name="userWeight"
               value={form.userWeight}
               onChange={handleChange}
