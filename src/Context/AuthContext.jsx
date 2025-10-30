@@ -77,11 +77,23 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Logout
-  const logout = () => {
-
+  const logout = async () => {
+    try {
+      // attempt to invalidate refresh cookie on server
+      await baseApi.post("/Accounts/logout", {}, { validateStatus: () => true });
+    } catch (_) {
+      // ignore network errors
+    } finally {
+      try {
+        // optional fallback if API exposes revoke endpoint instead
+        await baseApi.post("/Accounts/revoke-token", {}, { validateStatus: () => true });
+      } catch (_) {
+        // ignore
+      }
       setIsAuthenticated(false);
-    setUser(null);
-    localStorage.removeItem("user");
+      setUser(null);
+      localStorage.removeItem("user");
+    }
   };
 
   // Run once on mount

@@ -98,6 +98,10 @@ const MedicalFileStatus = () => {
                     <td className="py-2">{file.userEmail || "-"}</td>
                   </tr>
                   <tr className="border-b border-gray-300">
+                    <td className="py-2 font-medium">الرقم القومي</td>
+                    <td className="py-2">{file.nationalId || "-"}</td>
+                  </tr>
+                  <tr className="border-b border-gray-300">
                     <td className="py-2 font-medium">الوظيفة</td>
                     <td className="py-2">{file.jobTitle || "-"}</td>
                   </tr>

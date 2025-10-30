@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useContext } from "react";
 import { toast } from "react-toastify";
 import baseApi from "../api/baseApi";
 import AddRecordModal from "../Components/AddRecordModal";
 import RecordsViewModal from "../Components/RecordsViewModal";
+import { AuthContext } from "../Context/AuthContext";
 
 const enums = {
   paymentType: [
@@ -12,14 +13,24 @@ const enums = {
   sight: [
     { value: "Good", label: "جيد" },
     { value: "VeryGood", label: "جيد جدًا" },
-    { value: "Bad", label: "سيء" },
+    { value: "Bad", label: "ضعيف" },
     { value: "Excellent", label: "ممتاز" },
   ],
   hearing: [
     { value: "Good", label: "جيد" },
     { value: "VeryGood", label: "جيد جدًا" },
-    { value: "Bad", label: "سيء" },
+    { value: "Bad", label: "ضعيف" },
     { value: "Excellent", label: "ممتاز" },
+  ],
+  bloodTypes: [
+    { value: "A+", label: "A+" },
+    { value: "A-", label: "A-" },
+    { value: "B+", label: "B+" },
+    { value: "B-", label: "B-" },
+    { value: "AB+", label: "AB+" },
+    { value: "AB-", label: "AB-" },
+    { value: "O+", label: "O+" },
+    { value: "O-", label: "O-" },
   ],
   disease: [
     { value: "None", label: "لا يوجد" },
@@ -50,6 +61,7 @@ const fieldLabels = {
   userName: "الاسم",
   userPhone: "الهاتف",
   userEmail: "البريد الإلكتروني",
+  nationalId: "الرقم القومي",
   jobTitle: "الوظيفة",
   paymentStatus: "الحالة",
   paymentType: "طريقة الدفع",
@@ -95,10 +107,24 @@ const toArabicValue = (key, val) => {
   }
 };
 
+const translateMessage = (msg) => {
+  const key = String(msg || "").trim().toLowerCase();
+  const map = {
+    "your medical file service hasn't been activated yet": "خدمة الملف الطبي لم يتم تفعيلها بعد  برجاء الانتظار والمتابعه سوف يتم التواصل معك قريبا.....وشكرا لتفهمك",
+    "bad request": "طلب غير صالح",
+    "unauthorized": "غير مصرح",
+    "forbidden": "غير مسموح",
+    "not found": "غير موجود",
+    "internal server error": "خطأ داخلي في الخادم",
+  };
+  return map[key] || msg || "حدث خطأ غير متوقع";
+};
+
 const initialForm = {
   userName: "",
   userPhone: "",
   userEmail: "",
+  nationalId: "",
   jobTitle: "",
   paymentStatus: "",
   userTall: "",
@@ -112,6 +138,7 @@ const initialForm = {
 };
 
 const MedicalFiles = () => {
+  const { isAuthenticated } = useContext(AuthContext);
   const [showInstructions, setShowInstructions] = useState(true);
   const [form, setForm] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
@@ -120,6 +147,7 @@ const MedicalFiles = () => {
   const [types, setTypes] = useState([]);
   const [addModal, setAddModal] = useState({ open: false, typeId: null });
   const [viewModal, setViewModal] = useState({ open: false, typeId: null });
+  const [serverMessage, setServerMessage] = useState("");
 
   const canSubmit = useMemo(() => {
     return (
@@ -140,12 +168,17 @@ const MedicalFiles = () => {
     fetchTypes();
   }, []);
 
-  // اجلب بيانات المستخدم فور الدخول حتى بعد الريفريش
+  // اجلب بيانات المستخدم فقط عند وجود جلسة مصادقة
   useEffect(() => {
+    if (!isAuthenticated) {
+      setUserFile(null);
+      setSubmitted(false);
+      return;
+    }
     (async () => {
       await fetchUserFile();
     })();
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (userFile) setSubmitted(true);
@@ -153,9 +186,21 @@ const MedicalFiles = () => {
 
   const fetchUserFile = async () => {
     try {
-      const res = await baseApi.get("/MedicalFiles/user");
-      if (res.data?.success) setUserFile(res.data.data || null);
+      const res = await baseApi.get("/MedicalFiles/user", { validateStatus: () => true });
+      if (res.data?.success) {
+        setUserFile(res.data.data || null);
+        return;
+      }
+      // Not activated or other backend message
+      const msg = res?.data?.message || "الخدمة غير مفعلة بعد";
+      setUserFile(null);
+      setServerMessage(translateMessage(msg));
+      setSubmitted(true);
     } catch (e) {
+      const msg = e?.response?.data?.message || e?.message || "تعذر جلب البيانات";
+      setUserFile(null);
+      setServerMessage(translateMessage(msg));
+      setSubmitted(true);
       console.error(e);
     }
   };
@@ -193,11 +238,18 @@ const MedicalFiles = () => {
         return;
       }
 
+      const msg = res?.data?.message || "تعذر إرسال البيانات";
+      setServerMessage(translateMessage(msg));
+      toast.warning(msg);
       console.error("MedicalFiles submit status:", res.status, res.data);
-      throw new Error(res.data?.message || "Bad Request");
+      setSubmitted(true);
+      return;
     } catch (err) {
       console.error(err);
-      toast.error("تعذر إرسال البيانات");
+      const msg = err?.response?.data?.message || err?.message || "تعذر إرسال البيانات";
+      setServerMessage(translateMessage(msg));
+      toast.error(msg);
+      setSubmitted(true);
     } finally {
       setSubmitting(false);
     }
@@ -229,6 +281,11 @@ const MedicalFiles = () => {
             onSubmit={handleSubmit}
             className="bg-white rounded-xl shadow p-6 mb-8 grid grid-cols-1 md:grid-cols-2 gap-4"
           >
+            {serverMessage && (
+              <div className="md:col-span-2 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded p-3">
+                {serverMessage}
+              </div>
+            )}
             <Input
               label="الاسم"
               name="userName"
@@ -249,6 +306,12 @@ const MedicalFiles = () => {
               value={form.userEmail}
               onChange={handleChange}
               required
+            />
+            <Input
+              label="الرقم القومي"
+              name="nationalId"
+              value={form.nationalId}
+              onChange={handleChange}
             />
             <Input
               label="الوظيفة"
@@ -277,11 +340,12 @@ const MedicalFiles = () => {
               value={form.userWeight}
               onChange={handleChange}
             />
-            <Input
+            <Select
               label="فصيلة الدم"
               name="bloodType"
               value={form.bloodType}
               onChange={handleChange}
+              options={enums.bloodTypes}
             />
 
             <Select
@@ -342,6 +406,11 @@ const MedicalFiles = () => {
           <>
             <div className="bg-white rounded-xl shadow p-6 mb-8">
               <h3 className="text-xl font-bold mb-4">بياناتك</h3>
+              {serverMessage && (
+                <div className="mb-4 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded p-3">
+                  {serverMessage}
+                </div>
+              )}
               {userFile ? (
                 <table className="min-w-full text-right">
                   <tbody className="text-sm text-gray-700">
