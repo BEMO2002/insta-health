@@ -64,16 +64,8 @@ const MedicalFileStatus = () => {
           <p className="text-gray-600 mb-4">
             هذا رابط صفحة الكارت الطبي، يمكنك مشاركته أو حفظه:
           </p>
-          <div className="bg-gray-100 rounded p-3 break-all mb-4">
-            {currentUrl}
-          </div>
+
           <div className="flex gap-3 mb-6">
-            <button
-              onClick={() => navigator.clipboard.writeText(currentUrl)}
-              className="px-4 py-2 bg-second text-white rounded"
-            >
-              نسخ الرابط
-            </button>
             <Link to="/medical-file" className="px-4 py-2 bg-gray-200 rounded">
               الذهاب إلى الملف الطبي
             </Link>
