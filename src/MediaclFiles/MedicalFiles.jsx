@@ -126,19 +126,19 @@ const initialForm = {
   userEmail: "",
   nationalId: "",
   jobTitle: "",
-  paymentStatus: "",
+  paymentType: "Cash",
   userTall: "",
   userWeight: "",
-  bloodType: "",
-  userSight: "",
-  userHearing: "",
-  bloodPressure: "",
-  diabetes: "",
+  bloodType: "A+",
+  userSight: "Good",
+  userHearing: "Good",
+  bloodPressure: "None",
+  diabetes: "None",
   otherDiseases: "",
 };
 
 const MedicalFiles = () => {
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, user } = useContext(AuthContext);
   const [showInstructions, setShowInstructions] = useState(true);
   const [form, setForm] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
@@ -148,6 +148,10 @@ const MedicalFiles = () => {
   const [addModal, setAddModal] = useState({ open: false, typeId: null });
   const [viewModal, setViewModal] = useState({ open: false, typeId: null });
   const [serverMessage, setServerMessage] = useState("");
+  const isActivated = useMemo(() => {
+    const s = (userFile?.paymentStatus || userFile?.PaymentStatus || "").toString().toLowerCase();
+    return s === "paid";
+  }, [userFile]);
 
   const canSubmit = useMemo(() => {
     return (
@@ -168,39 +172,53 @@ const MedicalFiles = () => {
     fetchTypes();
   }, []);
 
-  // اجلب بيانات المستخدم فقط عند وجود جلسة مصادقة
+  // اجلب بيانات المستخدم فقط عند وجود جلسة مصادقة أو تبديل الحساب
   useEffect(() => {
+    // Reset all state when user changes
+    setUserFile(null);
+    setSubmitted(false);
+    setServerMessage("");
+    
     if (!isAuthenticated) {
-      setUserFile(null);
-      setSubmitted(false);
       return;
     }
     (async () => {
       await fetchUserFile();
     })();
-  }, [isAuthenticated]);
-
-  useEffect(() => {
-    if (userFile) setSubmitted(true);
-  }, [userFile]);
+  }, [isAuthenticated, user?.id || user?.email]);
 
   const fetchUserFile = async () => {
     try {
       const res = await baseApi.get("/MedicalFiles/user", { validateStatus: () => true });
-      if (res.data?.success) {
-        setUserFile(res.data.data || null);
+      
+      // Handle explicit Not Found first => new user, show form
+      if (res.status === 404 || res.data?.statusCode === 404) {
+        setUserFile(null);
+        setServerMessage("");
+        setSubmitted(false);
         return;
       }
-      // Not activated or other backend message
+      
+      // Success with data => show user file
+      if (res.data?.success) {
+        const data = res.data.data;
+        setUserFile(data);
+        setServerMessage("");
+        setSubmitted(!!data);
+        return;
+      }
+      
+      // Not activated or other backend message => hide form, show message
       const msg = res?.data?.message || "الخدمة غير مفعلة بعد";
       setUserFile(null);
       setServerMessage(translateMessage(msg));
       setSubmitted(true);
     } catch (e) {
+      // On network/unknown error, keep form visible for new users
       const msg = e?.response?.data?.message || e?.message || "تعذر جلب البيانات";
       setUserFile(null);
       setServerMessage(translateMessage(msg));
-      setSubmitted(true);
+      setSubmitted(false);
       console.error(e);
     }
   };
@@ -215,9 +233,13 @@ const MedicalFiles = () => {
     if (!canSubmit || submitting) return;
     setSubmitting(true);
     try {
+      // Build clean payload: remove empty strings to avoid DTO errors
+      const clean = Object.fromEntries(
+        Object.entries(form).filter(([_, v]) => v !== "")
+      );
       const payload = {
-        ...form,
-        ...(form.paymentType === "Visa"
+        ...clean,
+        ...(clean.paymentType === "Visa"
           ? { clientUrl: `${window.location.origin}/medical-file/success` }
           : {}),
       };
@@ -432,42 +454,44 @@ const MedicalFiles = () => {
               )}
             </div>
 
-            <div className="bg-white rounded-xl shadow p-6">
-              <h3 className="text-xl font-bold mb-4">أنواع السجلات الطبية</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {types.map((t) => (
-                  <div
-                    key={t.id}
-                    className="border border-gray-300 rounded-lg p-4 flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="text-second font-bold mb-1">{t.name}</div>
-                      <p className="text-gray-500 text-sm">
-                        إدارة السجلات الخاصة بهذا النوع
-                      </p>
+            {isActivated && (
+              <div className="bg-white rounded-xl shadow p-6">
+                <h3 className="text-xl font-bold mb-4">أنواع السجلات الطبية</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {types.map((t) => (
+                    <div
+                      key={t.id}
+                      className="border border-gray-300 rounded-lg p-4 flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="text-second font-bold mb-1">{t.name}</div>
+                        <p className="text-gray-500 text-sm">
+                          إدارة السجلات الخاصة بهذا النوع
+                        </p>
+                      </div>
+                      <div className="flex gap-2 mt-4">
+                        <button
+                          onClick={() =>
+                            setAddModal({ open: true, typeId: t.id })
+                          }
+                          className="bg-second text-white px-3 py-1 rounded"
+                        >
+                          إضافة جديد
+                        </button>
+                        <button
+                          onClick={() =>
+                            setViewModal({ open: true, typeId: t.id })
+                          }
+                          className="bg-gray-200 text-gray-700 px-3 py-1 rounded"
+                        >
+                          عرض السجلات
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex gap-2 mt-4">
-                      <button
-                        onClick={() =>
-                          setAddModal({ open: true, typeId: t.id })
-                        }
-                        className="bg-second text-white px-3 py-1 rounded"
-                      >
-                        إضافة جديد
-                      </button>
-                      <button
-                        onClick={() =>
-                          setViewModal({ open: true, typeId: t.id })
-                        }
-                        className="bg-gray-200 text-gray-700 px-3 py-1 rounded"
-                      >
-                        عرض السجلات
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </>
         )}
       </div>
