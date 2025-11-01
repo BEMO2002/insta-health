@@ -108,12 +108,15 @@ const toArabicValue = (key, val) => {
 };
 
 const translateMessage = (msg) => {
-  const key = String(msg || "").trim().toLowerCase();
+  const key = String(msg || "")
+    .trim()
+    .toLowerCase();
   const map = {
-    "your medical file service hasn't been activated yet": "خدمة الملف الطبي لم يتم تفعيلها بعد  برجاء الانتظار والمتابعه سوف يتم التواصل معك قريبا.....وشكرا لتفهمك",
+    "your medical file service hasn't been activated yet":
+      "خدمة الملف الطبي لم يتم تفعيلها بعد  برجاء الانتظار والمتابعه سوف يتم التواصل معك قريبا.....وشكرا لتفهمك",
     "bad request": "طلب غير صالح",
-    "unauthorized": "غير مصرح",
-    "forbidden": "غير مسموح",
+    unauthorized: "غير مصرح",
+    forbidden: "غير مسموح",
     "not found": "غير موجود",
     "internal server error": "خطأ داخلي في الخادم",
   };
@@ -149,7 +152,9 @@ const MedicalFiles = () => {
   const [viewModal, setViewModal] = useState({ open: false, typeId: null });
   const [serverMessage, setServerMessage] = useState("");
   const isActivated = useMemo(() => {
-    const s = (userFile?.paymentStatus || userFile?.PaymentStatus || "").toString().toLowerCase();
+    const s = (userFile?.paymentStatus || userFile?.PaymentStatus || "")
+      .toString()
+      .toLowerCase();
     return s === "paid";
   }, [userFile]);
 
@@ -173,24 +178,27 @@ const MedicalFiles = () => {
   }, []);
 
   // اجلب بيانات المستخدم فقط عند وجود جلسة مصادقة أو تبديل الحساب
+  const userId = user?.id || user?.email;
   useEffect(() => {
     // Reset all state when user changes
     setUserFile(null);
     setSubmitted(false);
     setServerMessage("");
-    
+
     if (!isAuthenticated) {
       return;
     }
     (async () => {
       await fetchUserFile();
     })();
-  }, [isAuthenticated, user?.id || user?.email]);
+  }, [isAuthenticated, userId]);
 
   const fetchUserFile = async () => {
     try {
-      const res = await baseApi.get("/MedicalFiles/user", { validateStatus: () => true });
-      
+      const res = await baseApi.get("/MedicalFiles/user", {
+        validateStatus: () => true,
+      });
+
       // Handle explicit Not Found first => new user, show form
       if (res.status === 404 || res.data?.statusCode === 404) {
         setUserFile(null);
@@ -198,7 +206,7 @@ const MedicalFiles = () => {
         setSubmitted(false);
         return;
       }
-      
+
       // Success with data => show user file
       if (res.data?.success) {
         const data = res.data.data;
@@ -207,7 +215,7 @@ const MedicalFiles = () => {
         setSubmitted(!!data);
         return;
       }
-      
+
       // Not activated or other backend message => hide form, show message
       const msg = res?.data?.message || "الخدمة غير مفعلة بعد";
       setUserFile(null);
@@ -215,7 +223,8 @@ const MedicalFiles = () => {
       setSubmitted(true);
     } catch (e) {
       // On network/unknown error, keep form visible for new users
-      const msg = e?.response?.data?.message || e?.message || "تعذر جلب البيانات";
+      const msg =
+        e?.response?.data?.message || e?.message || "تعذر جلب البيانات";
       setUserFile(null);
       setServerMessage(translateMessage(msg));
       setSubmitted(false);
@@ -235,7 +244,7 @@ const MedicalFiles = () => {
     try {
       // Build clean payload: remove empty strings to avoid DTO errors
       const clean = Object.fromEntries(
-        Object.entries(form).filter(([_, v]) => v !== "")
+        Object.entries(form).filter(([, v]) => v !== "")
       );
       const payload = {
         ...clean,
@@ -268,7 +277,8 @@ const MedicalFiles = () => {
       return;
     } catch (err) {
       console.error(err);
-      const msg = err?.response?.data?.message || err?.message || "تعذر إرسال البيانات";
+      const msg =
+        err?.response?.data?.message || err?.message || "تعذر إرسال البيانات";
       setServerMessage(translateMessage(msg));
       toast.error(msg);
       setSubmitted(true);
@@ -439,14 +449,18 @@ const MedicalFiles = () => {
                     {Object.entries(userFile)
                       .filter(([k]) => !hiddenKeys.has(k))
                       .map(([k, v]) => (
-                      <tr
-                        key={k}
-                        className="border-b border-gray-300 last:border-b-0  "
-                      >
-                        <td className="py-2 font-medium">{fieldLabels[k] ?? k}</td>
-                        <td className="py-2">{String(toArabicValue(k, v ?? "-"))}</td>
-                      </tr>
-                    ))}
+                        <tr
+                          key={k}
+                          className="border-b border-gray-300 last:border-b-0  "
+                        >
+                          <td className="py-2 font-medium">
+                            {fieldLabels[k] ?? k}
+                          </td>
+                          <td className="py-2">
+                            {String(toArabicValue(k, v ?? "-"))}
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               ) : (
@@ -456,7 +470,17 @@ const MedicalFiles = () => {
 
             {isActivated && (
               <div className="bg-white rounded-xl shadow p-6">
-                <h3 className="text-xl font-bold mb-4">أنواع السجلات الطبية</h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-bold">أنواع السجلات الطبية</h3>
+                  <button
+                    onClick={() =>
+                      setViewModal({ open: true, typeId: null })
+                    }
+                    className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 flex items-center gap-2"
+                  >
+             عرض الجميع
+                  </button>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {types.map((t) => (
                     <div
@@ -464,7 +488,9 @@ const MedicalFiles = () => {
                       className="border border-gray-300 rounded-lg p-4 flex flex-col justify-between"
                     >
                       <div>
-                        <div className="text-second font-bold mb-1">{t.name}</div>
+                        <div className="text-second font-bold mb-1">
+                          {t.name}
+                        </div>
                         <p className="text-gray-500 text-sm">
                           إدارة السجلات الخاصة بهذا النوع
                         </p>
@@ -513,6 +539,7 @@ const MedicalFiles = () => {
         onClose={() => setViewModal({ open: false, typeId: null })}
         fileId={userFile?.id}
         recordTypeId={viewModal.typeId}
+        recordTypeName={types.find((t) => t.id === viewModal.typeId)?.name}
       />
     </section>
   );

@@ -1,14 +1,24 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { FaTimes, FaPrint, FaSearch } from "react-icons/fa";
+import { FaTimes, FaPrint, FaSearch, FaEdit, FaTrash } from "react-icons/fa";
 import baseApi from "../api/baseApi";
+import { toast } from "react-toastify";
+import AddRecordModal from "./AddRecordModal";
 
-const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
+const RecordsViewModal = ({
+  isOpen,
+  onClose,
+  fileId,
+  recordTypeId,
+  recordTypeName,
+}) => {
   const [items, setItems] = useState([]);
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize] = useState(8);
   const [total, setTotal] = useState(0);
-  const [q, setQ] = useState("");
+  const [q] = useState("");
   const printRef = useRef();
+  const [editModal, setEditModal] = useState({ open: false, record: null });
+  const [deleting, setDeleting] = useState(false);
 
   // Helper to build absolute file URL
   const apiBase = baseApi.defaults?.baseURL || "";
@@ -73,7 +83,7 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
 
       if (idoc.readyState === "complete") doPrint();
       else idoc.addEventListener("DOMContentLoaded", doPrint);
-    } catch (e) {
+    } catch {
       // fallback
       const w = window.open("", "_blank");
       if (w) {
@@ -101,7 +111,8 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
         validateStatus: () => true,
       });
       if (res.data?.success) {
-        setItems(res.data.data.items || []);
+        const fetchedItems = res.data.data.items || [];
+        setItems(fetchedItems);
         setTotal(res.data.data.count || 0);
       } else {
         setItems([]);
@@ -109,7 +120,77 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
       }
     };
     fetchData();
-  }, [isOpen, pageIndex, pageSize, fileId, recordTypeId, q]);
+  }, [isOpen, pageIndex, pageSize, fileId, recordTypeId, q, editModal.open]);
+
+  const handleEdit = (record) => {
+    setEditModal({ open: true, record });
+  };
+
+  const handleDeleteClick = async (record) => {
+    if (!record) {
+      toast.error("خطأ: السجل غير موجود");
+      return;
+    }
+
+    if (deleting) return;
+
+    const recordId = record?.id;
+
+    if (!recordId) {
+      toast.error("خطأ: لا يوجد معرف للسجل");
+      return;
+    }
+
+    // Math challenge before delete
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    const correctAnswer = num1 + num2;
+    
+    const userAnswer = prompt(`للتأكيد، حل المسألة التالية:\n${num1} + ${num2} = ؟`);
+    
+    if (userAnswer === null) {
+      // User cancelled
+      return;
+    }
+    
+    if (parseInt(userAnswer) !== correctAnswer) {
+      toast.error("إجابة خاطئة! لم يتم الحذف");
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      const res = await baseApi.delete(`/MedicalRecords/${recordId}`, {
+        validateStatus: () => true,
+      });
+
+      if (res.data?.success || res.status === 200 || res.status === 204) {
+        toast.success("تم حذف السجل بنجاح");
+        // Refresh the list
+        const params = {
+          PageIndex: pageIndex,
+          PageSize: pageSize,
+          FileId: fileId,
+        };
+        if (recordTypeId) params.RecordType = recordTypeId;
+        if (q) params.SearchName = q;
+        const refreshRes = await baseApi.get("/MedicalRecords", {
+          params,
+          validateStatus: () => true,
+        });
+        if (refreshRes.data?.success) {
+          setItems(refreshRes.data.data.items || []);
+          setTotal(refreshRes.data.data.count || 0);
+        }
+      } else {
+        toast.error(res.data?.message || "تعذر الحذف");
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "تعذر حذف السجل");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -118,7 +199,7 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
       .map((it, idx) => {
         return `<section class="page">
           ${renderRecordHtml(it)}
-          ${idx < items.length - 1 ? '<div class="break"></div>' : ''}
+          ${idx < items.length - 1 ? '<div class="break"></div>' : ""}
         </section>`;
       })
       .join("\n");
@@ -150,7 +231,9 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
       <div class="container">
         <div class="header">
           <div class="brand">InstaHealthy</div>
-          <div class="meta">تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG')}</div>
+          <div class="meta">تاريخ الطباعة: ${new Date().toLocaleDateString(
+            "ar-EG"
+          )}</div>
         </div>
         ${itemsHtml}
       </div>
@@ -183,7 +266,11 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
 
   const renderRecordHtml = (it) => {
     const img = buildFileUrl(
-      it?.attachmentUrl || it?.attachmentURL || it?.attachment || it?.imageUrl || it?.imagePath
+      it?.attachmentUrl ||
+        it?.attachmentURL ||
+        it?.attachment ||
+        it?.imageUrl ||
+        it?.imagePath
     );
     return `<article class="record">
       <div class="title">
@@ -197,7 +284,11 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
         <div><span class="lbl">العنوان:</span> ${it.doctorAddress || "-"}</div>
       </div>
       <div class="content">${(it.content || "").replace(/\n/g, "<br/>")}</div>
-      ${img ? `<div class="imgwrap"><img src="${img}" alt="attachment" /><div class="caption">صورة المرفق</div></div>` : ""}
+      ${
+        img
+          ? `<div class="imgwrap"><img src="${img}" alt="attachment" /><div class="caption">صورة المرفق</div></div>`
+          : ""
+      }
     </article>`;
   };
 
@@ -209,7 +300,9 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
       >
         <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
           <div className="flex items-center flex-col md:flex-row gap-3">
-            <h3 className="text-lg font-bold">السجلات السابقة</h3>
+            <h3 className="text-lg font-bold">
+              السجلات  {recordTypeName ? `(${recordTypeName})` : "(جميع الأنواع)"}
+            </h3>
             {/* <div className="relative">
               <FaSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
@@ -237,51 +330,76 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
             <p className="text-gray-600">لا توجد سجلات</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {items.map((it) => {
+              {items.map((it, index) => {
                 const img = buildFileUrl(
-                  it?.attachmentUrl || it?.attachmentURL || it?.attachment || it?.imageUrl || it?.imagePath
+                  it?.attachmentUrl ||
+                    it?.attachmentURL ||
+                    it?.attachment ||
+                    it?.imageUrl ||
+                    it?.imagePath
                 );
+                const itemId = it?.id;
                 return (
-                <div key={it.id} className="border border-gray-300 rounded p-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <div className="font-bold text-second">
-                      {it.recordTypeName || "سجل"}
+                  <div
+                    key={itemId}
+                    className="border border-gray-300 rounded p-4 overflow-hidden"
+                  >
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="font-bold text-second break-words">
+                        {it.recordTypeName || "سجل"}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleEdit(it)}
+                          className="text-sm bg-blue-500 text-white px-2 py-1 rounded flex items-center gap-1 hover:bg-blue-600"
+                        >
+                          <FaEdit /> تعديل
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(it)}
+                          disabled={deleting}
+                          className="text-sm bg-red-500 text-white px-2 py-1 rounded flex items-center gap-1 hover:bg-red-600 disabled:opacity-50"
+                        >
+                          <FaTrash /> {deleting ? "جاري الحذف..." : "حذف"}
+                        </button>
+                        <button
+                          onClick={() => printOne(it)}
+                          className="text-sm bg-gray-200 px-2 py-1 rounded flex items-center gap-1"
+                        >
+                          <FaPrint /> طباعة
+                        </button>
+                      </div>
                     </div>
-                    <button
-                      onClick={() => printOne(it)}
-                      className="text-sm bg-gray-200 px-2 py-1 rounded flex items-center gap-1"
-                    >
-                      <FaPrint /> طباعة
-                    </button>
+                    <div className="text-sm text-gray-700">
+                      <div className="break-words">
+                        <b>التاريخ:</b> {it.createdAt}
+                      </div>
+                      <div className="break-words">
+                        <b>الطبيب:</b> {it.doctorName}
+                      </div>
+                      <div className="break-words">
+                        <b>التكلفة:</b> {it.cost}
+                      </div>
+                    </div>
+                    <hr className="my-2 text-gray-300 " />
+                    <div className="text-sm whitespace-pre-wrap break-words overflow-wrap-anywhere">
+                      {it.content}
+                    </div>
+                    {img ? (
+                      <a
+                        href={img}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-2 mt-2 px-3 py-2 bg-second text-white rounded"
+                      >
+                        تنزيل المرفق
+                      </a>
+                    ) : (
+                      <div className="mt-2 h-12 w-full flex items-center justify-center rounded border border-dashed text-gray-400 bg-gray-50">
+                        لا يوجد مرفق
+                      </div>
+                    )}
                   </div>
-                  <div className="text-sm text-gray-700">
-                    <div>
-                      <b>التاريخ:</b> {it.createdAt}
-                    </div>
-                    <div>
-                      <b>الطبيب:</b> {it.doctorName}
-                    </div>
-                    <div>
-                      <b>التكلفة:</b> {it.cost}
-                    </div>
-                  </div>
-                  <hr className="my-2 text-gray-300 " />
-                  <div className="text-sm whitespace-pre-wrap">{it.content}</div>
-                  {img ? (
-                    <a
-                      href={img}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-2 mt-2 px-3 py-2 bg-second text-white rounded"
-                    >
-                      تنزيل المرفق
-                    </a>
-                  ) : (
-                    <div className="mt-2 h-12 w-full flex items-center justify-center rounded border border-dashed text-gray-400 bg-gray-50">
-                      لا يوجد مرفق
-                    </div>
-                  )}
-                </div>
                 );
               })}
             </div>
@@ -309,6 +427,21 @@ const RecordsViewModal = ({ isOpen, onClose, fileId, recordTypeId }) => {
           </div>
         )}
       </div>
+
+      {/* Edit Modal */}
+      <AddRecordModal
+        isOpen={editModal.open}
+        onClose={(ok) => {
+          setEditModal({ open: false, record: null });
+          if (ok) {
+            // Refresh list will be handled by useEffect dependency
+          }
+        }}
+        fileId={fileId}
+        recordTypeId={recordTypeId}
+        recordTypeName={recordTypeName}
+        record={editModal.record}
+      />
     </div>
   );
 };
