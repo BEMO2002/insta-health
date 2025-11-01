@@ -19,6 +19,8 @@ const RecordsViewModal = ({
   const printRef = useRef();
   const [editModal, setEditModal] = useState({ open: false, record: null });
   const [deleting, setDeleting] = useState(false);
+  const [deleteModal, setDeleteModal] = useState({ open: false, record: null });
+  const [deleteInput, setDeleteInput] = useState("");
 
   // Helper to build absolute file URL
   const apiBase = baseApi.defaults?.baseURL || "";
@@ -126,11 +128,18 @@ const RecordsViewModal = ({
     setEditModal({ open: true, record });
   };
 
-  const handleDeleteClick = async (record) => {
+  const handleDeleteClick = (record) => {
     if (!record) {
       toast.error("خطأ: السجل غير موجود");
       return;
     }
+    setDeleteModal({ open: true, record });
+    setDeleteInput("");
+  };
+
+  const confirmDelete = async () => {
+    const record = deleteModal.record;
+    if (!record) return;
 
     if (deleting) return;
 
@@ -141,20 +150,9 @@ const RecordsViewModal = ({
       return;
     }
 
-    // Math challenge before delete
-    const num1 = Math.floor(Math.random() * 10) + 1;
-    const num2 = Math.floor(Math.random() * 10) + 1;
-    const correctAnswer = num1 + num2;
-    
-    const userAnswer = prompt(`للتأكيد، حل المسألة التالية:\n${num1} + ${num2} = ؟`);
-    
-    if (userAnswer === null) {
-      // User cancelled
-      return;
-    }
-    
-    if (parseInt(userAnswer) !== correctAnswer) {
-      toast.error("إجابة خاطئة! لم يتم الحذف");
+    // Verify fileNumber
+    if (deleteInput !== record.fileNumber) {
+      toast.error("رقم الملف غير صحيح! لم يتم الحذف");
       return;
     }
 
@@ -166,6 +164,8 @@ const RecordsViewModal = ({
 
       if (res.data?.success || res.status === 200 || res.status === 204) {
         toast.success("تم حذف السجل بنجاح");
+        setDeleteModal({ open: false, record: null });
+        setDeleteInput("");
         // Refresh the list
         const params = {
           PageIndex: pageIndex,
@@ -442,6 +442,52 @@ const RecordsViewModal = ({
         recordTypeName={recordTypeName}
         record={editModal.record}
       />
+
+      {/* Delete Confirmation Modal */}
+      {deleteModal.open && (
+        <div className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl w-full max-w-md p-6" dir="rtl">
+            <h3 className="text-xl font-bold text-red-600 mb-4">
+              تأكيد الحذف
+            </h3>
+            <p className="text-gray-700 mb-4">
+              لتأكيد حذف هذا السجل، يرجى إدخال رقم الملف التالي:
+            </p>
+            <div className="bg-gray-100 p-3 rounded mb-4 text-center">
+              <span className="font-bold text-lg text-gray-800">
+                {deleteModal.record?.fileNumber}
+              </span>
+            </div>
+            <input
+              type="text"
+              value={deleteInput}
+              onChange={(e) => setDeleteInput(e.target.value)}
+              placeholder="أدخل رقم الملف هنا"
+              className="w-full border border-gray-300 rounded p-3 mb-4 text-center"
+              autoFocus
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={confirmDelete}
+                disabled={deleting || !deleteInput}
+                className="flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {deleting ? "جاري الحذف..." : "تأكيد الحذف"}
+              </button>
+              <button
+                onClick={() => {
+                  setDeleteModal({ open: false, record: null });
+                  setDeleteInput("");
+                }}
+                disabled={deleting}
+                className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 disabled:opacity-50"
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
