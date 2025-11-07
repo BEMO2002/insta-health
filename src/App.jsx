@@ -49,11 +49,12 @@ function App() {
           <Route path="/cart" element={<MainCart />} />
           <Route path="/orders/:merchantOrderId" element={<OrderStatus />} />
           <Route path="/orders" element={<OrderStatus />} />
+          <Route path="/package-reservation/:reservationNumber" element={<PackageReservationDetails />} />
+          <Route path="/package-reservation" element={<PackageReservationDetails />} />
           <Route path="/medical-file" element={<MainMediaclFiles />} />
           <Route path="/medical-file/status" element={<MedicalFileStatus />} />
           <Route path="/medical-tourism" element={<MianMedicalTourism />} />
           <Route path="/content/:slug" element={<ContentPage />} />
-          <Route path="/package-reservation/:reservationNumber" element={<PackageReservationDetails />} />
           <Route path="/medical-prescriptions" element={<MedicalPrescriptions />} />
         </Route>
 

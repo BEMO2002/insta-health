@@ -156,12 +156,14 @@ const AddRecordModal = ({
               name="DoctorName"
               value={form.DoctorName}
               onChange={handleChange}
+              required
             />
             <Input
               label="عنوان الطبيب"
               name="DoctorAddress"
               value={form.DoctorAddress}
               onChange={handleChange}
+              required
             />
             {/* <Input
               label="المُقدّم (اختياري)"
@@ -177,6 +179,7 @@ const AddRecordModal = ({
               type="date"
               value={form.CreatedAt}
               onChange={handleChange}
+              required
             />
             <Input
               label="التكلفة"
@@ -188,21 +191,24 @@ const AddRecordModal = ({
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 نوع السجل
+                <span className="text-red-500 mr-1">*</span>
               </label>
-              <div className="w-full border rounded p-3 bg-gray-50">
+              <div className="w-full border border-gray-300 rounded p-3 bg-gray-50">
                 {recordTypeName || `#${form.MedicalRecordTypeId}`}
               </div>
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 المحتوى
+                <span className="text-red-500 mr-1">*</span>
               </label>
               <textarea
                 name="Content"
                 value={form.Content}
                 onChange={handleChange}
                 rows={3}
-                className="w-full border rounded p-3 break-words overflow-wrap-anywhere"
+                className="w-full border border-gray-300 rounded p-3 break-words overflow-wrap-anywhere"
+                required
               />
             </div>
             <div className="md:col-span-2">
@@ -248,8 +254,9 @@ const Input = ({ label, ...props }) => (
   <div>
     <label className="block text-sm font-medium text-gray-700 mb-1">
       {label}
+      {props.required && <span className="text-red-500 mr-1">*</span>}
     </label>
-    <input {...props} className="w-full border rounded p-3" />
+    <input {...props} className="w-full border border-gray-300 rounded p-3" />
   </div>
 );
 

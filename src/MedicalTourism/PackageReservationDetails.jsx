@@ -4,7 +4,7 @@ import baseApi from "../api/baseApi";
 import { toast } from "react-toastify";
 
 const PackageReservationDetails = () => {
-  const { reservationNumber } = useParams();
+  const { reservationNumber: pathReservationNumber } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(true);
@@ -12,20 +12,27 @@ const PackageReservationDetails = () => {
   const [reservation, setReservation] = useState(null);
   const [paymentLoading, setPaymentLoading] = useState(false);
 
-  // Get payment status from query parameters (webhook callback)
+  // Get query parameters
   const query = useMemo(
     () => new URLSearchParams(location.search),
     [location.search]
   );
+  
+  // Get payment status from query parameters (webhook callback)
   const paymentStatusFromQuery = query.get("paymentStatus");
+  
+  // Get merchantOrderId from query or path parameters
+  // Priority: merchantOrderId query (from payment gateway) > reservationNumber query > path parameter
+  const merchantOrderIdFromQuery = query.get("merchantOrderId") || query.get("reservationNumber");
+  const merchantOrderId = merchantOrderIdFromQuery || pathReservationNumber;
 
   useEffect(() => {
     const fetchReservation = async () => {
-      if (!reservationNumber) return;
+      if (!merchantOrderId) return;
       try {
         setLoading(true);
         setError("");
-        const res = await baseApi.get(`/MedicalTourismPackageReservations/${reservationNumber}`);
+        const res = await baseApi.get(`/MedicalTourismPackageReservations/${merchantOrderId}`);
         if (res.data?.success && res.data?.data) {
           setReservation(res.data.data);
         } else {
@@ -39,17 +46,17 @@ const PackageReservationDetails = () => {
       }
     };
     fetchReservation();
-  }, [reservationNumber]);
+  }, [merchantOrderId]);
 
   // Auto-refresh if payment is pending
   useEffect(() => {
-    if (!reservation) return;
-    const status = (reservation.paymentStatus || "").toString().toLowerCase();
-    if (status !== "pending") return;
+    if (!reservation || reservation.paymentStatus !== 'Pending') {
+      return;
+    }
     
     const intervalId = setInterval(async () => {
       try {
-        const res = await baseApi.get(`/MedicalTourismPackageReservations/${reservationNumber}`);
+        const res = await baseApi.get(`/MedicalTourismPackageReservations/${merchantOrderId}`);
         if (res.data?.success && res.data?.data) {
           setReservation(res.data.data);
         }
@@ -59,7 +66,7 @@ const PackageReservationDetails = () => {
     }, 5000);
     
     return () => clearInterval(intervalId);
-  }, [reservation, reservationNumber]);
+  }, [reservation, merchantOrderId]);
 
   const handlePayment = async () => {
     if (!reservation) return;
@@ -68,7 +75,7 @@ const PackageReservationDetails = () => {
       setPaymentLoading(true);
       
       // Call payment initiation endpoint
-      const response = await baseApi.post(`/MedicalTourismPackageReservations/${reservationNumber}/pay`);
+      const response = await baseApi.post(`/MedicalTourismPackageReservations/${merchantOrderId}/pay`);
       
       if (response.data?.success && response.data?.data?.paymentUrl) {
         // Redirect to payment gateway
@@ -100,6 +107,31 @@ const PackageReservationDetails = () => {
     });
   };
 
+  // If no merchant order ID, show error
+  if (!merchantOrderId) {
+    return (
+      <section className="py-16 bg-gray-50" dir="rtl">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="bg-white p-8 rounded-xl shadow text-center">
+            <div className="text-red-500 text-6xl mb-4">⚠️</div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              رقم الحجز غير موجود
+            </h2>
+            <p className="text-gray-600 mb-6">
+              يرجى التأكد من رابط الصفحة أو العودة للصفحة الرئيسية
+            </p>
+            <Link
+              to="/medical-tourism"
+              className="inline-block px-6 py-3 rounded-lg bg-primary text-white hover:bg-second transition-colors"
+            >
+              العودة للسياحة العلاجية
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-16 bg-gray-50" dir="rtl">
       <div className="max-w-4xl mx-auto px-4">
@@ -108,13 +140,8 @@ const PackageReservationDetails = () => {
             تفاصيل حجز الباقة الطبية
           </h1>
           <p className="text-gray-600 mt-2">
-            رقم الحجز: {reservationNumber}
+            رقم الحجز: {merchantOrderId}
           </p>
-          {paymentStatusFromQuery && (
-            <p className="text-gray-500 mt-1">
-              حالة الدفع (من مزود الخدمة): {paymentStatusFromQuery}
-            </p>
-          )}
         </div>
 
         {loading ? (
@@ -125,10 +152,10 @@ const PackageReservationDetails = () => {
           <div className="bg-white p-6 rounded-xl shadow text-center">
             <p className="text-red-600 mb-4">{error}</p>
             <Link
-              to="/"
+              to="/medical-tourism"
               className="inline-block px-6 py-2 rounded-lg bg-primary text-white hover:bg-second"
             >
-              العودة للصفحة الرئيسية
+              العودة للسياحة العلاجية
             </Link>
           </div>
         ) : !reservation ? (
@@ -250,20 +277,6 @@ const PackageReservationDetails = () => {
                 <span className="text-3xl font-bold text-primary">{reservation.price} ج.م</span>
               </div>
             </div>
-
-            {/* Passport Image */}
-            {reservation.passportImageUrl && (
-              <div className="mb-6">
-                <h3 className="text-lg font-bold text-gray-800 mb-3">صورة جواز السفر</h3>
-                <div className="border rounded-lg overflow-hidden max-w-md">
-                  <img 
-                    src={reservation.passportImageUrl} 
-                    alt="Passport" 
-                    className="w-full h-auto"
-                  />
-                </div>
-              </div>
-            )}
 
             {/* Action Buttons */}
             <div className="mt-8 flex flex-wrap gap-3">
