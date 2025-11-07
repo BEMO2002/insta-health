@@ -274,7 +274,7 @@ const PackageReservationDetails = () => {
             <div className="bg-gray-50 p-4 rounded-lg mb-6">
               <div className="flex justify-between items-center">
                 <span className="text-gray-700 font-semibold text-lg">إجمالي التكلفة:</span>
-                <span className="text-3xl font-bold text-primary">{reservation.price} ج.م</span>
+                <span className="text-3xl font-bold text-primary">{reservation.price} $</span>
               </div>
             </div>
 

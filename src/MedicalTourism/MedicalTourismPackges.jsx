@@ -117,7 +117,7 @@ const MedicalTourismPackges = () => {
                   />
                   {/* Price Badge */}
                   <div className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-lg shadow-lg">
-                    <span className="text-lg font-semibold">{item.price} ج.م</span>
+                    <span className="text-lg font-semibold">{item.price} $</span>
                   </div>
                 </div>
 
