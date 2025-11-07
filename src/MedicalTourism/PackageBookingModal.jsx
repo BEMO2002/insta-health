@@ -239,7 +239,7 @@ const PackageBookingModal = ({ isOpen, onClose, package: packageItem }) => {
           </div>
 
           {/* Submit Buttons */}
-          <div className="flex gap-4">
+          <div className="flex  flex-col md:flex-row gap-4">
             <button
               type="button"
               onClick={onClose}
