@@ -6,7 +6,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import baseApi from '../api/baseApi';
 import ConsultationBookingModal from '../Components/ConsultationBookingModal';
-import { FiStar } from 'react-icons/fi';
+import DoctorsPopup from './DoctorsPopup';
 
 const MedicalTourismSpecialties = () => {
   const [specialties, setSpecialties] = useState([]);
@@ -16,6 +16,10 @@ const MedicalTourismSpecialties = () => {
   const [bookingModal, setBookingModal] = useState({
     isOpen: false,
     doctor: null,
+  });
+  const [doctorsPopup, setDoctorsPopup] = useState({
+    isOpen: false,
+    specialty: null,
   });
 
   useEffect(() => {
@@ -77,6 +81,25 @@ const MedicalTourismSpecialties = () => {
     });
   };
 
+  const handleShowDoctors = (specialty) => {
+    setDoctorsPopup({
+      isOpen: true,
+      specialty: specialty,
+    });
+  };
+
+  const closeDoctorsPopup = () => {
+    setDoctorsPopup({
+      isOpen: false,
+      specialty: null,
+    });
+  };
+
+  const handleBookFromPopup = (doctor) => {
+    handleBooking(doctor);
+    closeDoctorsPopup();
+  };
+
   if (loading) {
     return (
       <div className="py-12 bg-gray-50">
@@ -101,127 +124,66 @@ const MedicalTourismSpecialties = () => {
             التخصصات الطبية
           </h2>
 
-          <div className="space-y-12">
+          {/* Specialties Swiper */}
+          <Swiper
+            modules={[Autoplay, Pagination]}
+            spaceBetween={30}
+            slidesPerView={1}
+            loop={specialties.length > 1}
+            autoplay={{
+              delay: 5000,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
+            }}
+            pagination={{
+              clickable: true,
+              dynamicBullets: true,
+            }}
+          >
             {specialties.map((specialty) => (
-              <div key={specialty.id} className="bg-white rounded-xl shadow-lg overflow-hidden">
-                {/* Specialty Header */}
-                <div className="relative h-64 md:h-80">
-                  <img
-                    src={specialty.imageUrl}
-                    alt={specialty.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/800x400?text=تخصص+طبي';
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <h3 className="text-2xl md:text-3xl font-bold mb-2">{specialty.name}</h3>
-                    <p className="text-md text-white opacity-90">{specialty.description}</p>
+              <SwiperSlide key={specialty.id}>
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden max-w-4xl mx-auto">
+                  {/* Specialty Image with Text Overlay */}
+                  <div className="relative h-96 md:h-[500px]">
+                    <img
+                      src={specialty.imageUrl}
+                      alt={specialty.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="400"%3E%3Crect fill="%23e5e7eb" width="800" height="400"/%3E%3Ctext fill="%234b5563" font-family="Arial" font-size="24" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3Eتخصص طبي%3C/text%3E%3C/svg%3E';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                    <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                      <h3 className="text-3xl md:text-4xl font-bold mb-3">{specialty.name}</h3>
+                      <p className="text-lg text-white opacity-90">{specialty.description}</p>
+                    </div>
+                  </div>
+
+                  {/* Book Consultation Button */}
+                  <div className="p-8">
+                    <button
+                      onClick={() => handleShowDoctors(specialty)}
+                      className="w-full bg-primary hover:bg-second text-white py-3 rounded-lg font-bold text-lg transition-colors duration-300 shadow-lg hover:shadow-xl"
+                    >
+                      احجز استشارة
+                    </button>
                   </div>
                 </div>
-
-                {/* Doctors Swiper */}
-                {doctorsBySpecialty[specialty.id]?.length > 0 && (
-                  <div className="p-6">
-                    <h4 className="text-xl font-bold text-gray-800 mb-4">الأطباء المتاحون</h4>
-                    <Swiper
-                      modules={[Autoplay, Pagination]}
-                      spaceBetween={20}
-                      slidesPerView={1}
-                      loop={doctorsBySpecialty[specialty.id].length > 1}
-                      autoplay={{
-                        delay: 4000,
-                        disableOnInteraction: false,
-                        pauseOnMouseEnter: true,
-                      }}
-                      navigation={doctorsBySpecialty[specialty.id].length > 1}
-                      pagination={{
-                        clickable: true,
-                        dynamicBullets: true,
-                      }}
-                      breakpoints={{
-                        640: {
-                          slidesPerView: 2,
-                          spaceBetween: 20,
-                        },
-                        1024: {
-                          slidesPerView: 3,
-                          spaceBetween: 30,
-                        },
-                      }}
-                    //   className="doctors-swiper"
-                    >
-                      {doctorsBySpecialty[specialty.id].map((doctor) => (
-                        <SwiperSlide key={doctor.id}>
-                          <div className="bg-gray-50 rounded-lg overflow-hidden h-full flex flex-col shadow-md hover:shadow-xl transition-shadow duration-300">
-                            {/* Doctor Image */}
-                            <div className="relative h-50">
-                              <img
-                                src={doctor.imageUrl}
-                                alt={doctor.name}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  e.target.src = 'https://via.placeholder.com/300x200?text=دكتور';
-                                }}
-                              />
-                            </div>
-
-                            {/* Doctor Info */}
-                            <div className="p-4 flex-1 flex flex-col">
-                              <h5 className="text-lg font-bold text-gray-800 mb-1">{doctor.name}</h5>
-                              <p className="text-sm text-second font-medium mb-2">{doctor.speciality}</p>
-                              
-                              {/* Rating */}
-                              {doctor.rate && (
-                                <div className="flex items-center mb-2">
-                                  <div className="flex">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                      <FiStar
-                                        key={star}
-                                        className={`w-4 h-4 ${
-                                          star <= doctor.rate
-                                            ? 'text-yellow-400 fill-yellow-400'
-                                            : 'text-gray-300'
-                                        }`}
-                                      />
-                                    ))}
-                                  </div>
-                                  <span className="text-xs text-gray-600 mr-2">({doctor.rate}/5)</span>
-                                </div>
-                              )}
-
-                              {/* Experience */}
-                              {doctor.expirence && (
-                                <p className="text-xs text-gray-600 mb-4 line-clamp-2">{doctor.expirence}</p>
-                              )}
-
-                              {/* Booking Button */}
-                              <button
-                                onClick={() => handleBooking(doctor)}
-                                className="mt-auto w-full bg-primary hover:bg-second text-white py-2 rounded-lg font-semibold transition-colors duration-300"
-                              >
-                                احجز استشارة
-                              </button>
-                            </div>
-                          </div>
-                        </SwiperSlide>
-                      ))}
-                    </Swiper>
-                  </div>
-                )}
-
-                {/* No Doctors Message */}
-                {doctorsBySpecialty[specialty.id]?.length === 0 && (
-                  <div className="p-6 text-center text-gray-500">
-                    لا يوجد أطباء متاحون حالياً في هذا التخصص
-                  </div>
-                )}
-              </div>
+              </SwiperSlide>
             ))}
-          </div>
+          </Swiper>
         </div>
       </div>
+
+      {/* Doctors Popup */}
+      <DoctorsPopup
+        isOpen={doctorsPopup.isOpen}
+        onClose={closeDoctorsPopup}
+        specialty={doctorsPopup.specialty}
+        doctors={doctorsPopup.specialty ? doctorsBySpecialty[doctorsPopup.specialty.id] : []}
+        onBookDoctor={handleBookFromPopup}
+      />
 
       {/* Booking Modal */}
       <ConsultationBookingModal

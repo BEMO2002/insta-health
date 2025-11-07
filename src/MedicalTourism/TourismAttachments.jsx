@@ -59,7 +59,7 @@ const TourismAttachments = ({ slugProp = 'medical-tourism' }) => {
         <div className="bg-white rounded-xl shadow-lg p-6 md:p-8"> 
           <div className="relative">
             <Swiper
-              modules={[Autoplay, Navigation, Pagination]}
+              modules={[Autoplay, Pagination]}
               spaceBetween={20}
               slidesPerView={1}
               loop={true}
@@ -87,7 +87,7 @@ const TourismAttachments = ({ slugProp = 'medical-tourism' }) => {
                   spaceBetween: 30,
                 },
               }}
-              className="tourism-gallery-swiper"
+
             >
               {attachments.map((attachment) => (
                 <SwiperSlide key={attachment.id}>

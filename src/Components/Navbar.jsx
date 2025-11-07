@@ -201,7 +201,7 @@ const Navbar = () => {
     {
       name: "الروشته ",
       subItems: [
-        { name: " الروشته الطبيه", path: "/prescription-reservations" },
+        { name: " الروشته الطبيه", path: "/medical-prescriptions" },
       ],
     },
   ];

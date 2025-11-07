@@ -1,8 +1,8 @@
 import React from 'react'
-import MedicalTourism from './MedicalTourism'
 import ContentPage from './ContentPage'
 import TourismAttachments from './TourismAttachments'
 import MedicalTourismSpecialties from './MedicalTourismSpecialties'
+import MedicalTourismPackges from './MedicalTourismPackges'
 
 const MianMedicalTourism = () => {
   return (
@@ -10,7 +10,7 @@ const MianMedicalTourism = () => {
     <ContentPage slugProp="alsyahh-alalajyh" />
     <TourismAttachments slugProp="medical-tourism" />
     <MedicalTourismSpecialties />
-    <MedicalTourism />
+    <MedicalTourismPackges />
     </>
   )
 }

@@ -24,6 +24,8 @@ import MainMediaclFiles from "./MediaclFiles/MainMediaclFiles";
 import MedicalFileStatus from "./MediaclFiles/MedicalFileStatus";
 import MianMedicalTourism from "./MedicalTourism/MianMedicalTourism";
 import ContentPage from "./MedicalTourism/ContentPage";
+import PackageReservationDetails from "./MedicalTourism/PackageReservationDetails";
+import MedicalPrescriptions from "./MedicalPrescriptions/MedicalPrescriptions";
 function App() {
   return (
     <BrowserRouter>
@@ -51,6 +53,8 @@ function App() {
           <Route path="/medical-file/status" element={<MedicalFileStatus />} />
           <Route path="/medical-tourism" element={<MianMedicalTourism />} />
           <Route path="/content/:slug" element={<ContentPage />} />
+          <Route path="/package-reservation/:reservationNumber" element={<PackageReservationDetails />} />
+          <Route path="/medical-prescriptions" element={<MedicalPrescriptions />} />
         </Route>
 
         <Route path="/login" element={<Login />} />
