@@ -301,17 +301,9 @@ const RecordsViewModal = ({
         <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
           <div className="flex items-center flex-col md:flex-row gap-3">
             <h3 className="text-lg font-bold">
-              السجلات  {recordTypeName ? `(${recordTypeName})` : "(جميع الأنواع)"}
+              السجلات{" "}
+              {recordTypeName ? `(${recordTypeName})` : "(جميع الأنواع)"}
             </h3>
-            {/* <div className="relative">
-              <FaSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="بحث"
-                className="border border-gray-300 rounded pl-3 pr-8 py-2"
-              />
-            </div> */}
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -447,9 +439,7 @@ const RecordsViewModal = ({
       {deleteModal.open && (
         <div className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4">
           <div className="bg-white rounded-xl w-full max-w-md p-6" dir="rtl">
-            <h3 className="text-xl font-bold text-red-600 mb-4">
-              تأكيد الحذف
-            </h3>
+            <h3 className="text-xl font-bold text-red-600 mb-4">تأكيد الحذف</h3>
             <p className="text-gray-700 mb-4">
               لتأكيد حذف هذا السجل، يرجى إدخال رقم الملف التالي:
             </p>

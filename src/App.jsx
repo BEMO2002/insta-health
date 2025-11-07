@@ -22,6 +22,8 @@ import MainHomeProviders from "./HomeProviders/MainHomeProviders";
 import HomeProvidersDetails from "./HomeProviders/HomeProvidersDetails";
 import MainMediaclFiles from "./MediaclFiles/MainMediaclFiles";
 import MedicalFileStatus from "./MediaclFiles/MedicalFileStatus";
+import MianMedicalTourism from "./MedicalTourism/MianMedicalTourism";
+import ContentPage from "./MedicalTourism/ContentPage";
 function App() {
   return (
     <BrowserRouter>
@@ -47,6 +49,8 @@ function App() {
           <Route path="/orders" element={<OrderStatus />} />
           <Route path="/medical-file" element={<MainMediaclFiles />} />
           <Route path="/medical-file/status" element={<MedicalFileStatus />} />
+          <Route path="/medical-tourism" element={<MianMedicalTourism />} />
+          <Route path="/content/:slug" element={<ContentPage />} />
         </Route>
 
         <Route path="/login" element={<Login />} />

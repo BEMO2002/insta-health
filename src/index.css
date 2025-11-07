@@ -23,3 +23,35 @@ body {
 .list-image .active {
   width: calc(80% - 6px) !important;
 }
+
+/* Swiper Custom Styles */
+.doctors-swiper .swiper-button-next,
+.doctors-swiper .swiper-button-prev,
+.tourism-gallery-swiper .swiper-button-next,
+.tourism-gallery-swiper .swiper-button-prev {
+  color: #03A7FF;
+  background: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.doctors-swiper .swiper-button-next::after,
+.doctors-swiper .swiper-button-prev::after,
+.tourism-gallery-swiper .swiper-button-next::after,
+.tourism-gallery-swiper .swiper-button-prev::after {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.doctors-swiper .swiper-pagination-bullet,
+.tourism-gallery-swiper .swiper-pagination-bullet {
+  background: #03A7FF;
+  opacity: 0.5;
+}
+
+.doctors-swiper .swiper-pagination-bullet-active,
+.tourism-gallery-swiper .swiper-pagination-bullet-active {
+  opacity: 1;
+}

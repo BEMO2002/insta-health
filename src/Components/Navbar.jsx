@@ -196,7 +196,7 @@ const Navbar = () => {
     },
     {
       name: "السياحه العلاجيه ",
-      subItems: [{ name: " خدمات السياحه العلاجيه", path: "/member" }],
+      subItems: [{ name: " خدمات السياحه العلاجيه", path: "/medical-tourism" }],
     },
     {
       name: "الروشته ",
