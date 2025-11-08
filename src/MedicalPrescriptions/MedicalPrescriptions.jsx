@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { FiFileText, FiDownload } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
+import { FiFileText, FiDownload, FiEye } from 'react-icons/fi';
 import baseApi from '../api/baseApi';
 import { toast } from 'react-toastify';
 
 const MedicalPrescriptions = () => {
+  const navigate = useNavigate();
   const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -166,20 +168,29 @@ const MedicalPrescriptions = () => {
                     <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-primary transition-colors">
                       {prescription.title}
                     </h3>
-                    <p className="text-gray-600 text-sm mb-4 flex-1  leading-relaxed">
+                    <p className="text-gray-600 line-clamp-3 text-sm mb-4 flex-1  leading-relaxed">
                       {prescription.content}
                     </p>
 
-                    {/* Action Button */}
-                    <a
-                      href={prescription.attachment}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-primary to-second text-white py-3 rounded-lg font-bold hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-                    >
-                      <FiDownload className="text-lg" />
-                      <span>تحميل المرفق</span>
-                    </a>
+                    {/* Action Buttons */}
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => navigate(`/medical-prescriptions/${prescription.id}`)}
+                        className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-second text-white py-3 rounded-lg font-bold hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                      >
+                        <FiEye className="text-lg" />
+                        <span>عرض التفاصيل</span>
+                      </button>
+                      <a
+                        href={prescription.attachment}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 bg-white border-2 border-primary text-primary py-3 px-4 rounded-lg font-bold hover:bg-primary hover:text-white transition-all duration-300"
+                        title="تحميل المرفق"
+                      >
+                        <FiDownload className="text-lg" />
+                      </a>
+                    </div>
                   </div>
                 </div>
               ))}

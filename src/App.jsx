@@ -26,6 +26,8 @@ import MianMedicalTourism from "./MedicalTourism/MianMedicalTourism";
 import ContentPage from "./MedicalTourism/ContentPage";
 import PackageReservationDetails from "./MedicalTourism/PackageReservationDetails";
 import MedicalPrescriptions from "./MedicalPrescriptions/MedicalPrescriptions";
+import MedicalPrescriptionsDetails from "./MedicalPrescriptions/MedicalPrescriptionsDetails";
+import MedicalConsultationReservationsDetails from "./MedicalTourism/MedicalConsultationReservationsDetails";
 function App() {
   return (
     <BrowserRouter>
@@ -51,11 +53,16 @@ function App() {
           <Route path="/orders" element={<OrderStatus />} />
           <Route path="/package-reservation/:reservationNumber" element={<PackageReservationDetails />} />
           <Route path="/package-reservation" element={<PackageReservationDetails />} />
+          <Route path="/medical-consultation-reservations/:reservationNumber" element={<MedicalConsultationReservationsDetails />} />
+          <Route path="/medical-consultation-reservations" element={<MedicalConsultationReservationsDetails />} />
+          <Route path="/medical-consultation-reservation/:reservationNumber" element={<MedicalConsultationReservationsDetails />} />
+          <Route path="/medical-consultation-reservation" element={<MedicalConsultationReservationsDetails />} />
           <Route path="/medical-file" element={<MainMediaclFiles />} />
           <Route path="/medical-file/status" element={<MedicalFileStatus />} />
           <Route path="/medical-tourism" element={<MianMedicalTourism />} />
           <Route path="/content/:slug" element={<ContentPage />} />
           <Route path="/medical-prescriptions" element={<MedicalPrescriptions />} />
+          <Route path="/medical-prescriptions/:id" element={<MedicalPrescriptionsDetails />} />
         </Route>
 
         <Route path="/login" element={<Login />} />

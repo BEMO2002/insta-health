@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FiX, FiUpload, FiCalendar } from 'react-icons/fi';
 import baseApi from '../api/baseApi';
 import { toast } from 'react-toastify';
 
 const ConsultationBookingModal = ({ isOpen, onClose, doctor }) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     passportId: '',
@@ -93,25 +95,32 @@ const ConsultationBookingModal = ({ isOpen, onClose, doctor }) => {
       });
 
       if (response.data.success) {
-        toast.success('تم حجز الاستشارة بنجاح');
-        onClose();
-        // Reset form
-        setFormData({
-          passportId: '',
-          passportImage: null,
-          userName: '',
-          userMobile: '',
-          userEmail: '',
-          medicalComplaint: '',
-          complaintImage: null,
-          reservationDate: '',
-        });
+        // Check if payment URL is returned directly (redirect to payment gateway)
+        if (response.data.data?.sessionUrl || response.data.data?.paymentUrl) {
+          const paymentUrl = response.data.data.sessionUrl || response.data.data.paymentUrl;
+          toast.success('تم الحجز بنجاح! جاري التوجيه لبوابة الدفع...');
+          
+          // Close modal and redirect to payment gateway
+          onClose();
+          setTimeout(() => {
+            window.location.href = paymentUrl;
+          }, 1000);
+        } else {
+          // If no payment URL, navigate to reservation details page
+          const reservationNumber = response.data.data?.reservationNumber || response.data.data?.id;
+          toast.success('تم الحجز بنجاح! جاري التوجيه لصفحة الدفع...');
+          
+          onClose();
+          setTimeout(() => {
+            navigate(`/medical-consultation-reservations/${reservationNumber}`);
+          }, 1000);
+        }
       } else {
-        toast.error('فشل في حجز الاستشارة');
+        toast.error(response.data.message || 'حدث خطأ أثناء الحجز');
       }
     } catch (error) {
       console.error('Error booking consultation:', error);
-      toast.error('حدث خطأ أثناء حجز الاستشارة');
+      toast.error(error.response?.data?.message || 'حدث خطأ أثناء حجز الاستشارة');
     } finally {
       setLoading(false);
     }
@@ -321,7 +330,7 @@ const ConsultationBookingModal = ({ isOpen, onClose, doctor }) => {
                   جاري الحجز...
                 </>
               ) : (
-                'تأكيد الحجز'
+                'تأكيد الحجز والدفع'
               )}
             </button>
           </div>

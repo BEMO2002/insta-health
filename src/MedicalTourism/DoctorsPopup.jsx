@@ -71,7 +71,17 @@ const DoctorsPopup = ({ isOpen, onClose, specialty, doctors, onBookDoctor }) => 
 
                     {/* Experience */}
                     {doctor.expirence && (
-                      <p className="text-xs text-gray-600 mb-4 line-clamp-2">{doctor.expirence}</p>
+                      <p className="text-xs text-gray-600 mb-3 line-clamp-2">{doctor.expirence}</p>
+                    )}
+
+                    {/* Price */}
+                    {doctor.reservationPrice && (
+                      <div className="mb-3 bg-primary/10 p-2 rounded-lg border border-primary/20">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-gray-600 font-semibold">رسوم الاستشارة:</span>
+                          <span className="text-lg font-bold text-primary">{doctor.reservationPrice} $</span>
+                        </div>
+                      </div>
                     )}
 
                     {/* Booking Button */}
