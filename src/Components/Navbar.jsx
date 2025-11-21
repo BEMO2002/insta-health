@@ -192,7 +192,7 @@ const Navbar = () => {
     },
     {
       name: "  كارت الخصومات",
-      subItems: [{ name: "استماره كارت الاسره  ", path: "/member" }],
+      subItems: [{ name: "استماره كارت الاسره  ", path: "/family-card" }],
     },
     {
       name: "السياحه العلاجيه ",

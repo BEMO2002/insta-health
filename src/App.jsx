@@ -29,6 +29,8 @@ import MedicalPrescriptions from "./MedicalPrescriptions/MedicalPrescriptions";
 import MedicalPrescriptionsDetails from "./MedicalPrescriptions/MedicalPrescriptionsDetails";
 import MedicalConsultationReservationsDetails from "./MedicalTourism/MedicalConsultationReservationsDetails";
 import MainAreYouProvider from "./AreYouProvider/MainAreYouProvider";
+import MainFamilyCard from "./FamilyCard/MainFamilyCard";
+import FamilyCardStatus from "./FamilyCard/FamilyCardStatus";
 function App() {
   return (
     <BrowserRouter>
@@ -82,6 +84,8 @@ function App() {
             element={<MedicalPrescriptionsDetails />}
           />
           <Route path="/are-you-provider" element={<MainAreYouProvider />} />
+          <Route path="/family-card" element={<MainFamilyCard />} />
+          <Route path="/family-card/status" element={<FamilyCardStatus />} />
         </Route>
 
         <Route path="/login" element={<Login />} />
