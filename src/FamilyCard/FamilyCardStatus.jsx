@@ -89,7 +89,9 @@ const FamilyCardStatus = () => {
           window.location.href = res.data.data.sessionUrl;
           return;
         }
-        toast.success("تم تجديد الاشتراك بنجاح");
+        toast.success(
+          "تم تنفيذ طلبك بنجاح وسيتم التواصل معك قريباً من أحد ممثلي الخدمة لإتمام الدفع والتجديد"
+        );
         // إعادة تحميل بيانات الكارت
         await fetchCard();
       } else {

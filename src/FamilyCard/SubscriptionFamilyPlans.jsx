@@ -29,6 +29,7 @@ const SubscriptionFamilyPlans = () => {
     error: "",
     errorCode: null,
     cardNumber: null,
+    successMessage: "",
   });
   const [addMemberModalState, setAddMemberModalState] = useState({
     isOpen: false,
@@ -93,6 +94,7 @@ const SubscriptionFamilyPlans = () => {
       error: "",
       errorCode: null,
       cardNumber: null,
+      successMessage: "",
     });
     try {
       const res = await baseApi.get("/HealthCards/user-card", {
@@ -106,6 +108,7 @@ const SubscriptionFamilyPlans = () => {
           error: "",
           errorCode: null,
           cardNumber: res.data.data?.cardNumber || null,
+          successMessage: "",
         });
       } else {
         // الأولوية لـ statusCode من res.data.statusCode
@@ -129,6 +132,7 @@ const SubscriptionFamilyPlans = () => {
           error: message,
           errorCode: statusCode,
           cardNumber: cardNumber,
+          successMessage: "",
         });
       }
     } catch (err) {
@@ -151,6 +155,7 @@ const SubscriptionFamilyPlans = () => {
         error: message,
         errorCode: statusCode,
         cardNumber: cardNumber,
+        successMessage: "",
       });
     }
   };
@@ -163,6 +168,7 @@ const SubscriptionFamilyPlans = () => {
       error: "",
       errorCode: null,
       cardNumber: null,
+      successMessage: "",
     });
   };
 
@@ -195,9 +201,16 @@ const SubscriptionFamilyPlans = () => {
           window.location.href = res.data.data.sessionUrl;
           return;
         }
-        toast.success("تم تجديد الاشتراك بنجاح");
-        // إعادة تحميل بيانات الكارت
-        await openCardModal();
+        const successMsg =
+          "تم تنفيذ طلبك بنجاح وسيتم التواصل معك قريباً من أحد ممثلي الخدمة لإتمام الدفع والتجديد";
+        toast.success(successMsg);
+        // عرض الرسالة في الـ modal
+        setCardModalState((prev) => ({
+          ...prev,
+          error: "",
+          errorCode: null,
+          successMessage: successMsg,
+        }));
       } else {
         toast.error(res?.data?.message || "فشل تجديد الاشتراك");
       }
@@ -496,6 +509,20 @@ const SubscriptionFamilyPlans = () => {
           {cardModalState.loading ? (
             <div className="flex items-center justify-center py-12">
               <FiLoader className="w-8 h-8 text-primary animate-spin" />
+            </div>
+          ) : cardModalState.successMessage ? (
+            <div className="space-y-4">
+              <div className="bg-green-50 text-green-700 px-6 py-4 rounded-2xl text-right">
+                <p>{cardModalState.successMessage}</p>
+              </div>
+              <div className="flex justify-center">
+                <button
+                  onClick={closeCardModal}
+                  className="px-6 py-3 bg-second text-white rounded-2xl font-semibold hover:bg-primary transition"
+                >
+                  إغلاق
+                </button>
+              </div>
             </div>
           ) : cardModalState.error ? (
             <div className="space-y-4">
