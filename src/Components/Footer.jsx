@@ -6,7 +6,7 @@ import appStore from "../assets/Home/apple (1).png";
 const Footer = () => {
   return (
     <footer
-      className="relative py-16 md:py-20 overflow-hidden"
+      className="relative py-16 md:py-20 overflow-hidden -z-40"
       style={{
         backgroundImage: `url(${footimage})`,
         backgroundSize: "cover",
