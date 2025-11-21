@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import baseApi from "../api/baseApi";
 
 const statusClasses = (status) => {
@@ -13,25 +14,93 @@ const FamilyCardStatus = () => {
   const [card, setCard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [errorCode, setErrorCode] = useState(null);
+  const [cardNumber, setCardNumber] = useState(null);
 
   const fetchCard = async () => {
     try {
       setLoading(true);
       setError("");
+      setErrorCode(null);
+      setCardNumber(null);
       const res = await baseApi.get("/HealthCards/user-card", {
         validateStatus: () => true,
       });
       if (res.data?.success) {
         setCard(res.data.data || null);
+        setCardNumber(res.data.data?.cardNumber || null);
       } else {
-        setError(res?.data?.message || "تعذر تحميل بيانات الكارت.");
+        // الأولوية لـ statusCode من res.data.statusCode
+        const statusCode = res.data?.statusCode || res.status;
+        const message = res?.data?.message || "تعذر تحميل بيانات الكارت.";
+        const cardNum =
+          res.data?.data?.cardNumber || res.data?.cardNumber || null;
+        setError(message);
+        setErrorCode(statusCode);
+        setCardNumber(cardNum);
         setCard(null);
       }
     } catch (err) {
-      setError(err?.message || "تعذر تحميل بيانات الكارت.");
+      const statusCode =
+        err?.response?.status || err?.response?.data?.statusCode;
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "تعذر تحميل بيانات الكارت.";
+      const cardNum =
+        err?.response?.data?.data?.cardNumber ||
+        err?.response?.data?.cardNumber ||
+        null;
+      setError(message);
+      setErrorCode(statusCode);
+      setCardNumber(cardNum);
       setCard(null);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRenew = async (paymentType) => {
+    if (!cardNumber) {
+      toast.error("رقم الكارت غير متوفر");
+      return;
+    }
+
+    try {
+      const payload = {
+        cardNumber: cardNumber,
+        paymentType: paymentType,
+      };
+
+      if (paymentType === "Visa") {
+        payload.clientUrl = `${window.location.origin}/family-card/status`;
+      }
+
+      const res = await baseApi.post(
+        "/Subscriptions/renew-medicalcard",
+        payload,
+        {
+          validateStatus: () => true,
+        }
+      );
+
+      if (res.data?.success) {
+        if (paymentType === "Visa" && res.data?.data?.sessionUrl) {
+          window.location.href = res.data.data.sessionUrl;
+          return;
+        }
+        toast.success("تم تجديد الاشتراك بنجاح");
+        // إعادة تحميل بيانات الكارت
+        await fetchCard();
+      } else {
+        toast.error(res?.data?.message || "فشل تجديد الاشتراك");
+      }
+    } catch (err) {
+      toast.error(
+        err?.response?.data?.message ||
+          err?.message ||
+          "حدث خطأ أثناء تجديد الاشتراك"
+      );
     }
   };
 
@@ -101,8 +170,44 @@ const FamilyCardStatus = () => {
           {loading ? (
             <p className="text-gray-600">جاري تحميل البيانات...</p>
           ) : error ? (
-            <div className="bg-red-50 text-red-700 px-4 py-3 rounded-2xl">
-              {error}
+            <div className="space-y-4">
+              <div className="bg-red-50 text-red-700 px-4 py-3 rounded-2xl">
+                {error}
+              </div>
+              {/* زر التجديد عند 401 expired */}
+              {errorCode === 401 &&
+                cardNumber &&
+                (error?.toLowerCase().includes("expired") ||
+                  error?.toLowerCase().includes("منتهي") ||
+                  error?.toLowerCase().includes("انتهت") ||
+                  error?.toLowerCase().includes("انتهاء") ||
+                  error?.toLowerCase().includes("تجديد")) && (
+                  <div className="flex gap-3 justify-center">
+                    <button
+                      onClick={() => handleRenew("Cash")}
+                      className="px-6 py-3 bg-second text-white rounded-2xl font-semibold hover:bg-primary transition"
+                    >
+                      تجديد نقداً
+                    </button>
+                    <button
+                      onClick={() => handleRenew("Visa")}
+                      className="px-6 py-3 bg-primary text-white rounded-2xl font-semibold hover:bg-second transition"
+                    >
+                      تجديد بفيزا
+                    </button>
+                  </div>
+                )}
+              {/* زر دفع فيزا عند 400 - الملف مش متفعل */}
+              {errorCode === 400 && cardNumber && (
+                <div className="flex gap-3 justify-center">
+                  <button
+                    onClick={() => handleRenew("Visa")}
+                    className="px-6 py-3 bg-primary text-white rounded-2xl font-semibold hover:bg-second transition"
+                  >
+                    دفع بفيزا لتفعيل الاشتراك
+                  </button>
+                </div>
+              )}
             </div>
           ) : card ? (
             <>

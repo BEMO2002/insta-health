@@ -27,6 +27,8 @@ const SubscriptionFamilyPlans = () => {
     card: null,
     loading: false,
     error: "",
+    errorCode: null,
+    cardNumber: null,
   });
   const [addMemberModalState, setAddMemberModalState] = useState({
     isOpen: false,
@@ -84,7 +86,14 @@ const SubscriptionFamilyPlans = () => {
   };
 
   const openCardModal = async () => {
-    setCardModalState({ isOpen: true, card: null, loading: true, error: "" });
+    setCardModalState({
+      isOpen: true,
+      card: null,
+      loading: true,
+      error: "",
+      errorCode: null,
+      cardNumber: null,
+    });
     try {
       const res = await baseApi.get("/HealthCards/user-card", {
         validateStatus: () => true,
@@ -95,27 +104,110 @@ const SubscriptionFamilyPlans = () => {
           card: res.data.data || null,
           loading: false,
           error: "",
+          errorCode: null,
+          cardNumber: res.data.data?.cardNumber || null,
         });
       } else {
+        // الأولوية لـ statusCode من res.data.statusCode
+        const statusCode = res.data?.statusCode || res.status;
+        const message = res?.data?.message || "تعذر تحميل بيانات الكارت.";
+        // محاولة الحصول على cardNumber من البيانات المرجعة
+        const cardNumber =
+          res.data?.data?.cardNumber || res.data?.cardNumber || null;
+
+        console.log("Error response:", {
+          statusCode,
+          message,
+          cardNumber,
+          fullData: res.data,
+        });
+
         setCardModalState({
           isOpen: true,
           card: null,
           loading: false,
-          error: res?.data?.message || "تعذر تحميل بيانات الكارت.",
+          error: message,
+          errorCode: statusCode,
+          cardNumber: cardNumber,
         });
       }
     } catch (err) {
+      const statusCode =
+        err?.response?.status || err?.response?.data?.statusCode;
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "تعذر تحميل بيانات الكارت.";
+      // محاولة الحصول على cardNumber من البيانات المرجعة
+      const cardNumber =
+        err?.response?.data?.data?.cardNumber ||
+        err?.response?.data?.cardNumber ||
+        null;
+
       setCardModalState({
         isOpen: true,
         card: null,
         loading: false,
-        error: err?.message || "تعذر تحميل بيانات الكارت.",
+        error: message,
+        errorCode: statusCode,
+        cardNumber: cardNumber,
       });
     }
   };
 
   const closeCardModal = () => {
-    setCardModalState({ isOpen: false, card: null, loading: false, error: "" });
+    setCardModalState({
+      isOpen: false,
+      card: null,
+      loading: false,
+      error: "",
+      errorCode: null,
+      cardNumber: null,
+    });
+  };
+
+  const handleRenew = async (paymentType) => {
+    if (!cardModalState.cardNumber) {
+      toast.error("رقم الكارت غير متوفر");
+      return;
+    }
+
+    try {
+      const payload = {
+        cardNumber: cardModalState.cardNumber,
+        paymentType: paymentType,
+      };
+
+      if (paymentType === "Visa") {
+        payload.clientUrl = `${window.location.origin}/family-card/status`;
+      }
+
+      const res = await baseApi.post(
+        "/Subscriptions/renew-healthcard",
+        payload,
+        {
+          validateStatus: () => true,
+        }
+      );
+
+      if (res.data?.success) {
+        if (paymentType === "Visa" && res.data?.data?.sessionUrl) {
+          window.location.href = res.data.data.sessionUrl;
+          return;
+        }
+        toast.success("تم تجديد الاشتراك بنجاح");
+        // إعادة تحميل بيانات الكارت
+        await openCardModal();
+      } else {
+        toast.error(res?.data?.message || "فشل تجديد الاشتراك");
+      }
+    } catch (err) {
+      toast.error(
+        err?.response?.data?.message ||
+          err?.message ||
+          "حدث خطأ أثناء تجديد الاشتراك"
+      );
+    }
   };
 
   const statusClasses = (status) => {
@@ -406,8 +498,55 @@ const SubscriptionFamilyPlans = () => {
               <FiLoader className="w-8 h-8 text-primary animate-spin" />
             </div>
           ) : cardModalState.error ? (
-            <div className="bg-red-50 text-red-700 px-6 py-4 rounded-2xl text-right">
-              <p>{cardModalState.error}</p>
+            <div className="space-y-4">
+              <div className="bg-red-50 text-red-700 px-6 py-4 rounded-2xl text-right">
+                <p>{cardModalState.error}</p>
+              </div>
+              {/* زر التجديد عند 401 expired */}
+              {(() => {
+                const shouldShow =
+                  cardModalState.errorCode === 401 &&
+                  cardModalState.cardNumber &&
+                  (cardModalState.error?.toLowerCase().includes("expired") ||
+                    cardModalState.error?.toLowerCase().includes("منتهي") ||
+                    cardModalState.error?.toLowerCase().includes("انتهت") ||
+                    cardModalState.error?.toLowerCase().includes("انتهاء") ||
+                    cardModalState.error?.toLowerCase().includes("تجديد"));
+                console.log("Should show renew buttons:", {
+                  errorCode: cardModalState.errorCode,
+                  cardNumber: cardModalState.cardNumber,
+                  error: cardModalState.error,
+                  shouldShow,
+                });
+                return shouldShow;
+              })() && (
+                <div className="flex gap-3 justify-center">
+                  <button
+                    onClick={() => handleRenew("Cash")}
+                    className="px-6 py-3 bg-second text-white rounded-2xl font-semibold hover:bg-primary transition"
+                  >
+                    تجديد نقداً
+                  </button>
+                  <button
+                    onClick={() => handleRenew("Visa")}
+                    className="px-6 py-3 bg-primary text-white rounded-2xl font-semibold hover:bg-second transition"
+                  >
+                    تجديد بفيزا
+                  </button>
+                </div>
+              )}
+              {/* زر دفع فيزا عند 400 - الملف مش متفعل */}
+              {cardModalState.errorCode === 400 &&
+                cardModalState.cardNumber && (
+                  <div className="flex gap-3 justify-center">
+                    <button
+                      onClick={() => handleRenew("Visa")}
+                      className="px-6 py-3 bg-primary text-white rounded-2xl font-semibold hover:bg-second transition"
+                    >
+                      دفع بفيزا لتفعيل الاشتراك
+                    </button>
+                  </div>
+                )}
             </div>
           ) : cardModalState.card ? (
             <div className="space-y-6">
