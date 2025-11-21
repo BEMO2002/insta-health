@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState, useContext } from "react";
-import { toast } from "react-toastify";
 import baseApi from "../api/baseApi";
 import AddRecordModal from "../Components/AddRecordModal";
 import RecordsViewModal from "../Components/RecordsViewModal";
@@ -107,45 +106,8 @@ const toArabicValue = (key, val) => {
   }
 };
 
-const translateMessage = (msg) => {
-  const key = String(msg || "")
-    .trim()
-    .toLowerCase();
-  const map = {
-    "your medical file service hasn't been activated yet":
-      "خدمة الملف الطبي لم يتم تفعيلها بعد  برجاء الانتظار والمتابعه سوف يتم التواصل معك قريبا.....وشكرا لتفهمك",
-    "bad request": "طلب غير صالح",
-    unauthorized: "غير مصرح",
-    forbidden: "غير مسموح",
-    "not found": "غير موجود",
-    "internal server error": "خطأ داخلي في الخادم",
-  };
-  return map[key] || msg || "حدث خطأ غير متوقع";
-};
-
-const initialForm = {
-  userName: "",
-  userPhone: "",
-  userEmail: "",
-  nationalId: "",
-  jobTitle: "",
-  paymentType: "Cash",
-  userTall: "",
-  userWeight: "",
-  bloodType: "A+",
-  userSight: "Good",
-  userHearing: "Good",
-  bloodPressure: "None",
-  diabetes: "None",
-  otherDiseases: "",
-};
-
 const MedicalFiles = () => {
   const { isAuthenticated, user } = useContext(AuthContext);
-  const [showInstructions, setShowInstructions] = useState(true);
-  const [form, setForm] = useState(initialForm);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [userFile, setUserFile] = useState(null);
   const [types, setTypes] = useState([]);
   const [addModal, setAddModal] = useState({ open: false, typeId: null });
@@ -157,12 +119,6 @@ const MedicalFiles = () => {
       .toLowerCase();
     return s === "paid";
   }, [userFile]);
-
-  const canSubmit = useMemo(() => {
-    return (
-      form.userName && form.userPhone && form.userEmail && form.paymentType
-    );
-  }, [form]);
 
   useEffect(() => {
     const fetchTypes = async () => {
@@ -182,7 +138,6 @@ const MedicalFiles = () => {
   useEffect(() => {
     // Reset all state when user changes
     setUserFile(null);
-    setSubmitted(false);
     setServerMessage("");
 
     if (!isAuthenticated) {
@@ -199,11 +154,10 @@ const MedicalFiles = () => {
         validateStatus: () => true,
       });
 
-      // Handle explicit Not Found first => new user, show form
+      // Handle explicit Not Found first => new user
       if (res.status === 404 || res.data?.statusCode === 404) {
         setUserFile(null);
         setServerMessage("");
-        setSubmitted(false);
         return;
       }
 
@@ -212,78 +166,26 @@ const MedicalFiles = () => {
         const data = res.data.data;
         setUserFile(data);
         setServerMessage("");
-        setSubmitted(!!data);
         return;
       }
 
-      // Not activated or other backend message => hide form, show message
+      // Not activated or other backend message => show message
+      const statusCode = res.data?.statusCode || res.status;
       const msg = res?.data?.message || "الخدمة غير مفعلة بعد";
-      setUserFile(null);
-      setServerMessage(translateMessage(msg));
-      setSubmitted(true);
+
+      // If statusCode is 400, we might have partial data
+      if (statusCode === 400 && res.data?.data) {
+        setUserFile(res.data.data);
+      } else {
+        setUserFile(null);
+      }
+      setServerMessage(msg);
     } catch (e) {
-      // On network/unknown error, keep form visible for new users
+      setUserFile(null);
       const msg =
         e?.response?.data?.message || e?.message || "تعذر جلب البيانات";
-      setUserFile(null);
-      setServerMessage(translateMessage(msg));
-      setSubmitted(false);
+      setServerMessage(msg);
       console.error(e);
-    }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((p) => ({ ...p, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!canSubmit || submitting) return;
-    setSubmitting(true);
-    try {
-      // Build clean payload: remove empty strings to avoid DTO errors
-      const clean = Object.fromEntries(
-        Object.entries(form).filter(([, v]) => v !== "")
-      );
-      const payload = {
-        ...clean,
-        ...(clean.paymentType === "Visa"
-          ? { clientUrl: `${window.location.origin}/medical-file/success` }
-          : {}),
-      };
-      const res = await baseApi.post("/MedicalFiles", payload, {
-        validateStatus: () => true,
-      });
-
-      if (res.data?.success) {
-        if (form.paymentType === "Visa" && res.data?.data?.sessionUrl) {
-          window.location.href = res.data.data.sessionUrl;
-          return;
-        }
-        toast.success(
-          res.data?.message || "تم إرسال البيانات وسيتم التواصل معك"
-        );
-        setSubmitted(true);
-        await fetchUserFile();
-        return;
-      }
-
-      const msg = res?.data?.message || "تعذر إرسال البيانات";
-      setServerMessage(translateMessage(msg));
-      toast.warning(msg);
-      console.error("MedicalFiles submit status:", res.status, res.data);
-      setSubmitted(true);
-      return;
-    } catch (err) {
-      console.error(err);
-      const msg =
-        err?.response?.data?.message || err?.message || "تعذر إرسال البيانات";
-      setServerMessage(translateMessage(msg));
-      toast.error(msg);
-      setSubmitted(true);
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -292,149 +194,7 @@ const MedicalFiles = () => {
       <div className="container mx-auto px-4">
         <h1 className="text-3xl font-bold text-primary mb-6">الملف الطبي</h1>
 
-        {showInstructions && !submitted && (
-          <div className="bg-white rounded-xl shadow p-5 mb-6">
-            <h3 className="text-xl font-bold text-second mb-2">تعليمات هامة</h3>
-            <p className="text-gray-600 mb-3">
-              برجاء ملء بيانات الكارت الذكي بعناية لضمان الدقة. اختر وسيلة الدفع
-              المناسبة، وفي حالة اختيار فيزا سيتم تحويلك لبوابة الدفع.
-            </p>
-            <button
-              onClick={() => setShowInstructions(false)}
-              className="bg-second text-white px-4 py-2 rounded"
-            >
-              فهمت
-            </button>
-          </div>
-        )}
-
-        {!submitted && (
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white rounded-xl shadow p-6 mb-8 grid grid-cols-1 md:grid-cols-2 gap-4"
-          >
-            {serverMessage && (
-              <div className="md:col-span-2 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded p-3">
-                {serverMessage}
-              </div>
-            )}
-            <Input
-              label="الاسم"
-              name="userName"
-              value={form.userName}
-              onChange={handleChange}
-              required
-            />
-            <Input
-              label="الهاتف"
-              name="userPhone"
-              value={form.userPhone}
-              onChange={handleChange}
-              required
-            />
-            <Input
-              label="البريد الإلكتروني"
-              name="userEmail"
-              value={form.userEmail}
-              onChange={handleChange}
-              required
-            />
-            <Input
-              label="الرقم القومي"
-              name="nationalId"
-              value={form.nationalId}
-              onChange={handleChange}
-            />
-            <Input
-              label="الوظيفة"
-              name="jobTitle"
-              value={form.jobTitle}
-              onChange={handleChange}
-            />
-
-            <Select
-              label="طريقة الدفع"
-              name="paymentType"
-              value={form.paymentType}
-              onChange={handleChange}
-              options={enums.paymentType}
-            />
-
-            <Input
-              label="الطول (سم)"
-              name="userTall"
-              value={form.userTall}
-              onChange={handleChange}
-            />
-            <Input
-              label="الوزن (كجم)"
-              name="userWeight"
-              value={form.userWeight}
-              onChange={handleChange}
-            />
-            <Select
-              label="فصيلة الدم"
-              name="bloodType"
-              value={form.bloodType}
-              onChange={handleChange}
-              options={enums.bloodTypes}
-            />
-
-            <Select
-              label="النظر"
-              name="userSight"
-              value={form.userSight}
-              onChange={handleChange}
-              options={enums.sight}
-            />
-            <Select
-              label="السمع"
-              name="userHearing"
-              value={form.userHearing}
-              onChange={handleChange}
-              options={enums.hearing}
-            />
-            <Select
-              label="ضغط الدم"
-              name="bloodPressure"
-              value={form.bloodPressure}
-              onChange={handleChange}
-              options={enums.disease}
-            />
-            <Select
-              label="السكر"
-              name="diabetes"
-              value={form.diabetes}
-              onChange={handleChange}
-              options={enums.disease}
-            />
-
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                أمراض أخرى
-              </label>
-              <textarea
-                name="otherDiseases"
-                value={form.otherDiseases}
-                onChange={handleChange}
-                rows={3}
-                className="w-full border border-gray-300 rounded p-3"
-              />
-            </div>
-
-            <div className="md:col-span-2 flex justify-end gap-3">
-              <button
-                type="submit"
-                disabled={!canSubmit || submitting}
-                className="bg-second text-white px-6 py-2 rounded disabled:opacity-50"
-              >
-                {submitting ? "جاري الإرسال..." : "إرسال"}
-              </button>
-            </div>
-          </form>
-        )}
-
-        {submitted && (
+        {userFile && (
           <>
             <div className="bg-white rounded-xl shadow p-6 mb-8">
               <h3 className="text-xl font-bold mb-4">بياناتك</h3>
@@ -443,29 +203,25 @@ const MedicalFiles = () => {
                   {serverMessage}
                 </div>
               )}
-              {userFile ? (
-                <table className="min-w-full text-right">
-                  <tbody className="text-sm text-gray-700">
-                    {Object.entries(userFile)
-                      .filter(([k]) => !hiddenKeys.has(k))
-                      .map(([k, v]) => (
-                        <tr
-                          key={k}
-                          className="border-b border-gray-300 last:border-b-0  "
-                        >
-                          <td className="py-2 font-medium">
-                            {fieldLabels[k] ?? k}
-                          </td>
-                          <td className="py-2">
-                            {String(toArabicValue(k, v ?? "-"))}
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-              ) : (
-                <p className="text-gray-600">لا توجد بيانات حالياً</p>
-              )}
+              <table className="min-w-full text-right">
+                <tbody className="text-sm text-gray-700">
+                  {Object.entries(userFile)
+                    .filter(([k]) => !hiddenKeys.has(k))
+                    .map(([k, v]) => (
+                      <tr
+                        key={k}
+                        className="border-b border-gray-300 last:border-b-0"
+                      >
+                        <td className="py-2 font-medium">
+                          {fieldLabels[k] ?? k}
+                        </td>
+                        <td className="py-2">
+                          {String(toArabicValue(k, v ?? "-"))}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
             </div>
 
             {isActivated && (
@@ -473,12 +229,10 @@ const MedicalFiles = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-xl font-bold">أنواع السجلات الطبية</h3>
                   <button
-                    onClick={() =>
-                      setViewModal({ open: true, typeId: null })
-                    }
+                    onClick={() => setViewModal({ open: true, typeId: null })}
                     className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 flex items-center gap-2"
                   >
-             عرض الجميع
+                    عرض الجميع
                   </button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -520,6 +274,32 @@ const MedicalFiles = () => {
             )}
           </>
         )}
+
+        {!userFile && isAuthenticated && serverMessage && (
+          <div className="bg-white rounded-xl shadow p-6 mb-8">
+            <h3 className="text-xl font-bold mb-4">بياناتك</h3>
+            <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded p-3 mb-4">
+              {serverMessage}
+            </div>
+            <p className="text-gray-600 text-center">لا توجد بيانات حالياً</p>
+          </div>
+        )}
+
+        {!userFile && isAuthenticated && !serverMessage && (
+          <div className="bg-white rounded-xl shadow p-6 text-center">
+            <p className="text-gray-600">
+              لا توجد بيانات للملف الطبي. يرجى الاشتراك في إحدى الباقات أولاً.
+            </p>
+          </div>
+        )}
+
+        {!isAuthenticated && (
+          <div className="bg-white rounded-xl shadow p-6 text-center">
+            <p className="text-gray-600">
+              يرجى تسجيل الدخول لعرض بيانات الملف الطبي.
+            </p>
+          </div>
+        )}
       </div>
       {/* Modals */}
       <AddRecordModal
@@ -544,34 +324,5 @@ const MedicalFiles = () => {
     </section>
   );
 };
-
-const Input = ({ label, ...props }) => (
-  <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">
-      {label}
-    </label>
-    <input {...props} className="w-full border border-gray-300 rounded p-3" />
-  </div>
-);
-
-const Select = ({ label, name, value, onChange, options }) => (
-  <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">
-      {label}
-    </label>
-    <select
-      name={name}
-      value={value}
-      onChange={onChange}
-      className="w-full border border-gray-300 rounded p-3 bg-white"
-    >
-      {options.map((o) => (
-        <option key={o.value} value={o.value}>
-          {o.label}
-        </option>
-      ))}
-    </select>
-  </div>
-);
 
 export default MedicalFiles;
