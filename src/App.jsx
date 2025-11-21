@@ -28,6 +28,7 @@ import PackageReservationDetails from "./MedicalTourism/PackageReservationDetail
 import MedicalPrescriptions from "./MedicalPrescriptions/MedicalPrescriptions";
 import MedicalPrescriptionsDetails from "./MedicalPrescriptions/MedicalPrescriptionsDetails";
 import MedicalConsultationReservationsDetails from "./MedicalTourism/MedicalConsultationReservationsDetails";
+import MainAreYouProvider from "./AreYouProvider/MainAreYouProvider";
 function App() {
   return (
     <BrowserRouter>
@@ -80,6 +81,7 @@ function App() {
             path="/medical-prescriptions/:id"
             element={<MedicalPrescriptionsDetails />}
           />
+          <Route path="/are-you-provider" element={<MainAreYouProvider />} />
         </Route>
 
         <Route path="/login" element={<Login />} />

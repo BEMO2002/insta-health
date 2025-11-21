@@ -37,7 +37,7 @@ const Footer = () => {
             </h3>
 
             {/* App Download Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start ">
               <a
                 href="#"
                 className="inline-block"
