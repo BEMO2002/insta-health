@@ -526,7 +526,13 @@ const SubscriptionFamilyPlans = () => {
             </div>
           ) : cardModalState.error ? (
             <div className="space-y-4">
-              <div className="bg-red-50 text-red-700 px-6 py-4 rounded-2xl text-right">
+              <div
+                className={`px-6 py-4 rounded-2xl text-right ${
+                  cardModalState.errorCode === 400
+                    ? "bg-yellow-50 text-yellow-700"
+                    : "bg-red-50 text-red-700"
+                }`}
+              >
                 <p>{cardModalState.error}</p>
               </div>
               {/* زر التجديد عند 401 expired */}

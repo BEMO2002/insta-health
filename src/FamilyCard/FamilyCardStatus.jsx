@@ -173,7 +173,13 @@ const FamilyCardStatus = () => {
             <p className="text-gray-600">جاري تحميل البيانات...</p>
           ) : error ? (
             <div className="space-y-4">
-              <div className="bg-red-50 text-red-700 px-4 py-3 rounded-2xl">
+              <div
+                className={`px-4 py-3 rounded-2xl ${
+                  errorCode === 400
+                    ? "bg-yellow-50 text-yellow-700"
+                    : "bg-red-50 text-red-700"
+                }`}
+              >
                 {error}
               </div>
               {/* زر التجديد عند 401 expired */}
