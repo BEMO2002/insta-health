@@ -367,7 +367,7 @@ const SubscriptionFamilyPlans = () => {
       <Modal
         isOpen={modalState.isOpen}
         onRequestClose={closeModal}
-        className="max-w-6xl mx-auto mt-20 bg-white rounded-3xl outline-none shadow-2xl overflow-auto max-h-[85vh]"
+        className="max-w-6xl w-[1000px] mx-auto mt-20 bg-white rounded-3xl outline-none shadow-2xl overflow-auto max-h-[85vh]"
         overlayClassName="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center px-4"
         closeTimeoutMS={0}
       >
@@ -385,7 +385,7 @@ const SubscriptionFamilyPlans = () => {
       <Modal
         isOpen={cardModalState.isOpen}
         onRequestClose={closeCardModal}
-        className="max-w-7xl mx-auto mt-20 bg-white rounded-3xl outline-none shadow-2xl overflow-auto max-h-[85vh]"
+        className="max-w-6xl w-[1000px] mx-auto mt-20 bg-white rounded-3xl outline-none shadow-2xl overflow-auto max-h-[85vh]"
         overlayClassName="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center px-4"
         closeTimeoutMS={0}
       >
