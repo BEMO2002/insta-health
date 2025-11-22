@@ -32,9 +32,11 @@ import MainAreYouProvider from "./AreYouProvider/MainAreYouProvider";
 import MainFamilyCard from "./FamilyCard/MainFamilyCard";
 import FamilyCardStatus from "./FamilyCard/FamilyCardStatus";
 import MainFilesAndrecord from "./MedicalFileAndRecored/MainFilesAndrecord";
+import ScrollToTop from "./Components/ScrollToTop";
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <ToastContainer />
       <Routes>
         <Route path="/" element={<Layout />}>
