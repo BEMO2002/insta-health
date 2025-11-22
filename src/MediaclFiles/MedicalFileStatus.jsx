@@ -284,6 +284,36 @@ const MedicalFileStatus = () => {
                         {file.paymentStatus || file.PaymentStatus || "-"}
                       </td>
                     </tr>
+                    {/* <tr className="border-b border-gray-100">
+                      <td className="py-3 px-4 font-semibold">تاريخ الإنشاء</td>
+                      <td className="py-3 px-4">
+                        {file.createdAt
+                          ? new Date(file.createdAt).toLocaleDateString(
+                              "ar-EG"
+                            ) : "-"}
+                      </td>
+                    </tr>
+                    <tr className="border-b border-gray-100">
+                      <td className="py-3 px-4 font-semibold">تاريخ التحديث</td>
+                      <td className="py-3 px-4">
+                        {file.updatedAt
+                          ? new Date(file.updatedAt).toLocaleDateString(
+                              "ar-EG"
+                            ) : "-"}
+                      </td>
+                    </tr> */}
+                    {file.expirationDate && (
+                      <tr className="border-b border-gray-100">
+                        <td className="py-3 px-4 font-semibold">
+                          تاريخ الانتهاء
+                        </td>
+                        <td className="py-3 px-4">
+                          {new Date(file.expirationDate).toLocaleDateString(
+                            "ar-EG"
+                          )}
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>

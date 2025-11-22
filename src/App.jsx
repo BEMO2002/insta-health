@@ -31,6 +31,7 @@ import MedicalConsultationReservationsDetails from "./MedicalTourism/MedicalCons
 import MainAreYouProvider from "./AreYouProvider/MainAreYouProvider";
 import MainFamilyCard from "./FamilyCard/MainFamilyCard";
 import FamilyCardStatus from "./FamilyCard/FamilyCardStatus";
+import MainFilesAndrecord from "./MedicalFileAndRecored/MainFilesAndrecord";
 function App() {
   return (
     <BrowserRouter>
@@ -86,6 +87,7 @@ function App() {
           <Route path="/are-you-provider" element={<MainAreYouProvider />} />
           <Route path="/family-card" element={<MainFamilyCard />} />
           <Route path="/family-card/status" element={<FamilyCardStatus />} />
+          <Route path="/medical-file-record" element={<MainFilesAndrecord />} />
         </Route>
 
         <Route path="/login" element={<Login />} />

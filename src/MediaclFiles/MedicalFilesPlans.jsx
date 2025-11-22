@@ -4,7 +4,8 @@ import { FiLoader, FiAlertCircle, FiX, FiFileText } from "react-icons/fi";
 import { toast } from "react-toastify";
 import baseApi from "../api/baseApi";
 import MedicalFileForm from "./MedicalFileForm";
-
+import { Link } from "react-router-dom";
+import { IoReturnUpBackOutline } from "react-icons/io5";
 Modal.setAppElement("#root");
 
 const MedicalFilesPlans = () => {
@@ -308,7 +309,7 @@ const MedicalFilesPlans = () => {
           ))}
         </div>
 
-        <div className="mt-12 text-center">
+        <div className="mt-12 text-center flex justify-center gap-4">
           <button
             onClick={openFileModal}
             className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-8 py-3 rounded-2xl hover:bg-second transition-all duration-300"
@@ -316,6 +317,13 @@ const MedicalFilesPlans = () => {
             <FiFileText className="w-5 h-5" />
             <span>عرض بيانات الملف</span>
           </button>
+          <Link
+            to="/medical-file-record"
+            className="inline-flex items-center gap-2 bg-transparent text-primary border border-primary font-semibold px-8 py-3 rounded-2xl hover:bg-second/5 transition-all duration-300"
+          >
+            <IoReturnUpBackOutline className="w-6 h-6" />
+            <span>الذهاب للملف الطبي</span>
+          </Link>
         </div>
       </div>
 
@@ -556,6 +564,18 @@ const MedicalFilesPlans = () => {
                       </p>
                     </div>
                   )}
+                  <div className="">
+                    <span className="text-sm text-gray-600 font-semibold">
+                      تاريخ الإنتهاء:
+                    </span>
+                    <p className="text-gray-900 bg-red-200 p-1 w-fit rounded-md">
+                      {fileModalState.file.expirationDate
+                        ? new Date(
+                            fileModalState.file.expirationDate
+                          ).toLocaleDateString("ar-EG")
+                        : "-"}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

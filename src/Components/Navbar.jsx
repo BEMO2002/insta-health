@@ -508,6 +508,14 @@ const Navbar = () => {
                   </>
                 ) : (
                   <>
+                    <Link
+                      to="/are-you-provider"
+                      className="bg-gradient-to-r from-second to-primary text-white px-4 py-2 rounded-md text-md font-medium flex items-center justify-center hover:bg-primary duration-300"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <FiUser className="mr-2" size={20} />
+                      هل انت مقدم خدمة
+                    </Link>
                     <button
                       onClick={handleLogout}
                       className="text-red-700  border-2 border-red-700 rounded-md px-4 py-2 text-md font-medium flex items-center justify-center hover:bg-red-700 duration-300 hover:text-white"

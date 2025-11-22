@@ -1,5 +1,5 @@
 import React from "react";
-import MedicalFiles from "./MedicalFiles";
+// import MedicalFiles from "./MedicalFiles";
 import SlugMedicalFiles from "./SlugMedicalFiles";
 import MedicalFilesPlans from "./MedicalFilesPlans";
 
@@ -8,7 +8,7 @@ const MainMediaclFiles = () => {
     <>
       <SlugMedicalFiles slugProp="almlf-altby" />
       <MedicalFilesPlans />
-      <MedicalFiles />
+      {/* <MedicalFiles /> */}
     </>
   );
 };

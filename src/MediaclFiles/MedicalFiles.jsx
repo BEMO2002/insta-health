@@ -74,6 +74,8 @@ const fieldLabels = {
   otherDiseases: "أمراض أخرى",
   createdAt: "تاريخ الإنشاء",
   updatedAt: "تاريخ التحديث",
+  expirationDate: "تاريخ الانتهاء",
+  subscriptionPlanId: "رقم خطة الاشتراك",
 };
 
 // Helpers to localize enum values in the summary table
