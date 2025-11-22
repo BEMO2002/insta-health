@@ -3,6 +3,7 @@ import baseApi from "../api/baseApi";
 import AddRecordModal from "../Components/AddRecordModal";
 import RecordsViewModal from "../Components/RecordsViewModal";
 import { AuthContext } from "../Context/AuthContext";
+import { toast } from "react-toastify";
 
 const enums = {
   paymentType: [
@@ -115,6 +116,8 @@ const MedicalFiles = () => {
   const [addModal, setAddModal] = useState({ open: false, typeId: null });
   const [viewModal, setViewModal] = useState({ open: false, typeId: null });
   const [serverMessage, setServerMessage] = useState("");
+  const [errorCode, setErrorCode] = useState(null);
+  const [cardNumber, setCardNumber] = useState(null);
   const isActivated = useMemo(() => {
     const s = (userFile?.paymentStatus || userFile?.PaymentStatus || "")
       .toString()
@@ -141,6 +144,8 @@ const MedicalFiles = () => {
     // Reset all state when user changes
     setUserFile(null);
     setServerMessage("");
+    setErrorCode(null);
+    setCardNumber(null);
 
     if (!isAuthenticated) {
       return;
@@ -160,6 +165,8 @@ const MedicalFiles = () => {
       if (res.status === 404 || res.data?.statusCode === 404) {
         setUserFile(null);
         setServerMessage("");
+        setErrorCode(null);
+        setCardNumber(null);
         return;
       }
 
@@ -168,12 +175,22 @@ const MedicalFiles = () => {
         const data = res.data.data;
         setUserFile(data);
         setServerMessage("");
+        const extractedCardNumber =
+          data?.cardNumber || data?.fileId || data?.id || null;
+        setErrorCode(null);
+        setCardNumber(extractedCardNumber);
         return;
       }
 
       // Not activated or other backend message => show message
       const statusCode = res.data?.statusCode || res.status;
       const msg = res?.data?.message || "الخدمة غير مفعلة بعد";
+
+      const extractedCardNumber =
+        res.data?.data?.cardNumber ||
+        res.data?.data?.fileId ||
+        res.data?.cardNumber ||
+        null;
 
       // If statusCode is 400, we might have partial data
       if (statusCode === 400 && res.data?.data) {
@@ -182,13 +199,116 @@ const MedicalFiles = () => {
         setUserFile(null);
       }
       setServerMessage(msg);
+      setErrorCode(statusCode || null);
+      setCardNumber(extractedCardNumber);
     } catch (e) {
       setUserFile(null);
       const msg =
         e?.response?.data?.message || e?.message || "تعذر جلب البيانات";
       setServerMessage(msg);
+      const statusCode =
+        e?.response?.data?.statusCode || e?.response?.status || null;
+      const extractedCardNumber =
+        e?.response?.data?.data?.cardNumber ||
+        e?.response?.data?.data?.fileId ||
+        e?.response?.data?.cardNumber ||
+        null;
+      setErrorCode(statusCode);
+      setCardNumber(extractedCardNumber);
       console.error(e);
     }
+  };
+
+  const handleRenew = async (paymentType) => {
+    if (!cardNumber) {
+      toast.error("رقم الملف غير متوفر");
+      return;
+    }
+
+    try {
+      const payload = {
+        cardNumber: cardNumber,
+        paymentType: paymentType,
+      };
+
+      if (paymentType === "Visa") {
+        payload.clientUrl = `${window.location.origin}/medical-file/status`;
+      }
+
+      const res = await baseApi.post(
+        "/Subscriptions/renew-medicalfile",
+        payload,
+        {
+          validateStatus: () => true,
+        }
+      );
+
+      if (res.data?.success) {
+        if (paymentType === "Visa" && res.data?.data?.sessionUrl) {
+          window.location.href = res.data.data.sessionUrl;
+          return;
+        }
+        const successMsg =
+          "تم تنفيذ طلبك بنجاح وسيتم التواصل معك قريباً من أحد ممثلي الخدمة لإتمام الدفع والتجديد";
+        toast.success(successMsg);
+        await fetchUserFile();
+      } else {
+        toast.error(res?.data?.message || "فشل تجديد الاشتراك");
+      }
+    } catch (e) {
+      toast.error(
+        e?.response?.data?.message ||
+          e?.message ||
+          "حدث خطأ أثناء تجديد الاشتراك"
+      );
+    }
+  };
+
+  const renderRenewButtons = () => {
+    if (!cardNumber) return null;
+
+    const msg = (serverMessage || "").toLowerCase();
+
+    if (
+      errorCode === 401 &&
+      (msg.includes("expired") ||
+        msg.includes("منتهي") ||
+        msg.includes("انتهت") ||
+        msg.includes("انتهاء") ||
+        msg.includes("تجديد"))
+    ) {
+      return (
+        <div className="flex gap-3 justify-center mt-4">
+          <button
+            onClick={() => handleRenew("Cash")}
+            className="px-6 py-3 bg-second text-white rounded-2xl font-semibold hover:bg-primary transition"
+          >
+            تجديد نقداً
+          </button>
+          <button
+            onClick={() => handleRenew("Visa")}
+            className="px-6 py-3 bg-primary text-white rounded-2xl font-semibold hover:bg-second transition"
+          >
+            تجديد بفيزا
+          </button>
+        </div>
+      );
+    }
+
+    if (errorCode === 400) {
+      return (
+        <div className="flex gap-3 justify-center mt-4">
+          <button
+            onClick={() => handleRenew("Visa")}
+            className="px-6 py-3 bg-primary text-white rounded-2xl font-semibold hover:bg-second transition"
+          >
+            دفع بفيزا لتفعيل الاشتراك
+          </button>
+        </div>
+      );
+    }
+
+    return null;
   };
 
   return (
@@ -205,6 +325,7 @@ const MedicalFiles = () => {
                   {serverMessage}
                 </div>
               )}
+              {renderRenewButtons()}
               <table className="min-w-full text-right">
                 <tbody className="text-sm text-gray-700">
                   {Object.entries(userFile)
@@ -284,6 +405,7 @@ const MedicalFiles = () => {
               {serverMessage}
             </div>
             <p className="text-gray-600 text-center">لا توجد بيانات حالياً</p>
+            {renderRenewButtons()}
           </div>
         )}
 
