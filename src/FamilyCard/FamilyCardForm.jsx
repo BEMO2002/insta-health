@@ -263,7 +263,7 @@ const FamilyCardForm = ({ plan, subscriptionPlanId, onClose, onSuccess }) => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-8 ">
         <div className="grid md:grid-cols-2 gap-5">
           {renderInput({
             label: "اسم مقدم الطلب",

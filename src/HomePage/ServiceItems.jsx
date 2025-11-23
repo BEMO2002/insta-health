@@ -48,6 +48,16 @@ const AddToCartButton = ({ service, onAdd }) => {
 
 const ServiceItemCard = ({ service, onAdd }) => {
   const navigate = useNavigate();
+  const hasDiscount =
+    service?.discountPrice != null &&
+    service?.price != null &&
+    Number(service.discountPrice) < Number(service.price);
+
+  const discountPercent = hasDiscount
+    ? Math.round(
+        100 - (Number(service.discountPrice) / Number(service.price)) * 100
+      )
+    : 0;
 
   return (
     <div className="bg-white mb-5  rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group h-[400px] flex flex-col">
@@ -64,6 +74,11 @@ const ServiceItemCard = ({ service, onAdd }) => {
         {service.isBestSeller && (
           <div className="absolute top-3 right-3 bg-second text-white px-2 py-1 rounded-full text-xs font-semibold">
             الأكثر مبيعاً
+          </div>
+        )}
+        {hasDiscount && (
+          <div className="absolute top-3 left-3 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-extrabold shadow">
+            خصم {discountPercent}%
           </div>
         )}
       </div>
@@ -87,9 +102,29 @@ const ServiceItemCard = ({ service, onAdd }) => {
 
         {/* Price */}
         <div className="mt-auto flex flex-col gap-3">
-          <span className="text-xl font-bold text-primary">
-            {service.price.toFixed(2)}ج.م
-          </span>
+          {hasDiscount ? (
+            <>
+              <span className="text-xl font-extrabold text-red-600">
+                {service.discountPrice?.toFixed
+                  ? service.discountPrice.toFixed(2)
+                  : service.discountPrice}{" "}
+                ج.م
+              </span>
+              <span className="text-xs text-gray-500 line-through -mt-0.5">
+                {service.price?.toFixed
+                  ? service.price.toFixed(2)
+                  : service.price}{" "}
+                ج.م
+              </span>
+            </>
+          ) : (
+            <span className="text-xl font-bold text-primary">
+              {service.price?.toFixed
+                ? service.price.toFixed(2)
+                : service.price}{" "}
+              ج.م
+            </span>
+          )}
           <div className="flex items-center justify-between gap-2">
             <AddToCartButton service={service} onAdd={onAdd} />
             <button

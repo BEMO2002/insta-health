@@ -6,7 +6,7 @@ const CartIcon = ({ count = 0, onClick }) => {
     <button
       onClick={onClick}
       aria-label="Cart"
-      className="fixed left-4 bottom-4  shadow-xl border border-gray-300 rounded-md  bg-white  transition-all duration-200 p-3 md:p-4"
+      className="fixed z-20 left-4 bottom-4  shadow-xl border border-gray-300 rounded-md  bg-white  transition-all duration-200 p-3 md:p-4"
       style={{ backdropFilter: "blur(6px)" }}
     >
       <div className="">

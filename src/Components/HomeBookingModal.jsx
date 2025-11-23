@@ -18,22 +18,35 @@ const HomeBookingModal = ({
   subSpecialityId = null,
   subSpecialityName = null,
 }) => {
+  const normalizedSubSpecialityId =
+    subSpecialityId && typeof subSpecialityId === "object"
+      ? subSpecialityId.id
+      : subSpecialityId;
   const [formData, setFormData] = useState({
     UserName: "",
     UserPhoneNumber: "",
     UserAddress: "",
     Content: "",
     PrescriptionImage: null,
-    SubSpecialityId: subSpecialityId,
+    SubSpecialityId: normalizedSubSpecialityId,
   });
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [isHealthCardUser, setIsHealthCardUser] = useState(false);
+  const [healthCardMembers, setHealthCardMembers] = useState([]);
+  const [healthCardLoading, setHealthCardLoading] = useState(false);
+  const [selectedHealthCardName, setSelectedHealthCardName] = useState("");
+  const [healthCardMessage, setHealthCardMessage] = useState("");
 
   // Update SubSpecialityId when prop changes
   useEffect(() => {
+    const normalized =
+      subSpecialityId && typeof subSpecialityId === "object"
+        ? subSpecialityId.id
+        : subSpecialityId;
     setFormData((prev) => ({
       ...prev,
-      SubSpecialityId: subSpecialityId,
+      SubSpecialityId: normalized,
     }));
   }, [subSpecialityId]);
 
@@ -70,6 +83,38 @@ const HomeBookingModal = ({
     setImagePreview(null);
   };
 
+  const fetchHealthCard = async () => {
+    try {
+      setHealthCardLoading(true);
+      setHealthCardMessage("");
+      const res = await baseApi.get("/HealthCards/user-card");
+      if (res.data?.success && res.data?.data) {
+        const card = res.data.data;
+        const list = [];
+        if (card.userName) {
+          list.push({ key: `user-${card.id}`, name: card.userName });
+        }
+        if (Array.isArray(card.members)) {
+          card.members.forEach((m) => {
+            if (m?.memberName) {
+              list.push({ key: `member-${m.id}`, name: m.memberName });
+            }
+          });
+        }
+        setHealthCardMembers(list);
+        setHealthCardMessage("");
+      } else {
+        setHealthCardMembers([]);
+        setHealthCardMessage("انت غير مشترك يرجي الاشتراك اولا");
+      }
+    } catch {
+      setHealthCardMembers([]);
+      setHealthCardMessage("انت غير مشترك يرجي الاشتراك اولا");
+    } finally {
+      setHealthCardLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -87,19 +132,40 @@ const HomeBookingModal = ({
       return;
     }
 
+    if (
+      isHealthCardUser &&
+      healthCardMembers.length > 0 &&
+      !selectedHealthCardName
+    ) {
+      toast.error("يرجى اختيار اسم من كارت الأسرة", {
+        position: "top-center",
+        autoClose: 3000,
+        rtl: true,
+        theme: "colored",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
+      const effectiveIsHealthCardUser =
+        isHealthCardUser && healthCardMembers.length > 0;
       const submitData = new FormData();
       submitData.append("UserName", formData.UserName);
       submitData.append("UserPhoneNumber", formData.UserPhoneNumber);
       submitData.append("UserAddress", formData.UserAddress);
       submitData.append("Content", formData.Content);
       submitData.append("ServiceProviderId", providerId);
+      submitData.append("IsHealthCardUser", effectiveIsHealthCardUser);
 
       // Add SubSpecialityId if available
-      if (formData.SubSpecialityId) {
-        submitData.append("SubSpecialityId", formData.SubSpecialityId);
+      if (formData.SubSpecialityId != null && formData.SubSpecialityId !== "") {
+        const subId =
+          typeof formData.SubSpecialityId === "object"
+            ? formData.SubSpecialityId.id
+            : formData.SubSpecialityId;
+        submitData.append("SubSpecialityId", String(subId));
       }
 
       if (formData.PrescriptionImage) {
@@ -127,9 +193,12 @@ const HomeBookingModal = ({
           UserAddress: "",
           Content: "",
           PrescriptionImage: null,
-          SubSpecialityId: subSpecialityId,
+          SubSpecialityId: normalizedSubSpecialityId,
         });
         setImagePreview(null);
+        setIsHealthCardUser(false);
+        setSelectedHealthCardName("");
+        setHealthCardMembers([]);
         onClose();
       } else {
         toast.error(response.data.message || "حدث خطأ في إرسال طلب الحجز", {
@@ -198,6 +267,60 @@ const HomeBookingModal = ({
                 required
               />
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                استخدام كارت الأسرة؟
+              </label>
+              <select
+                value={isHealthCardUser ? "true" : "false"}
+                onChange={async (e) => {
+                  const value = e.target.value === "true";
+                  setIsHealthCardUser(value);
+                  setSelectedHealthCardName("");
+                  if (value && healthCardMembers.length === 0) {
+                    await fetchHealthCard();
+                  }
+                }}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-second focus:border-transparent bg-white"
+              >
+                <option value="false">لا</option>
+                <option value="true">نعم</option>
+              </select>
+            </div>
+
+            {isHealthCardUser && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  اختر اسم من كارت الأسرة
+                </label>
+                {healthCardLoading ? (
+                  <div className="flex items-center justify-center py-3 text-gray-500 text-sm">
+                    جاري تحميل بيانات كارت الأسرة...
+                  </div>
+                ) : healthCardMembers.length === 0 ? (
+                  <div className="text-sm text-red-600">
+                    {healthCardMessage || "انت غير مشترك يرجي الاشتراك اولا"}
+                  </div>
+                ) : (
+                  <select
+                    value={selectedHealthCardName}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setSelectedHealthCardName(value);
+                    }}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-second focus:border-transparent bg-white"
+                  >
+                    <option value="">اختر اسم</option>
+                    {healthCardMembers.map((m) => (
+                      <option key={m.key} value={m.name}>
+                        {m.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+            )}
 
             {/* Phone Number */}
             <div>

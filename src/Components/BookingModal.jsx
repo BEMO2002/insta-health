@@ -23,6 +23,12 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
     selectedDoctor: null,
   });
 
+  const [isHealthCardUser, setIsHealthCardUser] = useState(false);
+  const [healthCardMembers, setHealthCardMembers] = useState([]);
+  const [healthCardLoading, setHealthCardLoading] = useState(false);
+  const [selectedHealthCardName, setSelectedHealthCardName] = useState("");
+  const [healthCardMessage, setHealthCardMessage] = useState("");
+
   // API data states
   const [availableDays, setAvailableDays] = useState([]);
   const [availableSlots, setAvailableSlots] = useState([]);
@@ -120,6 +126,11 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
       setAvailableDays([]);
       setAvailableSlots([]);
       setDoctors([]);
+      setIsHealthCardUser(false);
+      setHealthCardMembers([]);
+      setHealthCardLoading(false);
+      setSelectedHealthCardName("");
+      setHealthCardMessage("");
     }
   }, [isOpen]);
 
@@ -172,6 +183,38 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
     }));
   };
 
+  const fetchHealthCard = async () => {
+    try {
+      setHealthCardLoading(true);
+      setHealthCardMessage("");
+      const res = await baseApi.get("/HealthCards/user-card");
+      if (res.data?.success && res.data?.data) {
+        const card = res.data.data;
+        const list = [];
+        if (card.userName) {
+          list.push({ key: `user-${card.id}`, name: card.userName });
+        }
+        if (Array.isArray(card.members)) {
+          card.members.forEach((m) => {
+            if (m?.memberName) {
+              list.push({ key: `member-${m.id}`, name: m.memberName });
+            }
+          });
+        }
+        setHealthCardMembers(list);
+        setHealthCardMessage("");
+      } else {
+        setHealthCardMembers([]);
+        setHealthCardMessage("انت غير مشترك يرجي الاشتراك اولا");
+      }
+    } catch {
+      setHealthCardMembers([]);
+      setHealthCardMessage("انت غير مشترك يرجي الاشتراك اولا");
+    } finally {
+      setHealthCardLoading(false);
+    }
+  };
+
   const validateForm = () => {
     if (!formData.userName.trim()) {
       toast.error("اسم المستخدم مطلوب");
@@ -185,6 +228,15 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
       toast.error("رقم الهاتف غير صحيح");
       return false;
     }
+
+    if (
+      isHealthCardUser &&
+      healthCardMembers.length > 0 &&
+      !selectedHealthCardName
+    ) {
+      toast.error("يرجى اختيار اسم من كارت الأسرة");
+      return false;
+    }
     return true;
   };
 
@@ -196,10 +248,13 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
     setLoading(true);
 
     try {
+      const effectiveIsHealthCardUser =
+        isHealthCardUser && healthCardMembers.length > 0;
       const response = await baseApi.post("/ServicesReservations", {
         appointmentId: formData.appointmentId,
         userName: formData.userName,
         userMobile: formData.userMobile,
+        IsHealthCardUser: effectiveIsHealthCardUser,
       });
 
       if (response.data.success) {
@@ -572,6 +627,60 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                       required
                     />
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      استخدام كارت الأسرة؟
+                    </label>
+                    <select
+                      value={isHealthCardUser ? "true" : "false"}
+                      onChange={async (e) => {
+                        const value = e.target.value === "true";
+                        setIsHealthCardUser(value);
+                        setSelectedHealthCardName("");
+                        if (value && healthCardMembers.length === 0) {
+                          await fetchHealthCard();
+                        }
+                      }}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white"
+                    >
+                      <option value="false">لا</option>
+                      <option value="true">نعم</option>
+                    </select>
+                  </div>
+
+                  {isHealthCardUser && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        اختر اسم من كارت الأسرة
+                      </label>
+                      {healthCardLoading ? (
+                        <div className="flex items-center justify-center py-3 text-gray-500 text-sm">
+                          جاري تحميل بيانات كارت الأسرة...
+                        </div>
+                      ) : healthCardMembers.length === 0 ? (
+                        <div className="text-sm text-red-600">
+                          {healthCardMessage || "انت غير مشترك يرجي الاشتراك اولا"}
+                        </div>
+                      ) : (
+                        <select
+                          value={selectedHealthCardName}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            setSelectedHealthCardName(value);
+                          }}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white"
+                        >
+                          <option value="">اختر اسم</option>
+                          {healthCardMembers.map((m) => (
+                            <option key={m.key} value={m.name}>
+                              {m.name}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+                  )}
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
