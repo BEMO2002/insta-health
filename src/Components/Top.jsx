@@ -36,7 +36,7 @@ export const Top = () => {
       <button
         ref={buttonRef}
         onClick={scrollToTop}
-        className={`top p-[15px] border-2 border-primary rounded-full font-bold fixed right-[10px] bottom-[20px] z-30 cursor-pointer duration-200
+        className={`top  p-[15px] border-2 border-primary rounded-full font-bold fixed right-[10px] bottom-[20px] cursor-pointer duration-200
           ${
             isOverFooter
               ? "bg-white text-baseTwo border-baseTwo"

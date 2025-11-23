@@ -1,79 +1,65 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import {
   MdOutlineKeyboardArrowRight,
   MdOutlineKeyboardArrowLeft,
 } from "react-icons/md";
+import { FiShoppingCart } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import { CartContext } from "../Context/CartContext";
 import "swiper/css";
 import baseApi from "../api/baseApi";
 
-const ServiceItemCard = ({ service }) => {
-  const renderStars = (rating) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
 
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(
-        <svg
-          key={i}
-          className="w-4 h-4 text-amber-400"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-      );
+const AddToCartButton = ({ service, onAdd }) => {
+  const [adding, setAdding] = useState(false);
+
+  const handleClick = async () => {
+    if (adding) return;
+    setAdding(true);
+    try {
+      await onAdd(service);
+    } finally {
+      setAdding(false);
     }
-
-    if (hasHalfStar) {
-      stars.push(
-        <svg
-          key="half"
-          className="w-4 h-4 text-amber-400"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <defs>
-            <linearGradient id="half">
-              <stop offset="50%" stopColor="currentColor" />
-              <stop offset="50%" stopColor="#E5E7EB" />
-            </linearGradient>
-          </defs>
-          <path
-            fill="url(#half)"
-            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-          />
-        </svg>
-      );
-    }
-
-    const emptyStars = 5 - Math.ceil(rating);
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(
-        <svg
-          key={`empty-${i}`}
-          className="w-4 h-4 text-gray-300"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-      );
-    }
-
-    return stars;
   };
 
   return (
-    <div className="bg-white mb-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group h-full flex flex-col">
+    <button
+      onClick={handleClick}
+      disabled={adding}
+      className="bg-second text-white px-4 py-2 hover:bg-primary/90 transition-colors duration-200 text-sm font-medium flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+    >
+      {adding ? (
+        <span className="inline-flex items-center gap-2">
+          <span className="animate-spin rounded-full h-3 w-3 border-t-2 border-b-2 border-white"></span>
+          جاري الإضافة
+        </span>
+      ) : (
+        <>
+          <FiShoppingCart size={16} />
+          أضف للسلة
+        </>
+      )}
+    </button>
+  );
+};
+
+const ServiceItemCard = ({ service, onAdd }) => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="bg-white mb-5  rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group h-[400px] flex flex-col">
       {/* Image Container */}
       <div className="relative h-48 overflow-hidden">
         <img
-          src={service.imageCover}
+          onClick={() =>
+            navigate(`/products/${service.id}`, { state: { product: service } })
+          }
+          src={service.imageUrl}
           alt={service.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
         />
         {service.isBestSeller && (
           <div className="absolute top-3 right-3 bg-second text-white px-2 py-1 rounded-full text-xs font-semibold">
@@ -99,24 +85,24 @@ const ServiceItemCard = ({ service }) => {
           {service.sericeProviderName}
         </p>
 
-        {/* Rating */}
-        <div className="flex items-center gap-2 mb-3">
-          <div className="flex items-center">
-            {renderStars(service.averageRating)}
-          </div>
-          <span className="text-sm text-gray-600">
-            {service.averageRating.toFixed(1)} ({service.totalRatings})
-          </span>
-        </div>
-
         {/* Price */}
-        <div className="mt-auto flex items-center justify-between">
+        <div className="mt-auto flex flex-col gap-3">
           <span className="text-xl font-bold text-primary">
             {service.price.toFixed(2)}ج.م
           </span>
-          <button className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors duration-200 text-sm font-medium">
-            احجز الآن
-          </button>
+          <div className="flex items-center justify-between gap-2">
+            <AddToCartButton service={service} onAdd={onAdd} />
+            <button
+              onClick={() =>
+                navigate(`/products/${service.id}`, {
+                  state: { product: service },
+                })
+              }
+              className="px-4 py-2 border border-primary text-primary rounded-lg text-sm font-medium hover:bg-primary hover:text-white transition-colors duration-200"
+            >
+              التفاصيل
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -124,17 +110,21 @@ const ServiceItemCard = ({ service }) => {
 };
 
 const ServiceItems = () => {
+  const { addToCart } = useContext(CartContext);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const swiperRef = useRef(null);
 
+  const handleAddToCart = async (service) => {
+    return await addToCart(service, 1);
+  };
   useEffect(() => {
     const fetchServices = async () => {
       try {
         setLoading(true);
         setError("");
-        const response = await baseApi.get("/ServiceItems", {
+        const response = await baseApi.get("/products", {
           params: {
             PageIndex: 1,
             PageSize: 4000,
@@ -213,7 +203,7 @@ const ServiceItems = () => {
             الاكثر مبيعا
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            اكتشف مجموعة واسعة من الخدمات الطبية المتخصصة مع أفضل مقدمي الرعاية
+            اكتشف مجموعة واسعة من المنتجات الطبية المتخصصة مع أفضل مقدمي الرعاية
             الصحية
           </p>
         </div>
@@ -223,13 +213,14 @@ const ServiceItems = () => {
             ref={swiperRef}
             spaceBetween={24}
             slidesPerView={1}
+            allowTouchMove={true}
             loop={true}
             autoplay={{
               delay: 3000,
               disableOnInteraction: false,
               pauseOnMouseEnter: true,
             }}
-            modules={[Autoplay]}
+            modules={[Autoplay ]}
             breakpoints={{
               640: { slidesPerView: 1 },
               768: { slidesPerView: 2 },
@@ -240,7 +231,10 @@ const ServiceItems = () => {
           >
             {services.map((service) => (
               <SwiperSlide key={service.id} className="h-full">
-                <ServiceItemCard service={service} />
+                <ServiceItemCard
+                  service={service}
+                  onAdd={handleAddToCart}
+                />
               </SwiperSlide>
             ))}
           </Swiper>

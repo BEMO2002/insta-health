@@ -33,6 +33,7 @@ import MainFamilyCard from "./FamilyCard/MainFamilyCard";
 import FamilyCardStatus from "./FamilyCard/FamilyCardStatus";
 import MainFilesAndrecord from "./MedicalFileAndRecored/MainFilesAndrecord";
 import ScrollToTop from "./Components/ScrollToTop";
+import NotFound from "./Components/NotFound";
 function App() {
   return (
     <BrowserRouter>
@@ -98,6 +99,7 @@ function App() {
         <Route path="/confirm-email" element={<ConfirmEmail />} />
         <Route path="/forget" element={<ForgetPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
