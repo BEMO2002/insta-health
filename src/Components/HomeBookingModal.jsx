@@ -117,9 +117,24 @@ const HomeBookingModal = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const effectiveIsHealthCardUser =
+      isHealthCardUser && healthCardMembers.length > 0;
+    const effectiveUserName = effectiveIsHealthCardUser
+      ? selectedHealthCardName
+      : formData.UserName;
+
+    if (effectiveIsHealthCardUser && !selectedHealthCardName) {
+      toast.error("يرجى اختيار اسم من كارت الأسرة", {
+        position: "top-center",
+        autoClose: 3000,
+        rtl: true,
+        theme: "colored",
+      });
+      return;
+    }
 
     if (
-      !formData.UserName ||
+      !effectiveUserName ||
       !formData.UserPhoneNumber ||
       !formData.UserAddress
     ) {
@@ -132,27 +147,11 @@ const HomeBookingModal = ({
       return;
     }
 
-    if (
-      isHealthCardUser &&
-      healthCardMembers.length > 0 &&
-      !selectedHealthCardName
-    ) {
-      toast.error("يرجى اختيار اسم من كارت الأسرة", {
-        position: "top-center",
-        autoClose: 3000,
-        rtl: true,
-        theme: "colored",
-      });
-      return;
-    }
-
     setLoading(true);
 
     try {
-      const effectiveIsHealthCardUser =
-        isHealthCardUser && healthCardMembers.length > 0;
       const submitData = new FormData();
-      submitData.append("UserName", formData.UserName);
+      submitData.append("UserName", effectiveUserName);
       submitData.append("UserPhoneNumber", formData.UserPhoneNumber);
       submitData.append("UserAddress", formData.UserAddress);
       submitData.append("Content", formData.Content);
@@ -251,23 +250,6 @@ const HomeBookingModal = ({
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-6">
-            {/* User Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <FaUser className="inline ml-2" size={14} />
-                اسم المستخدم *
-              </label>
-              <input
-                type="text"
-                name="UserName"
-                value={formData.UserName}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-second focus:border-transparent"
-                placeholder="أدخل اسمك الكامل"
-                required
-              />
-            </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 استخدام كارت الأسرة؟
@@ -319,6 +301,26 @@ const HomeBookingModal = ({
                     ))}
                   </select>
                 )}
+              </div>
+            )}
+
+            {/* User Name */}
+            {(!isHealthCardUser ||
+              (isHealthCardUser && healthCardMembers.length === 0)) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <FaUser className="inline ml-2" size={14} />
+                  اسم المستخدم *
+                </label>
+                <input
+                  type="text"
+                  name="UserName"
+                  value={formData.UserName}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-second focus:border-transparent"
+                  placeholder="أدخل اسمك الكامل"
+                  required
+                />
               </div>
             )}
 

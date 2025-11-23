@@ -216,7 +216,18 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
   };
 
   const validateForm = () => {
-    if (!formData.userName.trim()) {
+    const effectiveIsHealthCardUser =
+      isHealthCardUser && healthCardMembers.length > 0;
+    const effectiveUserName = effectiveIsHealthCardUser
+      ? selectedHealthCardName
+      : formData.userName;
+
+    if (effectiveIsHealthCardUser && !selectedHealthCardName) {
+      toast.error("يرجى اختيار اسم من كارت الأسرة");
+      return false;
+    }
+
+    if (!effectiveUserName.trim()) {
       toast.error("اسم المستخدم مطلوب");
       return false;
     }
@@ -226,15 +237,6 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
     }
     if (!/^01[0-2,5]\d{8}$/.test(formData.userMobile)) {
       toast.error("رقم الهاتف غير صحيح");
-      return false;
-    }
-
-    if (
-      isHealthCardUser &&
-      healthCardMembers.length > 0 &&
-      !selectedHealthCardName
-    ) {
-      toast.error("يرجى اختيار اسم من كارت الأسرة");
       return false;
     }
     return true;
@@ -250,9 +252,12 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
     try {
       const effectiveIsHealthCardUser =
         isHealthCardUser && healthCardMembers.length > 0;
+      const effectiveUserName = effectiveIsHealthCardUser
+        ? selectedHealthCardName
+        : formData.userName;
       const response = await baseApi.post("/ServicesReservations", {
         appointmentId: formData.appointmentId,
-        userName: formData.userName,
+        userName: effectiveUserName,
         userMobile: formData.userMobile,
         IsHealthCardUser: effectiveIsHealthCardUser,
       });
@@ -615,21 +620,6 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      اسم المستخدم *
-                    </label>
-                    <input
-                      type="text"
-                      name="userName"
-                      value={formData.userName}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                      placeholder="أدخل اسمك الكامل"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       استخدام كارت الأسرة؟
                     </label>
                     <select
@@ -679,6 +669,24 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                           ))}
                         </select>
                       )}
+                    </div>
+                  )}
+
+                  {(!isHealthCardUser ||
+                    (isHealthCardUser && healthCardMembers.length === 0)) && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        اسم المستخدم *
+                      </label>
+                      <input
+                        type="text"
+                        name="userName"
+                        value={formData.userName}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholder="أدخل اسمك الكامل"
+                        required
+                      />
                     </div>
                   )}
 

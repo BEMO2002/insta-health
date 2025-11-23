@@ -8,7 +8,7 @@ export const Top = () => {
 
   useEffect(() => {
     const toggleVisibility = () => {
-      setIsVisible(window.scrollY >= 600);
+      setIsVisible(window.scrollY >= 1200);
 
       const footer = document.querySelector("footer");
       if (footer && buttonRef.current) {
@@ -40,7 +40,7 @@ export const Top = () => {
           ${
             isOverFooter
               ? "bg-white text-baseTwo border-baseTwo"
-              : "bg-transparent text-baseTwo hover:bg-baseTwo hover:text-white"
+              : "bg-transparent text-baseTwo"
           }`}
       >
         <GrLinkTop className="lg:text-2xl text-primary text-xl font-bold" />
