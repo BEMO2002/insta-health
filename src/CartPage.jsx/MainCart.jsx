@@ -235,9 +235,6 @@ const MainCart = () => {
                       متابعة الدفع
                         </button>  */}
                   <OrderButton className="" />
-                  <p className="text-xs text-gray-500 text-center mt-4">
-                    سيتم توجيهك لصفحة الدفع عند توفرها
-                  </p>
                 </div>
               </div>
             </div>
