@@ -185,7 +185,7 @@ const Providers = () => {
   // Generate page numbers for pagination
   const getPageNumbers = useCallback(() => {
     const totalPages = Math.ceil(totalCount / pageSize);
-    const maxPagesToShow = 5;
+    const maxPagesToShow = 3;
     const pages = [];
     let startPage = Math.max(1, pageIndex - Math.floor(maxPagesToShow / 2));
     let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);

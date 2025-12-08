@@ -221,7 +221,7 @@ const Products = () => {
   };
 
   const renderPageButtons = () => {
-    const max = 5;
+    const max = 3;
     const pages = [];
     let start = Math.max(1, pageIndex - Math.floor(max / 2));
     let end = Math.min(totalPages, start + max - 1);
