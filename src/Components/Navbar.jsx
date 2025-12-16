@@ -234,7 +234,7 @@ const Navbar = () => {
                   onMouseLeave={handleMouseLeave}
                 >
                   <button
-                    className="relative text-primary p-2 text-[13px] font-[800] flex items-center flex-row-reverse rounded-md hover:bg-second hover:text-white transition-colors duration-300"
+                    className="relative  text-primary p-2  text-[13px] font-[800] flex items-center flex-row-reverse rounded-md hover:bg-second hover:text-white transition-colors duration-300"
                     aria-expanded={isServicesOpen === item.name}
                   >
                     {item.name}

@@ -267,14 +267,14 @@ const HomeProviders = () => {
         )}
 
         <div
-          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-all duration-500 ${
+          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch transition-all duration-500 ${
             isDataChanging ? "opacity-50 scale-95" : "opacity-100 scale-100"
           } ${providersLoading ? "hidden" : "block"}`}
         >
           {providers.map((provider, index) => (
             <div
               key={provider.id}
-              className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden animate-fade-in-up"
+              className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-500 h-auto flex flex-col overflow-hidden animate-fade-in-up"
               style={{
                 animationDelay: `${index * 100}ms`,
                 animationFillMode: "both",
@@ -284,7 +284,7 @@ const HomeProviders = () => {
                 <img
                   src={provider.imageUrl}
                   alt={provider.name}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-60 object-cover"
                   onError={(e) => {
                     e.target.src =
                       "https://via.placeholder.com/400x200?text=No+Image";

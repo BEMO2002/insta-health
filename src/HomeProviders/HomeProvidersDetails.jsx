@@ -282,7 +282,10 @@ const HomeProvidersDetails = () => {
                   </div>
                   <button
                     onClick={() =>
-                      handleBookingClick(subSpeciality.id, subSpeciality.name)
+                      handleBookingClick(
+                        subSpeciality.subSpecialityId,
+                        subSpeciality.name
+                      )
                     }
                     className="bg-white flex items-center gap-2 cursor-pointer text-second px-3 py-2 rounded text-md font-bold transition-colors"
                   >

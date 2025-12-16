@@ -263,14 +263,14 @@ const Providers = () => {
         )}
 
         <div
-          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-all duration-500 ${
+          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch transition-all duration-500 ${
             isDataChanging ? "opacity-50 scale-95" : "opacity-100 scale-100"
           } ${providersLoading ? "hidden" : "block"}`}
         >
           {providers.map((provider, index) => (
             <div
               key={provider.id}
-              className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden animate-fade-in-up"
+              className="bg-white  rounded-xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden animate-fade-in-up h-full flex flex-col"
               style={{
                 animationDelay: `${index * 100}ms`,
                 animationFillMode: "both",
@@ -280,7 +280,7 @@ const Providers = () => {
                 <img
                   src={provider.imageCover}
                   alt={provider.name}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-60 object-cover"
                   onError={(e) => {
                     e.target.src =
                       "https://via.placeholder.com/400x200?text=No+Image";
@@ -291,7 +291,7 @@ const Providers = () => {
                 </div>
               </div>
 
-              <div className="p-6">
+              <div className="p-6 flex-1 flex flex-col">
                 <h3 className="text-xl font-bold text-primary mb-2">
                   {provider.name}
                 </h3>
@@ -300,7 +300,7 @@ const Providers = () => {
                   {provider.description}
                 </p>
 
-                <div className="space-y-2 text-sm text-gray-600">
+                <div className="space-y-2 text-sm mb-4 text-gray-600">
                   <div className="flex items-center">
                     <FaMapMarkerAlt className="text-second ml-2" size={14} />
                     <span className="font-medium ml-2">العنوان:</span>
@@ -328,15 +328,15 @@ const Providers = () => {
                   )}
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <div className="flex items-center justify-between">
+                <div className="mt-auto pt-6 border-t border-gray-200">
+                  <div className="flex mx-auto gap-2 flex-col ">
                     <span className="text-sm text-gray-500 flex items-center">
                       <FaUser className="text-gray-400 ml-2" size={14} />
                       مالك: {provider.ownerName}
                     </span>
                     <button
                       onClick={() => navigate(`/providers/${provider.id}`)}
-                      className="bg-second text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary transition-colors duration-300"
+                      className="bg-second  text-white px-4 py-2 rounded-lg text-md font-medium hover:bg-primary transition-colors duration-300"
                     >
                       تفاصيل الخدمه
                     </button>

@@ -364,69 +364,106 @@ const ProvidersDetails = () => {
                 <h2 className="text-2xl md:text-3xl font-bold text-primary mb-6">
                   الخدمات
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10 items-stretch ">
                   {/* Services */}
-                  {services.map((item) => (
-                    <div
-                      key={`service-${item.id}`}
-                      className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
-                    >
-                      <div className="relative">
-                        <img
-                          src={item.imageCover}
-                          alt={item.name}
-                          className="w-full h-48 object-cover"
-                          onError={(e) => {
-                            e.target.src =
-                              "https://via.placeholder.com/400x200?text=No+Image";
-                          }}
-                        />
-                        <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded text-xs font-medium">
-                          خدمة
-                        </div>
-                        {item.isBestSeller && (
-                          <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
-                            الأكثر مبيعاً
-                          </div>
-                        )}
-                      </div>
+                  {services.map((item) => {
+                    const hasDiscount =
+                      item?.discountPrice != null &&
+                      item?.price != null &&
+                      Number(item.discountPrice) < Number(item.price);
+                    const discountPercent = hasDiscount
+                      ? Math.round(
+                          100 -
+                            (Number(item.discountPrice) / Number(item.price)) *
+                              100
+                        )
+                      : 0;
 
-                      <div className="p-4">
-                        <h3 className="text-lg font-bold text-primary mb-2 line-clamp-2">
-                          {item.name}
-                        </h3>
-
-                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                          {item.description}
-                        </p>
-
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center">
-                            <div className="flex items-center">
-                              {renderStars(item.averageRating)}
-                            </div>
-                            <span className="text-sm text-gray-500 mr-2">
-                              ({item.totalRatings})
-                            </span>
-                          </div>
-                          <span className="text-lg font-bold text-second">
-                            {item.price} ج.م
-                          </span>
-                        </div>
-
-                        <button
-                          onClick={() => handleBookingClick(item, "Service")}
-                          className="w-full bg-second text-white py-2 rounded-lg text-sm font-medium hover:bg-primary transition-colors flex items-center justify-center"
-                        >
-                          احجز الخدمة
-                          <MdOutlineKeyboardArrowRight
-                            className="mr-2"
-                            size={16}
+                    return (
+                      <div
+                        key={`service-${item.id}`}
+                        className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition-shadow h-auto flex flex-col"
+                      >
+                        <div className="relative">
+                          <img
+                            src={item.imageCover}
+                            alt={item.name}
+                            className="w-full h-60 object-cover"
+                            onError={(e) => {
+                              e.target.src =
+                                "https://via.placeholder.com/400x200?text=No+Image";
+                            }}
                           />
-                        </button>
+                          <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded text-xs font-medium">
+                            خدمة
+                          </div>
+                          {item.isBestSeller && (
+                            <div className="absolute top-2 left-24 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
+                              الأكثر مبيعاً
+                            </div>
+                          )}
+                          {hasDiscount && (
+                            <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-extrabold shadow">
+                              خصم {discountPercent}%
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="p-4 flex-1 flex flex-col">
+                          <h3 className="text-lg font-bold text-primary mb-2 line-clamp-2">
+                            {item.name}
+                          </h3>
+
+                          <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                            {item.description}
+                          </p>
+
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center">
+                              <div className="flex items-center">
+                                {renderStars(item.averageRating)}
+                              </div>
+                              <span className="text-sm text-gray-500 mr-2">
+                                ({item.totalRatings})
+                              </span>
+                            </div>
+                            <div className="flex flex-col">
+                              {hasDiscount ? (
+                                <>
+                                  <span className="text-xl font-extrabold text-red-600">
+                                    {item.discountPrice?.toFixed
+                                      ? item.discountPrice.toFixed(2)
+                                      : item.discountPrice}{" "}
+                                    ج.م
+                                  </span>
+                                  <span className="text-xs text-gray-500 line-through -mt-0.5">
+                                    {item.price?.toFixed
+                                      ? item.price.toFixed(2)
+                                      : item.price}{" "}
+                                    ج.م
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="text-xl font-bold text-second">
+                                  {item.price?.toFixed
+                                    ? item.price.toFixed(2)
+                                    : item.price}{" "}
+                                  ج.م
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={() => handleBookingClick(item, "Service")}
+                            className="w-full bg-second text-white py-2 rounded-lg text-md font-medium hover:bg-primary transition-colors flex items-center justify-center mt-auto"
+                          >
+                            احجز الخدمة
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </>
             )}
@@ -436,69 +473,106 @@ const ProvidersDetails = () => {
                 <h2 className="text-2xl md:text-3xl font-bold text-primary mb-6">
                   العيادات
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
                   {/* Clinics */}
-                  {clinics.map((item) => (
-                    <div
-                      key={`clinic-${item.id}`}
-                      className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
-                    >
-                      <div className="relative">
-                        <img
-                          src={item.imageCover}
-                          alt={item.name}
-                          className="w-full h-48 object-cover"
-                          onError={(e) => {
-                            e.target.src =
-                              "https://via.placeholder.com/400x200?text=No+Image";
-                          }}
-                        />
-                        <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
-                          عيادة
-                        </div>
-                        {item.isBestSeller && (
-                          <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
-                            الأكثر مبيعاً
-                          </div>
-                        )}
-                      </div>
+                  {clinics.map((item) => {
+                    const hasDiscount =
+                      item?.discountPrice != null &&
+                      item?.price != null &&
+                      Number(item.discountPrice) < Number(item.price);
+                    const discountPercent = hasDiscount
+                      ? Math.round(
+                          100 -
+                            (Number(item.discountPrice) / Number(item.price)) *
+                              100
+                        )
+                      : 0;
 
-                      <div className="p-4">
-                        <h3 className="text-lg font-bold text-primary mb-2 line-clamp-2">
-                          {item.name}
-                        </h3>
-
-                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                          {item.description}
-                        </p>
-
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center">
-                            <div className="flex items-center">
-                              {renderStars(item.averageRating)}
-                            </div>
-                            <span className="text-sm text-gray-500 mr-2">
-                              ({item.totalRatings})
-                            </span>
-                          </div>
-                          <span className="text-lg font-bold text-second">
-                            {item.price} ج.م
-                          </span>
-                        </div>
-
-                        <button
-                          onClick={() => handleBookingClick(item, "Clinic")}
-                          className="w-full bg-second text-white py-2 rounded-lg text-sm font-medium hover:bg-primary transition-colors flex items-center justify-center"
-                        >
-                          احجز العيادة
-                          <MdOutlineKeyboardArrowRight
-                            className="mr-2"
-                            size={16}
+                    return (
+                      <div
+                        key={`clinic-${item.id}`}
+                        className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition-shadow h-auto flex flex-col"
+                      >
+                        <div className="relative">
+                          <img
+                            src={item.imageCover}
+                            alt={item.name}
+                            className="w-full h-60 object-cover"
+                            onError={(e) => {
+                              e.target.src =
+                                "https://via.placeholder.com/400x200?text=No+Image";
+                            }}
                           />
-                        </button>
+                          <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
+                            عيادة
+                          </div>
+                          {item.isBestSeller && (
+                            <div className="absolute top-2 left-24 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
+                              الأكثر مبيعاً
+                            </div>
+                          )}
+                          {hasDiscount && (
+                            <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-extrabold shadow">
+                              خصم {discountPercent}%
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="p-4 flex-1 flex flex-col">
+                          <h3 className="text-lg font-bold text-primary mb-2 line-clamp-2">
+                            {item.name}
+                          </h3>
+
+                          <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                            {item.description}
+                          </p>
+
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center">
+                              <div className="flex items-center">
+                                {renderStars(item.averageRating)}
+                              </div>
+                              <span className="text-sm text-gray-500 mr-2">
+                                ({item.totalRatings})
+                              </span>
+                            </div>
+                            <div className="flex flex-col">
+                              {hasDiscount ? (
+                                <>
+                                  <span className="text-xl font-extrabold text-red-600">
+                                    {item.discountPrice?.toFixed
+                                      ? item.discountPrice.toFixed(2)
+                                      : item.discountPrice}{" "}
+                                    ج.م
+                                  </span>
+                                  <span className="text-xs text-gray-500 line-through -mt-0.5">
+                                    {item.price?.toFixed
+                                      ? item.price.toFixed(2)
+                                      : item.price}{" "}
+                                    ج.م
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="text-xl font-bold text-second">
+                                  {item.price?.toFixed
+                                    ? item.price.toFixed(2)
+                                    : item.price}{" "}
+                                  ج.م
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={() => handleBookingClick(item, "Clinic")}
+                            className="w-full bg-second text-white py-2 rounded-lg text-md font-medium hover:bg-primary transition-colors flex items-center justify-center mt-auto"
+                          >
+                            احجز العيادة
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </>
             )}
