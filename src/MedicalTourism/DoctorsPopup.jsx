@@ -28,11 +28,25 @@ const DoctorsPopup = ({ isOpen, onClose, specialty, doctors, onBookDoctor }) => 
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
           {doctors && doctors.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {doctors.map((doctor) => (
-                <div 
-                  key={doctor.id} 
-                  className="bg-gray-50 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
-                >
+              {doctors.map((doctor) => {
+                const basePrice = doctor?.reservationPrice;
+                const discountedPrice =
+                  doctor?.discountReservationPrice ??
+                  doctor?.reservationDiscountPrice ??
+                  doctor?.discountPrice;
+                const hasDiscount =
+                  discountedPrice != null &&
+                  basePrice != null &&
+                  Number(discountedPrice) < Number(basePrice);
+                const discountPercent = hasDiscount
+                  ? Math.round(100 - (Number(discountedPrice) / Number(basePrice)) * 100)
+                  : 0;
+
+                return (
+                  <div 
+                    key={doctor.id} 
+                    className="bg-gray-50 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
+                  >
                   {/* Doctor Image */}
                   <div className="relative h-48">
                     <img
@@ -43,6 +57,13 @@ const DoctorsPopup = ({ isOpen, onClose, specialty, doctors, onBookDoctor }) => 
                         e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="200"%3E%3Crect fill="%23e5e7eb" width="300" height="200"/%3E%3Ctext fill="%234b5563" font-family="Arial" font-size="20" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3Eدكتور%3C/text%3E%3C/svg%3E';
                       }}
                     />
+                      {hasDiscount && (
+                          <div className="absolute top-2 right-2 z-10">
+                            <span className="bg-red-600 text-white px-2 py-0.5 rounded text-sm font-extrabold shadow">
+                              خصم {discountPercent}%
+                            </span>
+                          </div>
+                        )}
                   </div>
 
                   {/* Doctor Info */}
@@ -75,12 +96,24 @@ const DoctorsPopup = ({ isOpen, onClose, specialty, doctors, onBookDoctor }) => 
                     )}
 
                     {/* Price */}
-                    {doctor.reservationPrice && (
+                    {(basePrice != null || discountedPrice != null) && (
                       <div className="mb-3 bg-primary/10 p-2 rounded-lg border border-primary/20">
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-gray-600 font-semibold">رسوم الاستشارة:</span>
-                          <span className="text-lg font-bold text-primary">{doctor.reservationPrice} $</span>
+                          {hasDiscount ? (
+                            <div className="flex flex-row items-center gap-1 leading-tight">
+                              <span className="text-lg font-extrabold text-red-600">
+                                {discountedPrice} $
+                              </span>
+                              <span className="text-md font-bold text-gray-500 line-through -mt-0.5">
+                                {basePrice} $
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-lg font-bold text-primary">{basePrice} $</span>
+                          )}
                         </div>
+
                       </div>
                     )}
 
@@ -92,8 +125,9 @@ const DoctorsPopup = ({ isOpen, onClose, specialty, doctors, onBookDoctor }) => 
                       احجز استشارة
                     </button>
                   </div>
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <div className="text-center text-gray-500 py-12">

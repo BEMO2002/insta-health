@@ -126,7 +126,7 @@ const MedicalTourismSpecialties = () => {
 
           {/* Specialties Swiper */}
           <Swiper
-            modules={[Autoplay, Pagination]}
+            modules={[Autoplay, Pagination , Navigation]}
             spaceBetween={30}
             slidesPerView={1}
             loop={specialties.length > 1}
@@ -139,10 +139,11 @@ const MedicalTourismSpecialties = () => {
               clickable: true,
               dynamicBullets: true,
             }}
+            navigation={true}
           >
             {specialties.map((specialty) => (
               <SwiperSlide key={specialty.id}>
-                <div className="bg-white rounded-xl shadow-lg overflow-hidden max-w-4xl mx-auto">
+                <div className="bg-white mb-5 rounded-xl shadow-lg overflow-hidden max-w-4xl mx-auto">
                   {/* Specialty Image with Text Overlay */}
                   <div className="relative h-96 md:h-[500px]">
                     <img

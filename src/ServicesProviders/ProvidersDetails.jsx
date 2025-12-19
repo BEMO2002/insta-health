@@ -403,7 +403,7 @@ const ProvidersDetails = () => {
                             </div>
                           )}
                           {hasDiscount && (
-                            <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-extrabold shadow">
+                            <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-sm font-extrabold shadow">
                               خصم {discountPercent}%
                             </div>
                           )}
@@ -436,7 +436,7 @@ const ProvidersDetails = () => {
                                       : item.discountPrice}{" "}
                                     ج.م
                                   </span>
-                                  <span className="text-xs text-gray-500 line-through -mt-0.5">
+                                  <span className="text-md font-bold text-gray-500 line-through -mt-0.5">
                                     {item.price?.toFixed
                                       ? item.price.toFixed(2)
                                       : item.price}{" "}
@@ -512,7 +512,7 @@ const ProvidersDetails = () => {
                             </div>
                           )}
                           {hasDiscount && (
-                            <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-extrabold shadow">
+                            <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-sm font-extrabold shadow">
                               خصم {discountPercent}%
                             </div>
                           )}
@@ -545,7 +545,7 @@ const ProvidersDetails = () => {
                                       : item.discountPrice}{" "}
                                     ج.م
                                   </span>
-                                  <span className="text-xs text-gray-500 line-through -mt-0.5">
+                                  <span className="text-md font-bold text-gray-500 line-through -mt-0.5">
                                     {item.price?.toFixed
                                       ? item.price.toFixed(2)
                                       : item.price}{" "}

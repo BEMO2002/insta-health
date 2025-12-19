@@ -128,7 +128,7 @@ const TourismAttachments = ({ slugProp = 'medical-tourism' }) => {
                       <img
                         src={attachment.attachmentUrl}
                         alt={`مرفق السياحة العلاجية ${attachment.id}`}
-                        className="w-full h-64 md:h-72 object-cover transition-transform duration-300 group-hover:scale-110"
+                        className="w-full h-64 md:h-80 object-cover transition-transform duration-300 group-hover:scale-110"
                         onError={(e) => {
                           e.target.src = 'https://via.placeholder.com/400x300?text=No+Image';
                         }}
@@ -137,7 +137,7 @@ const TourismAttachments = ({ slugProp = 'medical-tourism' }) => {
                       <video
                         src={attachment.attachmentUrl}
                         controls
-                        className="w-full h-64 md:h-72 object-cover"
+                        className="w-full h-64 md:h-80 object-cover"
                       />
                     ) : (
                       <a

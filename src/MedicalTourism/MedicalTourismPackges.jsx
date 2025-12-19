@@ -20,7 +20,7 @@ const MedicalTourismPackges = () => {
       try {
         setLoading(true);
         const response = await baseApi.get('/MedicalTourismPackges');
-        
+
         if (response.data.success && response.data.data) {
           setPackagesData(response.data.data);
         }
@@ -69,6 +69,9 @@ const MedicalTourismPackges = () => {
     const title = typeData.type === 'Package' ? 'الباقات الطبية' : 'العروض الخاصة';
     const items = typeData.items || [];
 
+    const maxSlidesPerView = Math.min(3, items.length);
+    const shouldLoop = items.length > maxSlidesPerView;
+
     if (items.length === 0) return null;
 
     return (
@@ -81,7 +84,7 @@ const MedicalTourismPackges = () => {
           modules={[Autoplay, Pagination]}
           spaceBetween={30}
           slidesPerView={1}
-          loop={items.length > 1}
+          loop={shouldLoop}
           autoplay={{
             delay: 4000,
             disableOnInteraction: false,
@@ -93,52 +96,95 @@ const MedicalTourismPackges = () => {
           }}
           breakpoints={{
             640: {
-              slidesPerView: 2,
+              slidesPerView: Math.min(2, items.length),
               spaceBetween: 20,
             },
             1024: {
-              slidesPerView: 3,
+              slidesPerView: Math.min(3, items.length),
               spaceBetween: 30,
             },
           }}
         >
-          {items.map((item) => (
-            <SwiperSlide key={item.id}>
-              <div className="bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col hover:shadow-2xl transition-shadow duration-300">
-                {/* Package Image */}
-                <div className="relative h-64">
-                  <img
-                    src={item.imageUrl}
-                    alt={item.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23e5e7eb" width="400" height="300"/%3E%3Ctext fill="%234b5563" font-family="Arial" font-size="20" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3Eباقة طبية%3C/text%3E%3C/svg%3E';
-                    }}
-                  />
-                  {/* Price Badge */}
-                  <div className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-lg shadow-lg">
-                    <span className="text-lg font-semibold">{item.price} $</span>
+          {items.map((item) => {
+            const hasDiscount =
+              item?.discountPrice != null &&
+              item?.price != null &&
+              Number(item.discountPrice) < Number(item.price);
+            const discountPercent = hasDiscount
+              ? Math.round(
+                100 -
+                (Number(item.discountPrice) / Number(item.price)) *
+                100
+              )
+              : 0;
+            return (
+              <SwiperSlide key={item.id}>
+                <div className="bg-white mb-5 rounded-xl shadow-lg overflow-hidden h-full flex flex-col hover:shadow-2xl transition-shadow duration-300">
+                  {/* Package Image */}
+                  <div className="relative h-64">
+                    <img
+                      src={item.imageUrl}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23e5e7eb" width="400" height="300"/%3E%3Ctext fill="%234b5563" font-family="Arial" font-size="20" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3Eباقة طبية%3C/text%3E%3C/svg%3E';
+                      }}
+                    />
+                    {/* Price Badge */}
+                    {hasDiscount && (
+                      <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-sm font-extrabold shadow">
+                        خصم {discountPercent}%
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Package Info */}
+                  <div className="p-6 flex-1 flex flex-col">
+                    <h4 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2 ">{item.name}</h4>
+                    <p className="text-sm text-gray-600 mb-4 line-clamp-3 min-h-[60px]">
+                      {item.description}
+                    </p>
+                    <div className="flex flex-col mb-3 min-h-[70px]">
+                      {hasDiscount ? (
+                        <>
+                          <span className="text-2xl font-extrabold text-red-600">
+                            {item.discountPrice?.toFixed
+                              ? item.discountPrice.toFixed(2)
+                              : item.discountPrice}{" "}
+                            $
+                          </span>
+                          <span className="text-lg font-bold text-gray-500 line-through -mt-0.5">
+                            {item.price?.toFixed
+                              ? item.price.toFixed(2)
+                              : item.price}{" "}
+                            $
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-xl font-bold text-second">
+                            {item.price?.toFixed ? item.price.toFixed(2) : item.price}{" "}
+                              $
+                          </span>
+                          <span className="text-lg font-bold text-gray-500 line-through -mt-0.5 opacity-0">
+                            {item.price?.toFixed ? item.price.toFixed(2) : item.price}{" "}
+                            $
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    {/* Booking Button */}
+                    <button
+                      onClick={() => handleBooking(item)}
+                      className="w-full bg-primary hover:bg-second text-white py-2 rounded-lg font-bold text-md transition-colors duration-300 shadow-md hover:shadow-lg"
+                    >
+                      احجز الآن
+                    </button>
                   </div>
                 </div>
-
-                {/* Package Info */}
-                <div className="p-6 flex-1 flex flex-col">
-                  <h4 className="text-xl font-bold text-gray-800 mb-3">{item.name}</h4>
-                  <p className="text-sm text-gray-600 mb-4 flex-1 line-clamp-3">
-                    {item.description}
-                  </p>
-
-                  {/* Booking Button */}
-                  <button
-                    onClick={() => handleBooking(item)}
-                    className="w-full bg-primary hover:bg-second text-white py-2 rounded-lg font-bold text-md transition-colors duration-300 shadow-md hover:shadow-lg"
-                  >
-                    احجز الآن
-                  </button>
-                </div>
-              </div>
-            </SwiperSlide>
-          ))}
+              </SwiperSlide>
+            );
+          })}
         </Swiper>
       </div>
     );

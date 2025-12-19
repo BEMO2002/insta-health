@@ -128,7 +128,7 @@ const PackageBookingModal = ({ isOpen, onClose, package: packageItem }) => {
           <div className="bg-gray-50 p-4 rounded-lg mb-6">
             <div className="flex justify-between items-center">
               <span className="text-gray-700 font-semibold">السعر الإجمالي:</span>
-              <span className="text-2xl font-bold text-primary">{packageItem.price} ج.م</span>
+              <span className="text-2xl font-bold text-primary">{packageItem.discountPrice} $</span>
             </div>
           </div>
 
