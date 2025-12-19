@@ -111,6 +111,23 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
     }
   }, [serviceItem?.id]);
 
+  const getDoctorPricing = (doctor) => {
+    const basePrice = doctor?.reservationPrice;
+    const discountedPrice =
+      doctor?.discountReservationPrice ??
+      doctor?.reservationDiscountPrice ??
+      doctor?.discountPrice;
+    const hasDiscount =
+      discountedPrice != null &&
+      basePrice != null &&
+      Number(discountedPrice) < Number(basePrice);
+    const discountPercent = hasDiscount
+      ? Math.round(100 - (Number(discountedPrice) / Number(basePrice)) * 100)
+      : 0;
+
+    return { basePrice, discountedPrice, hasDiscount, discountPercent };
+  };
+
   // Reset form when modal opens/closes
   useEffect(() => {
     if (isOpen) {
@@ -372,61 +389,97 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                       </div>
                     ) : doctors.length > 0 ? (
                       <div className="space-y-2">
-                        {doctors.map((doctor) => (
-                          <button
-                            key={doctor.id}
-                            onClick={() => handleDoctorSelect(doctor)}
-                            className="w-full p-4 text-right border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-colors"
-                          >
-                            <div className="flex items-center gap-4">
-                              <img
-                                src={doctor.imageUrl}
-                                alt={doctor.name}
-                                className="w-16 h-16 rounded-full object-cover"
-                                onError={(e) => {
-                                  e.target.src =
-                                    "https://via.placeholder.com/64x64?text=د.م";
-                                }}
-                              />
-                              <div className="flex-1 text-right">
-                                <div className="font-medium text-lg">
-                                  {doctor.name}
-                                </div>
-                                {doctor.speciality && (
-                                  <div className="text-sm text-second font-medium">
-                                    {doctor.speciality}
-                                  </div>
-                                )}
-                                {doctor.expirence && (
-                                  <div className="text-sm text-gray-500 mt-1">
-                                    {doctor.expirence}
-                                  </div>
-                                )}
-                                {doctor.rate && (
-                                  <div className="flex items-center mt-2">
-                                    <div className="flex">
-                                      {[1, 2, 3, 4, 5].map((star) => (
-                                        <span
-                                          key={star}
-                                          className={`text-sm ${
-                                            star <= doctor.rate
-                                              ? "text-yellow-400"
-                                              : "text-gray-300"
-                                          }`}
-                                        >
-                                          ★
-                                        </span>
-                                      ))}
+                        {doctors.map((doctor) => {
+                          const { basePrice, discountedPrice, hasDiscount, discountPercent } =
+                            getDoctorPricing(doctor);
+
+                          return (
+                            <button
+                              key={doctor.id}
+                              onClick={() => handleDoctorSelect(doctor)}
+                              className="w-full p-4 text-right border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-colors"
+                            >
+                              <div className="flex items-center gap-4">
+                                <div className="relative">
+                                  <img
+                                    src={doctor.imageUrl}
+                                    alt={doctor.name}
+                                    className="w-16 h-16 rounded-full object-cover"
+                                    onError={(e) => {
+                                      e.target.src =
+                                        "https://via.placeholder.com/64x64?text=د.م";
+                                    }}
+                                  />
+                                  {hasDiscount && (
+                                    <div className="absolute -top-1 -right-1">
+                                      <span className="bg-red-600 text-white px-1.5 py-0.5 rounded text-[10px] font-extrabold shadow">
+                                        خصم {discountPercent}%
+                                      </span>
                                     </div>
-                                    <span className="text-xs text-gray-500 mr-2">
-                                      ({doctor.rate}/5)
-                                    </span>
+                                  )}
+                                </div>
+
+                                <div className="flex-1 text-right">
+                                  <div className="font-medium text-lg">
+                                    {doctor.name}
                                   </div>
-                                )}
+                                  {doctor.speciality && (
+                                    <div className="text-sm text-second font-medium">
+                                      {doctor.speciality}
+                                    </div>
+                                  )}
+                                  {doctor.expirence && (
+                                    <div className="text-sm text-gray-500 mt-1">
+                                      {doctor.expirence}
+                                    </div>
+                                  )}
+                                  {(basePrice != null || discountedPrice != null) && (
+                                    <div className="mt-2 flex items-center justify-between bg-white/70 rounded px-2 py-1 border border-gray-200">
+                                      <span className="text-xs text-gray-600 font-semibold">
+                                        رسوم الاستشارة:
+                                      </span>
+                                      {hasDiscount ? (
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-sm font-extrabold text-red-600">
+                                            {discountedPrice} $
+                                          </span>
+                                          <span className="text-xs font-bold text-gray-500 line-through">
+                                            {basePrice} $
+                                          </span>
+                                        </div>
+                                      ) : (
+                                        <span className="text-sm font-bold text-primary">
+                                          {basePrice} $
+                                        </span>
+                                      )}
+                                    </div>
+                                  )}
+                                  {doctor.rate && (
+                                    <div className="flex items-center mt-2">
+                                      <div className="flex">
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                          <span
+                                            key={star}
+                                            className={`text-sm ${
+                                              star <= doctor.rate
+                                                ? "text-yellow-400"
+                                                : "text-gray-300"
+                                            }`}
+                                          >
+                                            ★
+                                          </span>
+                                        ))}
+                                      </div>
+                                      <span className="text-xs text-gray-500 mr-2">
+                                        ({doctor.rate}/5)
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          </button>
-                        ))}
+                            </button>
+                          );
+                        })}
                       </div>
                     ) : (
                       <p className="text-center text-gray-500 py-8">
@@ -611,7 +664,44 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                       {formatTime(formData.selectedSlot?.slotEnd)}
                     </p>
                     {formData.selectedDoctor && (
-                      <p>الطبيب: {formData.selectedDoctor.name}</p>
+                      <div>
+                        <p>الطبيب: {formData.selectedDoctor.name}</p>
+                        {(() => {
+                          const {
+                            basePrice,
+                            discountedPrice,
+                            hasDiscount,
+                            discountPercent,
+                          } = getDoctorPricing(formData.selectedDoctor);
+
+                          if (basePrice == null && discountedPrice == null) return null;
+
+                          return (
+                            <div className="mt-2 flex items-center justify-between bg-white rounded-lg p-2 border border-gray-200">
+                              <span className="text-xs text-gray-600 font-semibold">
+                                رسوم الاستشارة:
+                              </span>
+                              {hasDiscount ? (
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm font-extrabold text-red-600">
+                                    {discountedPrice} $
+                                  </span>
+                                  <span className="text-xs font-bold text-gray-500 line-through">
+                                    {basePrice} $
+                                  </span>
+                                  <span className="bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-extrabold shadow">
+                                    خصم {discountPercent}%
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="text-sm font-bold text-primary">
+                                  {basePrice} $
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })()}
+                      </div>
                     )}
                   </div>
                 </div>

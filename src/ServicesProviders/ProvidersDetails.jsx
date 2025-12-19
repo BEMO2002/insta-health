@@ -11,7 +11,6 @@ import {
   FaPhone,
   FaEnvelope,
 } from "react-icons/fa";
-import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -476,17 +475,17 @@ const ProvidersDetails = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
                   {/* Clinics */}
                   {clinics.map((item) => {
-                    const hasDiscount =
-                      item?.discountPrice != null &&
-                      item?.price != null &&
-                      Number(item.discountPrice) < Number(item.price);
-                    const discountPercent = hasDiscount
-                      ? Math.round(
-                          100 -
-                            (Number(item.discountPrice) / Number(item.price)) *
-                              100
-                        )
-                      : 0;
+                    // const hasDiscount =
+                    //   item?.discountPrice != null &&
+                    //   item?.price != null &&
+                    //   Number(item.discountPrice) < Number(item.price);
+                    // const discountPercent = hasDiscount
+                    //   ? Math.round(
+                    //       100 -
+                    //         (Number(item.discountPrice) / Number(item.price)) *
+                    //           100
+                    //     )
+                    //   : 0;
 
                     return (
                       <div
@@ -511,11 +510,11 @@ const ProvidersDetails = () => {
                               الأكثر مبيعاً
                             </div>
                           )}
-                          {hasDiscount && (
+                          {/* {hasDiscount && (
                             <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-sm font-extrabold shadow">
                               خصم {discountPercent}%
                             </div>
-                          )}
+                          )} */}
                         </div>
 
                         <div className="p-4 flex-1 flex flex-col">
@@ -536,7 +535,7 @@ const ProvidersDetails = () => {
                                 ({item.totalRatings})
                               </span>
                             </div>
-                            <div className="flex flex-col">
+                            {/* <div className="flex flex-col">
                               {hasDiscount ? (
                                 <>
                                   <span className="text-xl font-extrabold text-red-600">
@@ -560,7 +559,7 @@ const ProvidersDetails = () => {
                                   ج.م
                                 </span>
                               )}
-                            </div>
+                            </div> */}
                           </div>
 
                           <button
