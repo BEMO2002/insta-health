@@ -342,9 +342,11 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
             {serviceItem?.name}
           </h3>
           <p className="text-sm text-gray-600">{providerName}</p>
-          <p className="text-lg font-bold text-second mt-2">
-            {serviceItem?.price} ج.م
-          </p>
+          {serviceItem?.type !== "Clinic" && serviceItem?.discountPrice && (
+            <p className="text-lg font-bold text-second mt-2">
+              {serviceItem?.discountPrice} ج.م
+            </p>
+          )}
         </div>
 
         {/* Progress Steps */}
@@ -390,8 +392,12 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                     ) : doctors.length > 0 ? (
                       <div className="space-y-2">
                         {doctors.map((doctor) => {
-                          const { basePrice, discountedPrice, hasDiscount, discountPercent } =
-                            getDoctorPricing(doctor);
+                          const {
+                            basePrice,
+                            discountedPrice,
+                            hasDiscount,
+                            discountPercent,
+                          } = getDoctorPricing(doctor);
 
                           return (
                             <button
@@ -411,7 +417,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                                     }}
                                   />
                                   {hasDiscount && (
-                                    <div className="absolute -top-6 -right-1">
+                                    <div className="absolute -top-8 -right-1">
                                       <span className="bg-red-600 text-white px-1.5 py-0.5 rounded text-[12px] font-extrabold shadow">
                                         خصم {discountPercent}%
                                       </span>
@@ -433,17 +439,18 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                                       {doctor.expirence}
                                     </div>
                                   )}
-                                  {(basePrice != null || discountedPrice != null) && (
+                                  {(basePrice != null ||
+                                    discountedPrice != null) && (
                                     <div className="mt-2 flex items-center justify-between bg-white/70 rounded px-2 py-1 border border-gray-200">
                                       <span className="text-xs text-gray-600 font-semibold">
                                         رسوم الاستشارة:
                                       </span>
                                       {hasDiscount ? (
                                         <div className="flex items-center gap-2">
-                                          <span className="text-sm font-extrabold text-red-600">
+                                          <span className="text-lg font-extrabold text-red-600">
                                             {discountedPrice} $
                                           </span>
-                                          <span className="text-xs font-bold text-gray-500 line-through">
+                                          <span className="text-md font-bold text-gray-500 line-through">
                                             {basePrice} $
                                           </span>
                                         </div>
@@ -674,7 +681,8 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                             discountPercent,
                           } = getDoctorPricing(formData.selectedDoctor);
 
-                          if (basePrice == null && discountedPrice == null) return null;
+                          if (basePrice == null && discountedPrice == null)
+                            return null;
 
                           return (
                             <div className="mt-2 flex items-center justify-between bg-white rounded-lg p-2 border border-gray-200">
@@ -740,7 +748,8 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                         </div>
                       ) : healthCardMembers.length === 0 ? (
                         <div className="text-sm text-red-600">
-                          {healthCardMessage || "انت غير مشترك يرجي الاشتراك اولا"}
+                          {healthCardMessage ||
+                            "انت غير مشترك يرجي الاشتراك اولا"}
                         </div>
                       ) : (
                         <select
