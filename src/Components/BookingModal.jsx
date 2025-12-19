@@ -411,8 +411,8 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                                     }}
                                   />
                                   {hasDiscount && (
-                                    <div className="absolute -top-1 -right-1">
-                                      <span className="bg-red-600 text-white px-1.5 py-0.5 rounded text-[10px] font-extrabold shadow">
+                                    <div className="absolute -top-6 -right-1">
+                                      <span className="bg-red-600 text-white px-1.5 py-0.5 rounded text-[12px] font-extrabold shadow">
                                         خصم {discountPercent}%
                                       </span>
                                     </div>
