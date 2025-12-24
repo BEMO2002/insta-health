@@ -222,9 +222,31 @@ const Slider = () => {
 
   if (loading) {
     return (
-      <div className="bg-secondary">
-        <div className="flex justify-center items-center h-[90vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-second"></div>
+      <div className="relative pt-10 bg-third h-screen overflow-hidden">
+        <div className="h-full w-full max-w-[1600px] mx-auto flex items-center justify-center px-4 md:px-8">
+          <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div className="animate-pulse">
+              <div className="h-12 md:h-14 bg-gray-200 rounded-xl w-4/5 mb-5" />
+              <div className="h-12 md:h-14 bg-gray-200 rounded-xl w-3/5 mb-7" />
+              <div className="h-5 bg-gray-200 rounded w-full mb-3" />
+              <div className="h-5 bg-gray-200 rounded w-11/12 mb-3" />
+              <div className="h-5 bg-gray-200 rounded w-10/12 mb-8" />
+              <div className="h-12 bg-gray-200 rounded-full w-48" />
+            </div>
+
+            <div className="animate-pulse flex items-center justify-center">
+              <div className="w-full max-w-[640px] aspect-[4/3] bg-gray-200 rounded-2xl" />
+            </div>
+          </div>
+        </div>
+
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2">
+          {Array.from({ length: 3 }).map((_, idx) => (
+            <div
+              key={`dot-${idx}`}
+              className="h-2.5 w-2.5 rounded-full bg-gray-200 animate-pulse"
+            />
+          ))}
         </div>
       </div>
     );
