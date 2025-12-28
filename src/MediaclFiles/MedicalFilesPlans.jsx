@@ -449,7 +449,7 @@ const MedicalFilesPlans = () => {
                       رقم الملف:
                     </span>
                     <p className="text-gray-900 font-bold text-lg">
-                      {fileModalState.file.fileId ||
+                      {fileModalState.file.fileNumber ||
                         fileModalState.file.id ||
                         "-"}
                     </p>

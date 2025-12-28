@@ -42,7 +42,7 @@ const enums = {
 // Keys to hide from the summary table
 const hiddenKeys = new Set([
   "id",
-  "Id",
+  "qrCodeUrl",
   "userId",
   "UserId",
   "medicalFileId",
@@ -56,8 +56,7 @@ const hiddenKeys = new Set([
 // Arabic labels for user file fields shown in the summary table
 const fieldLabels = {
   id: "رقم الملف",
-  fileId: "رقم الملف",
-  FileId: "رقم الملف",
+  fileNumber: "رقم الملف",
   userName: "الاسم",
   userPhone: "الهاتف",
   userEmail: "البريد الإلكتروني",

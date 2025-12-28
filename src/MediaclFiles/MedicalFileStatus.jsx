@@ -275,7 +275,7 @@ const MedicalFileStatus = () => {
                     <tr className="border-b border-gray-100">
                       <td className="py-3 px-4 font-semibold">رقم الملف</td>
                       <td className="py-3 px-4">
-                        {file.fileId || file.id || "-"}
+                        {file.fileNumber || file.id || "-"}
                       </td>
                     </tr>
                     <tr className="border-b border-gray-100">
