@@ -39,7 +39,7 @@ const SubscriptionPlans = () => {
   }, []);
 
   const servicePlans = useMemo(
-    () => plans.filter((plan) => plan.type === "ServiceProivder"),
+    () => plans.filter((plan) => plan.type === "ServiceProvider"),
     [plans]
   );
 
