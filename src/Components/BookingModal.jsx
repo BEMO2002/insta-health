@@ -410,7 +410,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                 </div>
                 {step < 4 && (
                   <div
-                    className={`w-[180px] h-1 mx-2 ${
+                    className={`md:w-[180px] w-[50px] h-1 mx-2 ${
                       currentStep > step ? "bg-primary" : "bg-gray-200"
                     }`}
                   />
