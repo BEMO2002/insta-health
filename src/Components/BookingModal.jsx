@@ -17,11 +17,15 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
   const [formData, setFormData] = useState({
     userName: "",
     userMobile: "",
+    content: "",
+    prescriptionImage: null,
     appointmentId: null,
     selectedDay: null,
     selectedSlot: null,
     selectedDoctor: null,
   });
+
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   const [isHealthCardUser, setIsHealthCardUser] = useState(false);
   const [healthCardMembers, setHealthCardMembers] = useState([]);
@@ -135,11 +139,14 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
       setFormData({
         userName: "",
         userMobile: "",
+        content: "",
+        prescriptionImage: null,
         appointmentId: null,
         selectedDay: null,
         selectedSlot: null,
         selectedDoctor: null,
       });
+      setPreviewUrl(null);
       setAvailableDays([]);
       setAvailableSlots([]);
       setDoctors([]);
@@ -150,6 +157,15 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
       setHealthCardMessage("");
     }
   }, [isOpen]);
+
+  // Cleanup preview URL on unmount or when previewUrl changes
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   // Fetch data when modal opens
   useEffect(() => {
@@ -198,6 +214,17 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        prescriptionImage: file,
+      }));
+      setPreviewUrl(URL.createObjectURL(file));
+    }
   };
 
   const fetchHealthCard = async () => {
@@ -272,12 +299,30 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
       const effectiveUserName = effectiveIsHealthCardUser
         ? selectedHealthCardName
         : formData.userName;
-      const response = await baseApi.post("/ServicesReservations", {
-        appointmentId: formData.appointmentId,
-        userName: effectiveUserName,
-        userMobile: formData.userMobile,
-        IsHealthCardUser: effectiveIsHealthCardUser,
-      });
+
+      const submissionData = new FormData();
+      submissionData.append("AppointmentId", formData.appointmentId);
+      submissionData.append("UserName", effectiveUserName);
+      submissionData.append("UserMobile", formData.userMobile);
+      submissionData.append("IsHealthCardUser", effectiveIsHealthCardUser);
+
+      if (formData.content) {
+        submissionData.append("Content", formData.content);
+      }
+
+      if (formData.prescriptionImage) {
+        submissionData.append("PrescriptionImage", formData.prescriptionImage);
+      }
+
+      const response = await baseApi.post(
+        "/ServicesReservations",
+        submissionData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (response.data.success) {
         toast.success("تم حجز الموعد بنجاح");
@@ -322,7 +367,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
 
   return (
     <div className="fixed inset-0 bg-black/40 bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-xl font-bold text-primary">
@@ -365,7 +410,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                 </div>
                 {step < 4 && (
                   <div
-                    className={`w-12 h-1 mx-2 ${
+                    className={`w-[180px] h-1 mx-2 ${
                       currentStep > step ? "bg-primary" : "bg-gray-200"
                     }`}
                   />
@@ -375,7 +420,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
           </div>
 
           {/* Step Content */}
-          <div className="min-h-[300px]">
+          <div className="min-h-[300px] ">
             {/* Step 1: Select Doctor (Only for Clinics) or Day (for Services) */}
             {currentStep === 1 && (
               <div>
@@ -802,6 +847,85 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                       placeholder="01xxxxxxxxx"
                       required
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      تفاصيل إضافية
+                    </label>
+                    <textarea
+                      name="content"
+                      value={formData.content}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="أي تفاصيل أو ملاحظات أخرى..."
+                      rows="3"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      صورة الروشتة
+                    </label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors bg-gray-50">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        id="prescription-upload"
+                      />
+                      <label
+                        htmlFor="prescription-upload"
+                        className="cursor-pointer flex flex-col items-center justify-center space-y-2"
+                      >
+                        <svg
+                          className="w-8 h-8 text-gray-400 group-hover:text-primary transition-colors"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                        <span className="text-sm text-gray-600">
+                          اضغط لرفع صورة الروشتة
+                        </span>
+                        <span className="text-xs text-gray-400">
+                          (PNG, JPG, JPEG)
+                        </span>
+                      </label>
+                    </div>
+
+                    {previewUrl && (
+                      <div className="mt-4 relative bg-gray-100 rounded-lg p-2 border border-gray-200">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              prescriptionImage: null,
+                            }));
+                            setPreviewUrl(null);
+                          }}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
+                        >
+                          <FiX size={16} />
+                        </button>
+                        <img
+                          src={previewUrl}
+                          alt="Prescription Preview"
+                          className="w-full h-48 object-contain rounded-md"
+                        />
+                        <p className="text-center text-xs text-gray-500 mt-2">
+                          معاينة الصورة
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
 

@@ -166,9 +166,6 @@ const HomeProvidersDetails = () => {
                   "https://via.placeholder.com/800x400?text=No+Image";
               }}
             />
-            <div className="absolute top-4 right-4 bg-second text-white px-4 py-2 rounded-full text-sm font-medium">
-              {provider.specialityName}
-            </div>
             <div className="absolute top-4 left-4 flex items-center bg-yellow-500 text-white px-3 py-1 rounded-full text-sm">
               <FaStar className="ml-1" size={14} />
               {provider.rate}
@@ -238,6 +235,28 @@ const HomeProvidersDetails = () => {
             </div>
           </div>
         </div>
+        {provider.specialties && provider.specialties.length > 0 && (
+          <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-primary mb-6">
+              التخصصات
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {provider.specialties.map((specialties) => (
+                <div
+                  key={specialties.id}
+                  className="flex items-center justify-between flex-col md:flex-row gap-4 p-4 bg-second text-white rounded-lg transition-colors"
+                >
+                  <div className="flex  items-center">
+                    <div className="w-3 h-3 bg-white rounded-full ml-3"></div>
+                    <div className="flex flex-col">
+                      <span className="font-medium">{specialties.name}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Cities Section */}
         {provider.providerCities && provider.providerCities.length > 0 && (
@@ -265,37 +284,59 @@ const HomeProvidersDetails = () => {
         )}
 
         {/* Sub Specialities Section */}
-        {provider.subSpecialities && provider.subSpecialities.length > 0 && (
-          <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-primary mb-6">
-              الخدمات المتوفرة
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {provider.subSpecialities.map((subSpeciality) => (
-                <div
-                  key={subSpeciality.id}
-                  className="flex items-center justify-between flex-col md:flex-row gap-4 p-4 bg-second text-white rounded-lg transition-colors"
-                >
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-white rounded-full ml-3"></div>
-                    <span className="font-medium">{subSpeciality.name}</span>
-                  </div>
-                  <button
-                    onClick={() =>
-                      handleBookingClick(
-                        subSpeciality.subSpecialityId,
-                        subSpeciality.name
-                      )
-                    }
-                    className="bg-white flex items-center gap-2 cursor-pointer text-second px-3 py-2 rounded text-md font-bold transition-colors"
+        {provider.subSpecialties && provider.subSpecialties.length > 0 && (
+          <section className="my-10 px-4 md:px-0">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-10">
+              {/* Header Section */}
+              <div className="flex items-center mb-8 border-r-4 border-second pr-4">
+                <h2 className="text-2xl md:text-3xl font-extrabold text-primary">
+                  الخدمات المتوفرة
+                </h2>
+              </div>
+
+              {/* Services Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {provider.subSpecialties.map((subSpecialty) => (
+                  <div
+                    key={subSpecialty.id}
+                    className="group flex flex-col justify-between p-5 bg-second rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
                   >
-                    احجز
-                    <BsJournalBookmark className="ml-2" size={20} />
-                  </button>
-                </div>
-              ))}
+                    <div className="flex items-start gap-4 mb-6">
+                      {/* Decorative Icon Dot */}
+                      <div className="mt-1.5 w-2.5 h-2.5 bg-white rounded-full flex-shrink-0 animate-pulse" />
+
+                      <div className="flex flex-col gap-1">
+                        <h3 className="text-lg font-bold text-white leading-tight">
+                          {subSpecialty.name}
+                        </h3>
+                        <p className="text-white/90 text-sm font-medium">
+                          السعر:
+                          <span className="text-xl mr-1 font-black text-white">
+                            {subSpecialty.price}
+                          </span>
+                          <span className="text-xs mr-1">ج.م</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Action Button */}
+                    <button
+                      onClick={() =>
+                        handleBookingClick(
+                          subSpecialty.subSpecialtyId,
+                          subSpecialty.name
+                        )
+                      }
+                      className="w-full flex items-center justify-center gap-3 bg-white text-second py-3 px-4 rounded-lg font-bold transition-all hover:bg-gray-100 active:scale-95"
+                    >
+                      <span>احجز الآن</span>
+                      <BsJournalBookmark size={18} />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          </section>
         )}
 
         {/* Contact Information */}

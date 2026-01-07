@@ -290,9 +290,6 @@ const HomeProviders = () => {
                       "https://via.placeholder.com/400x200?text=No+Image";
                   }}
                 />
-                <div className="absolute top-4 right-4 bg-second text-white px-3 py-1 rounded-full text-sm font-medium">
-                  {provider.specialityName}
-                </div>
                 <div className="absolute top-4 left-4 flex items-center bg-yellow-500 text-white px-2 py-1 rounded-full text-sm">
                   <FaStar className="ml-1" size={12} />
                   {provider.rate}

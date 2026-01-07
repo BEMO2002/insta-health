@@ -34,6 +34,7 @@ import FamilyCardStatus from "./FamilyCard/FamilyCardStatus";
 import MainFilesAndrecord from "./MedicalFileAndRecored/MainFilesAndrecord";
 import ScrollToTop from "./Components/ScrollToTop";
 import NotFound from "./Components/NotFound";
+import MedicalFileDetails from "./MedicalFileDetails";
 function App() {
   return (
     <BrowserRouter>
@@ -91,6 +92,10 @@ function App() {
           <Route path="/family-card" element={<MainFamilyCard />} />
           <Route path="/family-card/status" element={<FamilyCardStatus />} />
           <Route path="/medical-file-record" element={<MainFilesAndrecord />} />
+          <Route
+            path="medical-files/:fileNumber"
+            element={<MedicalFileDetails />}
+          />
         </Route>
 
         <Route path="/login" element={<Login />} />
