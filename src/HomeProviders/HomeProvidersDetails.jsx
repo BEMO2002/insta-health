@@ -160,7 +160,7 @@ const HomeProvidersDetails = () => {
             <img
               src={provider.imageUrl}
               alt={provider.name}
-              className="w-full h-64 md:h-80 object-cover"
+              className="w-full h-64 md:h-80 object-contain"
               onError={(e) => {
                 e.target.src =
                   "https://via.placeholder.com/800x400?text=No+Image";
@@ -283,55 +283,84 @@ const HomeProvidersDetails = () => {
           </div>
         )}
 
-        {/* Sub Specialities Section */}
-        {provider.subSpecialties && provider.subSpecialties.length > 0 && (
-          <section className="my-10 px-4 md:px-0">
+        {/* الخدمات المتوفرة - بناءً على الهيكل الجديد */}
+        {provider.specialties && provider.specialties.length > 0 && (
+          <section className="my-10 px-4 md:px-0" dir="rtl">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-10">
-              {/* Header Section */}
+              {/* العنوان الرئيسي */}
               <div className="flex items-center mb-8 border-r-4 border-second pr-4">
                 <h2 className="text-2xl md:text-3xl font-extrabold text-primary">
-                  الخدمات المتوفرة
+                  الخدمات والأسعار المتاحة
                 </h2>
               </div>
 
-              {/* Services Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {provider.subSpecialties.map((subSpecialty) => (
+              <div className="space-y-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
+                {provider.specialties.map((specialty) => (
                   <div
-                    key={subSpecialty.id}
-                    className="group flex flex-col justify-between p-5 bg-second rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                    key={specialty.id}
+                    className="border-b border-gray-100 pb-8 last:border-0"
                   >
-                    <div className="flex items-start gap-4 mb-6">
-                      {/* Decorative Icon Dot */}
-                      <div className="mt-1.5 w-2.5 h-2.5 bg-white rounded-full flex-shrink-0 animate-pulse" />
+                    {/* اسم التخصص الرئيسي */}
+                    <h3 className="text-xl font-bold text-second mb-4 flex items-center gap-2">
+                      <span className="w-2 h-2 bg-second rounded-full"></span>
+                      {specialty.name}
+                    </h3>
 
-                      <div className="flex flex-col gap-1">
-                        <h3 className="text-lg font-bold text-white leading-tight">
-                          {subSpecialty.name}
-                        </h3>
-                        <p className="text-white/90 text-sm font-medium">
-                          السعر:
-                          <span className="text-xl mr-1 font-black text-white">
-                            {subSpecialty.price}
-                          </span>
-                          <span className="text-xs mr-1">ج.م</span>
-                        </p>
-                      </div>
+                    {/* شبكة الخدمات الفرعية */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {specialty.subSpecialties.map((sub) => (
+                        <div
+                          key={sub.id}
+                          className="group flex flex-col justify-between p-5 bg-white border border-gray-200 rounded-xl transition-all duration-300 hover:shadow-xl hover:border-second/30"
+                        >
+                          <div className="mb-6">
+                            <h4 className="text-lg font-bold text-gray-800 mb-3 leading-tight min-h-[3rem]">
+                              {sub.name}
+                            </h4>
+
+                            <div className="flex flex-col gap-1">
+                              {/* عرض السعر الأصلي إذا كان هناك خصم */}
+                              {sub.discountPrice > 0 &&
+                                sub.discountPrice < sub.price && (
+                                  <p className="text-gray-400 text-md line-through decoration-red-500">
+                                    {sub.price} ج.م
+                                  </p>
+                                )}
+
+                              {/* السعر النهائي */}
+                              <div className="flex items-baseline gap-1">
+                                <span className="text-2xl font-black text-second">
+                                  {sub.discountPrice > 0
+                                    ? sub.discountPrice
+                                    : sub.price}
+                                </span>
+                                <span className="text-xs font-bold text-gray-500">
+                                  ج.م
+                                </span>
+                                {sub.discountPrice > 0 && (
+                                  <span className="mr-2 bg-red-100 text-red-600 text-[13px] px-2 py-0.5 rounded-full font-bold">
+                                    وفر{" "}
+                                    {(sub.price - sub.discountPrice).toFixed(0)}{" "}
+                                    ج.م
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* زر الحجز */}
+                          <button
+                            onClick={() =>
+                              handleBookingClick(sub.subSpecialtyId, sub.name)
+                            }
+                            className="w-full flex items-center justify-center gap-3 bg-second text-white py-3 px-4 rounded-lg font-bold transition-all hover:bg-primary active:scale-95 shadow-md shadow-second/20"
+                          >
+                            <span>احجز الخدمة</span>
+                            <BsJournalBookmark size={18} />
+                          </button>
+                        </div>
+                      ))}
                     </div>
-
-                    {/* Action Button */}
-                    <button
-                      onClick={() =>
-                        handleBookingClick(
-                          subSpecialty.subSpecialtyId,
-                          subSpecialty.name
-                        )
-                      }
-                      className="w-full flex items-center justify-center gap-3 bg-white text-second py-3 px-4 rounded-lg font-bold transition-all hover:bg-gray-100 active:scale-95"
-                    >
-                      <span>احجز الآن</span>
-                      <BsJournalBookmark size={18} />
-                    </button>
                   </div>
                 ))}
               </div>

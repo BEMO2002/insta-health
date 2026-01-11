@@ -201,7 +201,7 @@ const ProvidersDetails = () => {
             <img
               src={provider.imageCover}
               alt={provider.name}
-              className="w-full h-64 md:h-80 object-cover"
+              className="w-full h-64 md:h-80 object-contain "
               onError={(e) => {
                 e.target.src =
                   "https://via.placeholder.com/800x400?text=No+Image";
