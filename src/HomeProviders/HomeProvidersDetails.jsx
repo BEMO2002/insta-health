@@ -235,28 +235,6 @@ const HomeProvidersDetails = () => {
             </div>
           </div>
         </div>
-        {provider.specialties && provider.specialties.length > 0 && (
-          <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-primary mb-6">
-              التخصصات
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {provider.specialties.map((specialties) => (
-                <div
-                  key={specialties.id}
-                  className="flex items-center justify-between flex-col md:flex-row gap-4 p-4 bg-second text-white rounded-lg transition-colors"
-                >
-                  <div className="flex  items-center">
-                    <div className="w-3 h-3 bg-white rounded-full ml-3"></div>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{specialties.name}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Cities Section */}
         {provider.providerCities && provider.providerCities.length > 0 && (
