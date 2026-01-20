@@ -8,12 +8,7 @@ const HomePopup = () => {
   const [popupData, setPopupData] = useState(null);
 
   useEffect(() => {
-    // Check if the popup has been closed previously
-    const hasClosedPopup = localStorage.getItem("homePopupClosed");
-
-    if (!hasClosedPopup) {
-      fetchPopupData();
-    }
+    fetchPopupData();
   }, []);
 
   const fetchPopupData = async () => {
@@ -38,8 +33,6 @@ const HomePopup = () => {
 
   const handleClose = () => {
     setIsVisible(false);
-    // Set flag in localStorage so it doesn't appear again
-    localStorage.setItem("homePopupClosed", "true");
   };
 
   if (!isVisible || !popupData) return null;
@@ -55,10 +48,10 @@ const HomePopup = () => {
           onClick={handleClose} // Close when clicking outside
         >
           <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.5, opacity: 0 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -100, opacity: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
             className="relative bg-white rounded-2xl overflow-hidden max-w-lg w-full shadow-2xl"
             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
           >

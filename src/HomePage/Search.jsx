@@ -85,7 +85,7 @@ const Search = () => {
                 </button>
 
                 {isSpecialityOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-[9999] max-h-60 overflow-y-auto">
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-[9999] max-h-40 overflow-y-auto">
                     <button
                       onClick={() => {
                         setSelectedSpeciality("");
