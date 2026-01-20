@@ -77,7 +77,7 @@ export const Services = () => {
                 onMouseOver={() => {
                   setActiveIndex(index);
                 }}
-                className={`h-[200px] lg:h-[600px]  rounded-2xl cursor-pointer overflow-hidden relative transition-all duration-300 ${
+                className={`h-[200px] lg:h-[400px]  rounded-2xl cursor-pointer overflow-hidden relative transition-all duration-300 ${
                   activeIndex === index ? "active" : ""
                 }`}
               >
