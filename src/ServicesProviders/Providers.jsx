@@ -162,7 +162,7 @@ const Providers = () => {
       console.log("New URL params:", newParams);
       setSearchParams(newParams, { replace: true });
     },
-    [setSearchParams, filters]
+    [setSearchParams, filters],
   );
 
   // Handle page change
@@ -179,7 +179,7 @@ const Providers = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
     },
-    [totalCount, pageSize, searchParams, setSearchParams]
+    [totalCount, pageSize, searchParams, setSearchParams],
   );
 
   // Generate page numbers for pagination
@@ -280,7 +280,7 @@ const Providers = () => {
                 <img
                   src={provider.imageCover}
                   alt={provider.name}
-                  className="w-full h-60 object-cover"
+                  className="w-full h-56 object-cover"
                   onError={(e) => {
                     e.target.src =
                       "https://via.placeholder.com/400x200?text=No+Image";
