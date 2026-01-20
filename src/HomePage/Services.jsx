@@ -60,7 +60,7 @@ export const Services = () => {
         viewport={{ once: false, amount: 0 }}
         className="py-20 p-8 root hidden lg:block"
       >
-        <div className="container mx-auto max-w-7xl mb-3  cursor-pointer">
+        <div className="container mx-auto max-w-6xl mb-3  cursor-pointer">
           <div className="flex items-center justify-center flex-col gap-3 ">
             <span className="mx-4 text-xl lg:text-3xl text-second font-bold">
               خدماتنا
