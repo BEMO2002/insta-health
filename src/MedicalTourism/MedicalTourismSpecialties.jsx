@@ -148,7 +148,7 @@ const MedicalTourismSpecialties = () => {
           >
             {specialties.map((specialty) => (
               <SwiperSlide key={specialty.id}>
-                <div className="bg-white mb-5 rounded-xl shadow-lg overflow-hidden max-w-3xl mx-auto">
+                <div className="bg-white mb-5 rounded-xl shadow-lg overflow-hidden sm:max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
                   {/* Specialty Image with Text Overlay */}
                   <div className="relative h-96 md:h-[500px]">
                     <img
