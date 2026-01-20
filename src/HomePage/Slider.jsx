@@ -21,7 +21,7 @@ const MotionDiv = motion.div;
 
 const ProfessionalCarousel = ({ items }) => {
   return (
-    <div className="relative  z-2 w-full h-[95vh] md:h-[100vh]  ">
+    <div className="relative  z-2 w-full h-[95vh] lg:h-[100vh] md:h-[120vh]  ">
       {/* Animated Floating Circles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-5">
         {/* Circle 1 */}
@@ -71,7 +71,7 @@ const ProfessionalCarousel = ({ items }) => {
       >
         {items.map((item, index) => (
           <SwiperSlide key={item.id || index}>
-            <div className="relative w-full h-full flex items-center overflow-hidden justify-center">
+            <div className="relative w-full h-full flex items-center overflow-visible justify-center">
               <img
                 src={looder}
                 alt=""
@@ -125,7 +125,7 @@ const ProfessionalCarousel = ({ items }) => {
                       <img src={appStore} alt="" className="lg:w-52 w-32" />
                     </div>
                     {/* Search Component */}
-                    <div className=" items-start ml-auto max-w-lg mt-2 relative z-[9999]">
+                    <div className=" items-start ml-auto max-w-lg mt-2 relative z-60">
                       <Search />
                     </div>
                   </MotionDiv>

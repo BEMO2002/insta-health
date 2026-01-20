@@ -70,7 +70,7 @@ const Search = () => {
     <div className="" dir="rtl">
       <div className=" mx-auto ">
         <div className="max-w-xl mx-auto">
-          <div className=" rounded-lg p-4 items-start relative z-[9999]">
+          <div className=" rounded-lg p-4 items-start relative z-50">
             <div className="flex flex-row items-start gap-4 text-right">
               {/* Speciality Dropdown */}
               <div className="relative flex-1" ref={specialityRef}>
