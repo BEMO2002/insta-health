@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { fadeIn } from "../Framermotion/Varient";
+import { Link } from "react-router-dom";
 const MotionSection = motion.section;
 export const Services = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -37,11 +38,13 @@ export const Services = () => {
                 key={index}
                 className="h-[220px] rounded-2xl overflow-hidden relative"
               >
-                <img
-                  className="h-full w-full object-cover"
-                  src={item.src}
-                  alt={`service-${index}`}
-                />
+                <Link to="/providers">
+                  <img
+                    className="h-full w-full object-cover"
+                    src={item.src}
+                    alt={`service-${index}`}
+                  />
+                </Link>
                 <span className="absolute bottom-2 left-2 bg-black/60 text-white text-lg px-3 py-1 rounded-md">
                   {item.label}
                 </span>
@@ -77,15 +80,17 @@ export const Services = () => {
                 onMouseOver={() => {
                   setActiveIndex(index);
                 }}
-                className={`h-[200px] lg:h-[400px]  rounded-2xl cursor-pointer overflow-hidden relative transition-all duration-300 ${
+                className={`h-[200px] lg:h-[500px]  rounded-2xl cursor-pointer overflow-hidden relative transition-all duration-300 ${
                   activeIndex === index ? "active" : ""
                 }`}
               >
-                <img
-                  className="overflow-hidden h-full w-full object-cover"
-                  src={item.src}
-                  alt={`car${index}`}
-                />
+                <Link to="/providers">
+                  <img
+                    className="overflow-hidden h-full w-full object-cover"
+                    src={item.src}
+                    alt={`car${index}`}
+                  />
+                </Link>
                 <span className="absolute bottom-4 left-4 bg-black/60 text-white lg:text-2xl px-6 py-2 rounded-md">
                   {item.label}
                 </span>

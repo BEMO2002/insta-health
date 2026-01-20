@@ -21,7 +21,7 @@ const MotionDiv = motion.div;
 
 const ProfessionalCarousel = ({ items }) => {
   return (
-    <div className="relative  z-2 w-full h-[100vh] max-h-screen  ">
+    <div className="relative  z-2 w-full h-[95vh] md:h-[90vh]  ">
       {/* Animated Floating Circles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-5">
         {/* Circle 1 */}
@@ -53,7 +53,7 @@ const ProfessionalCarousel = ({ items }) => {
         slidesPerView={1}
         autoplay={{
           delay: 6000,
-          disableOnInteraction: false,
+          disableOnInteraction: true,
           pauseOnMouseEnter: false,
         }}
         navigation={{
@@ -75,22 +75,22 @@ const ProfessionalCarousel = ({ items }) => {
               <img
                 src={looder}
                 alt=""
-                className="absolute opacity-30 lg:opacity-100 md:opacity-100 md:left-20 left-5 top-0 w-40 z-50"
+                className="absolute opacity-30 lg:opacity-100 md:opacity-100 md:left-20 left-5 top-0 w-40 -z-50"
               />
               <img
                 src={looder2}
                 alt=""
-                className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 md:right-20 right-5 bottom-0 w-40 z-50"
+                className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 md:right-20 right-5 bottom-0 w-40 -z-50"
               />
               <img
                 src={looder3}
                 alt=""
-                className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 md:left-20 left-5 bottom-0 w-40 z-50"
+                className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 md:left-20 left-5 bottom-0 w-40 -z-50"
               />
               <img
                 src={looder4}
                 alt=""
-                className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 right-0 top-20 z-50"
+                className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 right-0 top-20 -50"
               />
 
               <div
@@ -136,11 +136,11 @@ const ProfessionalCarousel = ({ items }) => {
                     viewport={{ once: false, amount: 0 }}
                     className="w-full lg:w-1/2 relative"
                   >
-                    <div className="relative w-full h-full flex items-center justify-center">
+                    <div className="relative w-full h-auto flex items-center justify-center">
                       <img
                         src={item.image}
                         alt={item.alt || `Slide ${index + 1}`}
-                        className="w-full md:h-auto  h-[400px]   object-contain rounded-xl"
+                        className="w-full lg:h-auto  h-[350px]   object-contain rounded-xl"
                       />
                     </div>
                   </MotionDiv>
@@ -199,13 +199,15 @@ const Slider = () => {
         setError("");
         const response = await baseApi.get("/Advertisments");
         if (response.data.success) {
-          const advertisements = response.data.data.map((ad) => ({
-            id: ad.id,
-            image: ad.imageUrl,
-            paragraph: "انستا هيلث",
-            title: "حمل التطبيق الأن",
-            descriptionTwo: ad.description,
-          }));
+          const advertisements = response.data.data
+            .filter((ad) => ad.placement === "Slider")
+            .map((ad) => ({
+              id: ad.id,
+              image: ad.imageUrl,
+              paragraph: "انستا هيلث",
+              title: "حمل التطبيق الأن",
+              descriptionTwo: ad.description,
+            }));
           setCarouselItems(advertisements);
         } else {
           setError("تعذر تحميل الإعلانات");

@@ -68,7 +68,7 @@ const HomeProvidersDetails = () => {
     const remainingStars = 5 - Math.ceil(rating);
     for (let i = 0; i < remainingStars; i++) {
       stars.push(
-        <FaStar key={`empty-${i}`} className="text-gray-300" size={16} />
+        <FaStar key={`empty-${i}`} className="text-gray-300" size={16} />,
       );
     }
 
@@ -77,7 +77,7 @@ const HomeProvidersDetails = () => {
 
   const handleBookingClick = (
     subSpecialityId = null,
-    subSpecialityName = null
+    subSpecialityName = null,
   ) => {
     setBookingModal({
       isOpen: true,
@@ -253,7 +253,9 @@ const HomeProvidersDetails = () => {
                     <span className="font-medium text-gray-700">
                       {city.arabicName}
                     </span>
-                    <p className="text-sm text-gray-500">{city.englishName}</p>
+                    <p className="text-sm text-gray-500">
+                      {city.governorateName}
+                    </p>
                   </div>
                 </div>
               ))}

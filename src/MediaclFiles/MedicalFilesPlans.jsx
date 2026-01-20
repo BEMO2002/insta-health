@@ -31,7 +31,7 @@ const MedicalFilesPlans = () => {
       try {
         setLoading(true);
         const response = await baseApi.get(
-          "/SubscriptionPlans?type=MedicalFile"
+          "/SubscriptionPlans?type=MedicalFile",
         );
         if (response?.data?.success && Array.isArray(response.data.data)) {
           setPlans(response.data.data);
@@ -50,7 +50,7 @@ const MedicalFilesPlans = () => {
 
   const medicalFilePlans = useMemo(
     () => plans.filter((plan) => plan.type === "MedicalFile"),
-    [plans]
+    [plans],
   );
 
   const openModal = (plan) => {
@@ -64,7 +64,7 @@ const MedicalFilesPlans = () => {
   const handleFormSuccess = (planName) => {
     closeModal();
     toast.success(
-      `تم الاشتراك في ${planName} بنجاح، أحد ممثلي خدمة العملاء سوف يتواصل معك قريباً.`
+      `تم الاشتراك في ${planName} بنجاح، أحد ممثلي خدمة العملاء سوف يتواصل معك قريباً.`,
     );
   };
 
@@ -170,7 +170,7 @@ const MedicalFilesPlans = () => {
         payload,
         {
           validateStatus: () => true,
-        }
+        },
       );
 
       if (res.data?.success) {
@@ -195,7 +195,7 @@ const MedicalFilesPlans = () => {
       toast.error(
         err?.response?.data?.message ||
           err?.message ||
-          "حدث خطأ أثناء تجديد الاشتراك"
+          "حدث خطأ أثناء تجديد الاشتراك",
       );
     }
   };
@@ -271,17 +271,26 @@ const MedicalFilesPlans = () => {
                   {plan.description}
                 </p>
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 text-right">
-                  <div className="flex items-center gap-3">
-                    {plan.discountPriceInYear && (
-                      <span className="text-lg text-gray-400 line-through">
-                        {plan.priceInYear?.toLocaleString("ar-EG")} ج.م
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-3">
+                      {plan.discountPrice &&
+                        plan.price &&
+                        plan.discountPrice < plan.price && (
+                          <span className="text-lg text-gray-400 line-through">
+                            {plan.price?.toLocaleString("ar-EG")} ج.م
+                          </span>
+                        )}
+                      <span className="text-3xl font-bold text-primary">
+                        {plan.discountPrice &&
+                        plan.price &&
+                        plan.discountPrice < plan.price
+                          ? plan.discountPrice.toLocaleString("ar-EG")
+                          : plan.price?.toLocaleString("ar-EG")}{" "}
+                        ج.م
                       </span>
-                    )}
-                    <span className="text-3xl font-bold text-primary">
-                      {plan.discountPriceInYear
-                        ? plan.discountPriceInYear.toLocaleString("ar-EG")
-                        : plan.priceInYear?.toLocaleString("ar-EG")}{" "}
-                      ج.م / سنة
+                    </div>
+                    <span className="text-gray-600 bg-gray-100 px-3 py-1 rounded-lg w-fit text-sm font-medium">
+                      المدة: {plan.durationInMonths} شهر
                     </span>
                   </div>
                 </div>
@@ -433,7 +442,7 @@ const MedicalFilesPlans = () => {
                 <span
                   className={`inline-block px-4 py-2 rounded-full text-sm font-semibold ${statusClasses(
                     fileModalState.file.paymentStatus ||
-                      fileModalState.file.PaymentStatus
+                      fileModalState.file.PaymentStatus,
                   )}`}
                 >
                   حالة الدفع:{" "}
@@ -571,7 +580,7 @@ const MedicalFilesPlans = () => {
                     <p className="text-gray-900 bg-red-200 p-1 w-fit rounded-md">
                       {fileModalState.file.expirationDate
                         ? new Date(
-                            fileModalState.file.expirationDate
+                            fileModalState.file.expirationDate,
                           ).toLocaleDateString("ar-EG")
                         : "-"}
                     </p>

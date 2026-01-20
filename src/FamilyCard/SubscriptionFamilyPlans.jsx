@@ -49,7 +49,7 @@ const SubscriptionFamilyPlans = () => {
       try {
         setLoading(true);
         const response = await baseApi.get(
-          "/SubscriptionPlans?type=HealthCard"
+          "/SubscriptionPlans?type=HealthCard",
         );
         if (response?.data?.success && Array.isArray(response.data.data)) {
           setPlans(response.data.data);
@@ -68,7 +68,7 @@ const SubscriptionFamilyPlans = () => {
 
   const healthPlans = useMemo(
     () => plans.filter((plan) => plan.type === "HealthCard"),
-    [plans]
+    [plans],
   );
 
   const openModal = (plan) => {
@@ -82,7 +82,7 @@ const SubscriptionFamilyPlans = () => {
   const handleFormSuccess = (planName) => {
     closeModal();
     toast.success(
-      `تم الاشتراك في ${planName} بنجاح، أحد ممثلي خدمة العملاء سوف يتواصل معك قريباً.`
+      `تم الاشتراك في ${planName} بنجاح، أحد ممثلي خدمة العملاء سوف يتواصل معك قريباً.`,
     );
   };
 
@@ -193,7 +193,7 @@ const SubscriptionFamilyPlans = () => {
         payload,
         {
           validateStatus: () => true,
-        }
+        },
       );
 
       if (res.data?.success) {
@@ -218,7 +218,7 @@ const SubscriptionFamilyPlans = () => {
       toast.error(
         err?.response?.data?.message ||
           err?.message ||
-          "حدث خطأ أثناء تجديد الاشتراك"
+          "حدث خطأ أثناء تجديد الاشتراك",
       );
     }
   };
@@ -430,9 +430,28 @@ const SubscriptionFamilyPlans = () => {
                     <FiUsers className="w-6 h-6" />
                     <span>عدد الأفراد المسموح به: {plan.numberOfMembers}</span>
                   </div>
-                  <span className="text-3xl font-bold text-primary">
-                    {plan.priceInYear?.toLocaleString("ar-EG")} ج.م / سنة
-                  </span>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-3">
+                      {plan.discountPrice &&
+                        plan.price &&
+                        plan.discountPrice < plan.price && (
+                          <span className="text-lg text-gray-400 line-through">
+                            {plan.price?.toLocaleString("ar-EG")} ج.م
+                          </span>
+                        )}
+                      <span className="text-3xl font-bold text-primary">
+                        {plan.discountPrice &&
+                        plan.price &&
+                        plan.discountPrice < plan.price
+                          ? plan.discountPrice.toLocaleString("ar-EG")
+                          : plan.price?.toLocaleString("ar-EG")}{" "}
+                        ج.م
+                      </span>
+                    </div>
+                    <span className="text-gray-600 bg-gray-100 px-3 py-1 rounded-lg w-fit text-sm font-medium">
+                      المدة: {plan.durationInMonths} شهر
+                    </span>
+                  </div>
                 </div>
                 {plan.planAdvantages?.length > 0 && (
                   <ul className="space-y-3 text-right">
@@ -587,7 +606,7 @@ const SubscriptionFamilyPlans = () => {
                 <span
                   className={`inline-block px-4 py-2 rounded-full text-sm font-semibold ${statusClasses(
                     cardModalState.card.paymentStatus ||
-                      cardModalState.card.PaymentStatus
+                      cardModalState.card.PaymentStatus,
                   )}`}
                 >
                   حالة الدفع:{" "}
@@ -598,7 +617,7 @@ const SubscriptionFamilyPlans = () => {
                 {cardModalState.card.deliveryStatus && (
                   <span
                     className={`inline-block px-4 py-2 rounded-full text-sm font-semibold ${deliveryStatusClasses(
-                      cardModalState.card.deliveryStatus
+                      cardModalState.card.deliveryStatus,
                     )}`}
                   >
                     حالة الشحن:{" "}
@@ -673,7 +692,7 @@ const SubscriptionFamilyPlans = () => {
                         const subscriptionPlanId =
                           cardModalState.card.subscriptionPlanId;
                         const plan = plans.find(
-                          (p) => p.id === subscriptionPlanId
+                          (p) => p.id === subscriptionPlanId,
                         );
                         return plan?.numberOfMembers || "-";
                       })()}
@@ -689,7 +708,7 @@ const SubscriptionFamilyPlans = () => {
                         const subscriptionPlanId =
                           cardModalState.card.subscriptionPlanId;
                         const plan = plans.find(
-                          (p) => p.id === subscriptionPlanId
+                          (p) => p.id === subscriptionPlanId,
                         );
                         return plan?.numberOfMembers || 0;
                       })()}

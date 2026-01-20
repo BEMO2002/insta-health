@@ -40,7 +40,7 @@ const SubscriptionPlans = () => {
 
   const servicePlans = useMemo(
     () => plans.filter((plan) => plan.type === "ServiceProvider"),
-    [plans]
+    [plans],
   );
 
   const openModal = (formType, plan) => {
@@ -62,7 +62,7 @@ const SubscriptionPlans = () => {
   const handleFormSuccess = (planName) => {
     closeModal();
     setSuccessToast(
-      `تم الاشتراك في ${planName} بنجاح، أحد ممثلي خدمة العملاء سوف يتواصل معك قريباً.`
+      `تم الاشتراك في ${planName} بنجاح، أحد ممثلي خدمة العملاء سوف يتواصل معك قريباً.`,
     );
   };
 
@@ -147,9 +147,28 @@ const SubscriptionPlans = () => {
                   <span className="text-sm font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
                     خطة #{plan.id}
                   </span>
-                  <span className="text-2xl font-bold text-second">
-                    {plan.priceInYear?.toLocaleString("ar-EG")} ج.م / سنة
-                  </span>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-3">
+                      {plan.discountPrice &&
+                        plan.price &&
+                        plan.discountPrice < plan.price && (
+                          <span className="text-lg text-gray-400 line-through">
+                            {plan.price?.toLocaleString("ar-EG")} ج.م
+                          </span>
+                        )}
+                      <span className="text-3xl font-bold text-primary">
+                        {plan.discountPrice &&
+                        plan.price &&
+                        plan.discountPrice < plan.price
+                          ? plan.discountPrice.toLocaleString("ar-EG")
+                          : plan.price?.toLocaleString("ar-EG")}{" "}
+                        ج.م
+                      </span>
+                    </div>
+                    <span className="text-gray-600 bg-gray-100 px-3 py-1 rounded-lg w-fit text-sm font-medium">
+                      المدة: {plan.durationInMonths} شهر
+                    </span>
+                  </div>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-3 text-right">
                   {plan.name}

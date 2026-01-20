@@ -11,16 +11,19 @@ import Faq from "./Faq";
 import ServiceItems from "./ServiceItems";
 import NumbersTwo from "./NumbersTwo";
 
+import HomePopup from "./HomePopup";
+
 const MainHome = () => {
   return (
     <>
+      <HomePopup />
       <Slider />
+      <AboutTwo />
       <WhyUs />
       <Services />
       <SliderOne />
       <ServiceItems />
       <Work />
-      <AboutTwo />
       <Numbers />
       <NumbersTwo />
       <Testimonials />
