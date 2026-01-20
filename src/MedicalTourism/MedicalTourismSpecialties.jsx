@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Navigation, Pagination } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import baseApi from '../api/baseApi';
-import ConsultationBookingModal from '../Components/ConsultationBookingModal';
-import DoctorsPopup from './DoctorsPopup';
+import React, { useState, useEffect } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import baseApi from "../api/baseApi";
+import ConsultationBookingModal from "../Components/ConsultationBookingModal";
+import DoctorsPopup from "./DoctorsPopup";
 
 const MedicalTourismSpecialties = () => {
   const [specialties, setSpecialties] = useState([]);
@@ -28,8 +28,10 @@ const MedicalTourismSpecialties = () => {
         setLoading(true);
 
         // Fetch specialties
-        const specialtiesResponse = await baseApi.get('/MedicalTourismSpecialties');
-        
+        const specialtiesResponse = await baseApi.get(
+          "/MedicalTourismSpecialties",
+        );
+
         if (specialtiesResponse.data.success && specialtiesResponse.data.data) {
           const specialtiesData = specialtiesResponse.data.data;
           setSpecialties(specialtiesData);
@@ -38,27 +40,30 @@ const MedicalTourismSpecialties = () => {
           const doctorsData = {};
           for (const specialty of specialtiesData) {
             try {
-              const doctorsResponse = await baseApi.get('/Doctors', {
+              const doctorsResponse = await baseApi.get("/Doctors", {
                 params: {
                   tourismSpecialityId: specialty.id,
                 },
               });
-              
+
               if (doctorsResponse.data.success && doctorsResponse.data.data) {
                 doctorsData[specialty.id] = doctorsResponse.data.data;
               } else {
                 doctorsData[specialty.id] = [];
               }
             } catch (err) {
-              console.error(`Error fetching doctors for specialty ${specialty.id}:`, err);
+              console.error(
+                `Error fetching doctors for specialty ${specialty.id}:`,
+                err,
+              );
               doctorsData[specialty.id] = [];
             }
           }
           setDoctorsBySpecialty(doctorsData);
         }
       } catch (err) {
-        console.error('Error fetching specialties:', err);
-        setError('حدث خطأ في تحميل البيانات');
+        console.error("Error fetching specialties:", err);
+        setError("حدث خطأ في تحميل البيانات");
       } finally {
         setLoading(false);
       }
@@ -126,7 +131,7 @@ const MedicalTourismSpecialties = () => {
 
           {/* Specialties Swiper */}
           <Swiper
-            modules={[Autoplay, Pagination , Navigation]}
+            modules={[Autoplay, Pagination, Navigation]}
             spaceBetween={30}
             slidesPerView={1}
             loop={specialties.length > 1}
@@ -143,7 +148,7 @@ const MedicalTourismSpecialties = () => {
           >
             {specialties.map((specialty) => (
               <SwiperSlide key={specialty.id}>
-                <div className="bg-white mb-5 rounded-xl shadow-lg overflow-hidden max-w-4xl mx-auto">
+                <div className="bg-white mb-5 rounded-xl shadow-lg overflow-hidden max-w-3xl mx-auto">
                   {/* Specialty Image with Text Overlay */}
                   <div className="relative h-96 md:h-[500px]">
                     <img
@@ -151,13 +156,18 @@ const MedicalTourismSpecialties = () => {
                       alt={specialty.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="400"%3E%3Crect fill="%23e5e7eb" width="800" height="400"/%3E%3Ctext fill="%234b5563" font-family="Arial" font-size="24" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3Eتخصص طبي%3C/text%3E%3C/svg%3E';
+                        e.target.src =
+                          'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="400"%3E%3Crect fill="%23e5e7eb" width="800" height="400"/%3E%3Ctext fill="%234b5563" font-family="Arial" font-size="24" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3Eتخصص طبي%3C/text%3E%3C/svg%3E';
                       }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                     <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                      <h3 className="text-3xl md:text-4xl font-bold mb-3">{specialty.name}</h3>
-                      <p className="text-lg text-white opacity-90">{specialty.description}</p>
+                      <h3 className="text-3xl md:text-4xl font-bold mb-3">
+                        {specialty.name}
+                      </h3>
+                      <p className="text-lg text-white opacity-90">
+                        {specialty.description}
+                      </p>
                     </div>
                   </div>
 
@@ -182,7 +192,11 @@ const MedicalTourismSpecialties = () => {
         isOpen={doctorsPopup.isOpen}
         onClose={closeDoctorsPopup}
         specialty={doctorsPopup.specialty}
-        doctors={doctorsPopup.specialty ? doctorsBySpecialty[doctorsPopup.specialty.id] : []}
+        doctors={
+          doctorsPopup.specialty
+            ? doctorsBySpecialty[doctorsPopup.specialty.id]
+            : []
+        }
         onBookDoctor={handleBookFromPopup}
       />
 
