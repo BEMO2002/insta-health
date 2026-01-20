@@ -34,7 +34,7 @@ const Footer = () => {
 
   return (
     <footer
-      className="relative py-16 md:py-20 overflow-hidden "
+      className="relative py-16 md:py-10 lg:py-20 overflow-hidden "
       style={{
         backgroundImage: `url(${footimage})`,
         backgroundSize: "cover",

@@ -21,7 +21,7 @@ const MotionDiv = motion.div;
 
 const ProfessionalCarousel = ({ items }) => {
   return (
-    <div className="relative  z-2 w-full h-[95vh]  md:h-[100vh]   ">
+    <div className="relative  z-2 w-full h-[90vh] sm:h-[50vh] md:h-[85vh]   ">
       {/* Animated Floating Circles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-5">
         {/* Circle 1 */}
@@ -71,7 +71,7 @@ const ProfessionalCarousel = ({ items }) => {
       >
         {items.map((item, index) => (
           <SwiperSlide key={item.id || index}>
-            <div className="relative w-full h-full flex items-center overflow-visible justify-center">
+            <div className="relative w-full h-full md:h-[70vh] flex items-center overflow-visible justify-center">
               <img
                 src={looder}
                 alt=""
@@ -93,10 +93,7 @@ const ProfessionalCarousel = ({ items }) => {
                 className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 right-0 top-20 -50"
               />
 
-              <div
-                className="container mx-auto px-4 py-12 relative z-10"
-                dir="rtl"
-              >
+              <div className="container mx-auto px-4 relative z-10" dir="rtl">
                 <div className="flex flex-col lg:flex-row items-center text-right gap-8 lg:gap-5">
                   {/* Text Section */}
                   <MotionDiv
@@ -224,7 +221,7 @@ const Slider = () => {
 
   if (loading) {
     return (
-      <div className="relative pt-10 bg-third h-screen overflow-hidden">
+      <div className="relative  bg-third h-screen overflow-hidden">
         <div className="h-full w-full max-w-[1600px] mx-auto flex items-center justify-center px-4 md:px-8">
           <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div className="animate-pulse">
