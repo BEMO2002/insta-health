@@ -21,7 +21,7 @@ const MotionDiv = motion.div;
 
 const ProfessionalCarousel = ({ items }) => {
   return (
-    <div className="relative  z-2 w-full h-[95vh] md:h-[90vh]  ">
+    <div className="relative  z-2 w-full h-[95vh] md:h-[100vh]  ">
       {/* Animated Floating Circles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-5">
         {/* Circle 1 */}
@@ -52,9 +52,9 @@ const ProfessionalCarousel = ({ items }) => {
         spaceBetween={0}
         slidesPerView={1}
         autoplay={{
-          delay: 6000,
+          delay: 8000,
           disableOnInteraction: true,
-          pauseOnMouseEnter: false,
+          pauseOnMouseEnter: true,
         }}
         navigation={{
           nextEl: ".swiper-button-next-custom",
