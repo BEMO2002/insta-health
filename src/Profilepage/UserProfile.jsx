@@ -293,7 +293,7 @@ const UserProfile = () => {
                     key={index}
                     className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
                   >
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-300 pb-4 mb-4">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-100 pb-4 mb-4">
                       <div>
                         <p className="text-sm text-gray-500 mb-1">رقم الطلب</p>
                         <p className="font-bold text-lg text-gray-900">
@@ -308,7 +308,7 @@ const UserProfile = () => {
                         {translateStatus(item.status)}
                       </span>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
                       <div>
                         <p className="text-sm text-gray-500 mb-1">
                           التكلفة الإجمالية
@@ -334,6 +334,40 @@ const UserProfile = () => {
                         </p>
                       </div>
                     </div>
+
+                    {/* Order Items */}
+                    {item.items && item.items.length > 0 && (
+                      <div className="bg-gray-50 p-4 rounded-xl space-y-3">
+                        <p className="text-sm font-semibold text-gray-700 mb-2">
+                          المنتجات المطلوبة:
+                        </p>
+                        <div className="space-y-2">
+                          {item.items.map((prod, pIndex) => (
+                            <div
+                              key={pIndex}
+                              className="flex justify-between items-center text-sm bg-white p-3 rounded-lg border border-gray-100"
+                            >
+                              <div>
+                                <p className="font-semibold text-gray-900">
+                                  {prod.productName}
+                                </p>
+                                <p className="text-gray-500 text-xs mt-1">
+                                  {prod.providerName}
+                                </p>
+                              </div>
+                              <div className="text-left">
+                                <p className="font-bold text-second">
+                                  {prod.totalPrice} ج.م
+                                </p>
+                                <p className="text-gray-500 text-xs">
+                                  الكمية: {prod.quantity}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
 
