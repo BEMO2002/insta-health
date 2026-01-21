@@ -2,7 +2,8 @@ import React, { useContext, useMemo, useState } from "react";
 import { CartContext } from "../Context/CartContext";
 import { FiTrash2, FiMinus, FiPlus, FiShoppingBag } from "react-icons/fi";
 import OrderButton from "../Components/OrderButton";
-
+import { Link } from "react-router-dom";
+import { FiArrowLeft } from "react-icons/fi";
 const MainCart = () => {
   const { items, updateQuantity, removeFromCart, error, loading } =
     useContext(CartContext);
@@ -75,6 +76,13 @@ const MainCart = () => {
             <p className="text-gray-500">
               ابدأ بإضافة بعض المنتجات إلى سلة التسوق
             </p>
+            <Link
+              to="/products"
+              className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors duration-300"
+            >
+              اذهب للتسوق
+              <FiArrowLeft />
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -129,7 +137,7 @@ const MainCart = () => {
                             onClick={() =>
                               handleQuantityUpdate(
                                 item.productId,
-                                Math.max(1, item.quantity - 1)
+                                Math.max(1, item.quantity - 1),
                               )
                             }
                             className="p-2 hover:bg-gray-100 border-l border-r border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -148,7 +156,7 @@ const MainCart = () => {
                             onClick={() =>
                               handleQuantityUpdate(
                                 item.productId,
-                                item.quantity + 1
+                                item.quantity + 1,
                               )
                             }
                             className="p-2 hover:bg-gray-100 border-l border-r border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"

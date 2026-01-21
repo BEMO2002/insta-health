@@ -1,64 +1,64 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FiX, FiUpload, FiCalendar } from 'react-icons/fi';
-import baseApi from '../api/baseApi';
-import { toast } from 'react-toastify';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FiX, FiUpload, FiCalendar } from "react-icons/fi";
+import baseApi from "../api/baseApi";
+import { toast } from "react-toastify";
 
 const ConsultationBookingModal = ({ isOpen, onClose, doctor }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    passportId: '',
+    passportId: "",
     passportImage: null,
-    userName: '',
-    userMobile: '',
-    userEmail: '',
-    medicalComplaint: '',
+    userName: "",
+    userMobile: "",
+    userEmail: "",
+    medicalComplaint: "",
     complaintImage: null,
-    reservationDate: '',
+    reservationDate: "",
   });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
     if (files && files[0]) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [name]: files[0]
+        [name]: files[0],
       }));
     }
   };
 
   const validateForm = () => {
     if (!formData.passportId.trim()) {
-      toast.error('رقم جواز السفر مطلوب');
+      toast.error("رقم جواز السفر مطلوب");
       return false;
     }
     if (!formData.passportImage) {
-      toast.error('صورة جواز السفر مطلوبة');
+      toast.error("صورة جواز السفر مطلوبة");
       return false;
     }
     if (!formData.userName.trim()) {
-      toast.error('اسم المستخدم مطلوب');
+      toast.error("اسم المستخدم مطلوب");
       return false;
     }
     if (!formData.userMobile.trim()) {
-      toast.error('رقم الهاتف مطلوب');
+      toast.error("رقم الهاتف مطلوب");
       return false;
     }
     if (!formData.userEmail.trim()) {
-      toast.error('البريد الإلكتروني مطلوب');
+      toast.error("البريد الإلكتروني مطلوب");
       return false;
     }
     if (!formData.reservationDate) {
-      toast.error('تاريخ الحجز مطلوب');
+      toast.error("تاريخ الحجز مطلوب");
       return false;
     }
     return true;
@@ -73,33 +73,38 @@ const ConsultationBookingModal = ({ isOpen, onClose, doctor }) => {
 
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append('PassportId', formData.passportId);
-      formDataToSend.append('PassportImage', formData.passportImage);
-      formDataToSend.append('UserName', formData.userName);
-      formDataToSend.append('UserMobile', formData.userMobile);
-      formDataToSend.append('UserEmail', formData.userEmail);
-      formDataToSend.append('ReservationDate', formData.reservationDate);
-      formDataToSend.append('DoctorId', doctor.id);
-      
+      formDataToSend.append("PassportId", formData.passportId);
+      formDataToSend.append("PassportImage", formData.passportImage);
+      formDataToSend.append("UserName", formData.userName);
+      formDataToSend.append("UserMobile", formData.userMobile);
+      formDataToSend.append("UserEmail", formData.userEmail);
+      formDataToSend.append("ReservationDate", formData.reservationDate);
+      formDataToSend.append("DoctorId", doctor.id);
+
       if (formData.medicalComplaint) {
-        formDataToSend.append('MedicalComplaint', formData.medicalComplaint);
+        formDataToSend.append("MedicalComplaint", formData.medicalComplaint);
       }
       if (formData.complaintImage) {
-        formDataToSend.append('ComplaintImage', formData.complaintImage);
+        formDataToSend.append("ComplaintImage", formData.complaintImage);
       }
 
-      const response = await baseApi.post('/MedicalConsultationReservations', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      const response = await baseApi.post(
+        "/MedicalConsultationReservations",
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
-      });
+      );
 
       if (response.data.success) {
         // Check if payment URL is returned directly (redirect to payment gateway)
         if (response.data.data?.sessionUrl || response.data.data?.paymentUrl) {
-          const paymentUrl = response.data.data.sessionUrl || response.data.data.paymentUrl;
-          toast.success('تم الحجز بنجاح! جاري التوجيه لبوابة الدفع...');
-          
+          const paymentUrl =
+            response.data.data.sessionUrl || response.data.data.paymentUrl;
+          toast.success("تم الحجز بنجاح! جاري التوجيه لبوابة الدفع...");
+
           // Close modal and redirect to payment gateway
           onClose();
           setTimeout(() => {
@@ -107,20 +112,23 @@ const ConsultationBookingModal = ({ isOpen, onClose, doctor }) => {
           }, 1000);
         } else {
           // If no payment URL, navigate to reservation details page
-          const reservationNumber = response.data.data?.reservationNumber || response.data.data?.id;
-          toast.success('تم الحجز بنجاح! جاري التوجيه لصفحة الدفع...');
-          
+          const reservationNumber =
+            response.data.data?.reservationNumber || response.data.data?.id;
+          toast.success("تم الحجز بنجاح! جاري التوجيه لصفحة الدفع...");
+
           onClose();
           setTimeout(() => {
             navigate(`/medical-consultation-reservations/${reservationNumber}`);
           }, 1000);
         }
       } else {
-        toast.error(response.data.message || 'حدث خطأ أثناء الحجز');
+        toast.error(response.data.message || "حدث خطأ أثناء الحجز");
       }
     } catch (error) {
-      console.error('Error booking consultation:', error);
-      toast.error(error.response?.data?.message || 'حدث خطأ أثناء حجز الاستشارة');
+      console.error("Error booking consultation:", error);
+      toast.error(
+        error.response?.data?.message || "حدث خطأ أثناء حجز الاستشارة",
+      );
     } finally {
       setLoading(false);
     }
@@ -129,7 +137,7 @@ const ConsultationBookingModal = ({ isOpen, onClose, doctor }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 backdrop-blur-sm bg-black/50 bg-opacity-50 flex items-center justify-center z-[10000] p-4">
       <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b sticky top-0 bg-white z-10">
@@ -151,7 +159,7 @@ const ConsultationBookingModal = ({ isOpen, onClose, doctor }) => {
                 alt={doctor.name}
                 className="w-16 h-16 rounded-full object-cover"
                 onError={(e) => {
-                  e.target.src = 'https://via.placeholder.com/64x64?text=د.م';
+                  e.target.src = "https://via.placeholder.com/64x64?text=د.م";
                 }}
               />
               <div>
@@ -162,7 +170,9 @@ const ConsultationBookingModal = ({ isOpen, onClose, doctor }) => {
                     <span
                       key={star}
                       className={`text-sm ${
-                        star <= doctor.rate ? 'text-yellow-400' : 'text-gray-300'
+                        star <= doctor.rate
+                          ? "text-yellow-400"
+                          : "text-gray-300"
                       }`}
                     >
                       ★
@@ -252,7 +262,7 @@ const ConsultationBookingModal = ({ isOpen, onClose, doctor }) => {
                   name="reservationDate"
                   value={formData.reservationDate}
                   onChange={handleInputChange}
-                  min={new Date().toISOString().split('T')[0]}
+                  min={new Date().toISOString().split("T")[0]}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                   required
                 />
@@ -268,7 +278,9 @@ const ConsultationBookingModal = ({ isOpen, onClose, doctor }) => {
               <label className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors">
                 <FiUpload className="ml-2" />
                 <span className="text-sm text-gray-600">
-                  {formData.passportImage ? formData.passportImage.name : 'اختر ملف'}
+                  {formData.passportImage
+                    ? formData.passportImage.name
+                    : "اختر ملف"}
                 </span>
                 <input
                   type="file"
@@ -305,7 +317,9 @@ const ConsultationBookingModal = ({ isOpen, onClose, doctor }) => {
             <label className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors">
               <FiUpload className="ml-2" />
               <span className="text-sm text-gray-600">
-                {formData.complaintImage ? formData.complaintImage.name : 'اختر ملف'}
+                {formData.complaintImage
+                  ? formData.complaintImage.name
+                  : "اختر ملف"}
               </span>
               <input
                 type="file"
@@ -330,7 +344,7 @@ const ConsultationBookingModal = ({ isOpen, onClose, doctor }) => {
                   جاري الحجز...
                 </>
               ) : (
-                'تأكيد الحجز والدفع'
+                "تأكيد الحجز والدفع"
               )}
             </button>
           </div>

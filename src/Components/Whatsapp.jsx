@@ -26,7 +26,7 @@ const Whatsapp = () => {
   }, []);
 
   return (
-    <div className="fixed bottom-5 right-5 z-50">
+    <div className="fixed bottom-5 right-5 z-30">
       <a
         href={whatsappUrl}
         target="_blank"

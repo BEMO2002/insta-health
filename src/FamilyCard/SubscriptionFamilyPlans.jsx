@@ -492,7 +492,7 @@ const SubscriptionFamilyPlans = () => {
         isOpen={modalState.isOpen}
         onRequestClose={closeModal}
         className="max-w-6xl w-[1000px] mx-auto mt-20 bg-white rounded-3xl outline-none shadow-2xl overflow-auto max-h-[85vh]"
-        overlayClassName="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center px-4"
+        overlayClassName="fixed inset-0 z-[10000] bg-black/50 backdrop-blur-sm flex items-center justify-center px-4"
         closeTimeoutMS={0}
       >
         <div className="flex justify-end p-4 border-b border-gray-100">
@@ -510,7 +510,7 @@ const SubscriptionFamilyPlans = () => {
         isOpen={cardModalState.isOpen}
         onRequestClose={closeCardModal}
         className="max-w-6xl w-[1000px] mx-auto mt-20 bg-white rounded-3xl outline-none shadow-2xl overflow-auto max-h-[85vh]"
-        overlayClassName="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center px-4"
+        overlayClassName="fixed inset-0 z-[10000] bg-black/50 backdrop-blur-sm flex items-center justify-center px-4"
         closeTimeoutMS={0}
       >
         <div className="flex justify-end p-4 border-b border-gray-100">
@@ -800,7 +800,7 @@ const SubscriptionFamilyPlans = () => {
         isOpen={addMemberModalState.isOpen}
         onRequestClose={closeAddMemberModal}
         className="max-w-2xl mx-auto mt-20 bg-white rounded-3xl outline-none shadow-2xl overflow-auto max-h-[85vh]"
-        overlayClassName="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center px-4"
+        overlayClassName="fixed inset-0 bg-black/50 z-[10000] backdrop-blur-sm flex items-center justify-center px-4"
         closeTimeoutMS={0}
       >
         <div className="flex justify-end p-4 border-b border-gray-100">

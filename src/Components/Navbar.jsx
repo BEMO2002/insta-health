@@ -12,7 +12,7 @@ import { AuthContext } from "../Context/AuthContext";
 import navlogo from "../assets/Home/LOGO(INSTA HEALTH).svg";
 import { toast } from "react-toastify";
 import baseApi from "../api/baseApi";
-
+import { LiaUserNurseSolid } from "react-icons/lia";
 const Navbar = () => {
   const { isAuthenticated, logout } = useContext(AuthContext);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
@@ -36,7 +36,7 @@ const Navbar = () => {
           setMedicalSpecialities(specialitiesResponse.data.data);
         }
         const HomeSpecialitiesResponse = await baseApi.get(
-          "/MedicalSpecialities/Home"
+          "/MedicalSpecialities/Home",
         );
         if (HomeSpecialitiesResponse.data.success) {
           setMedicalSpecialitiesHome(HomeSpecialitiesResponse.data.data);
@@ -262,7 +262,7 @@ const Navbar = () => {
                             onClick={() =>
                               item.name === "الخدمات المنزليه"
                                 ? handleHomeSpecialityClick(
-                                    subItem.specialityId
+                                    subItem.specialityId,
                                   )
                                 : handleSpecialityClick(subItem.specialityId)
                             }
@@ -288,7 +288,7 @@ const Navbar = () => {
                           >
                             {subItem.name}
                           </Link>
-                        )
+                        ),
                       )}
                     </div>
                   </div>
@@ -301,7 +301,7 @@ const Navbar = () => {
                 >
                   {item.name}
                 </Link>
-              )
+              ),
             )}
           </div>
 
@@ -354,9 +354,8 @@ const Navbar = () => {
                 {/* Provider Button - Separate */}
                 <Link
                   to="/are-you-provider"
-                  className="min-w-[156px] min-h-[48px] text-center bg-second text-white px-[16px] py-[8px] rounded-[8px] text-[15px] font-[700] flex items-center justify-center hover:bg-primary duration-300"
+                  className="min-w-[156px] min-h-[48px] text-center bg-gradient-to-r from-second to-primary  text-white px-[16px] py-[8px] rounded-[8px] text-[15px] font-[700] flex items-center justify-center hover:bg-primary duration-300"
                 >
-                  <FiUser className="ml-2" size={20} />
                   هل انت مقدم خدمة ؟
                 </Link>
               </>
@@ -393,13 +392,21 @@ const Navbar = () => {
                         تسجيل الخروج
                       </button>
                     </div>
+                    <div className="py-2">
+                      <Link
+                        to="/profile"
+                        className="flex items-center w-full text-right px-4 py-3 text-sm text-second hover:bg-second hover:text-white transition-colors duration-150"
+                      >
+                        <FiUser className="ml-3" size={18} />
+                        الملف الشخصي
+                      </Link>
+                    </div>
                   </div>
                 </div>
                 <Link
                   to="/are-you-provider"
-                  className="min-w-[156px] min-h-[48px] text-center bg-second text-white px-[16px] py-[8px] rounded-[8px] text-[15px] font-[700] flex items-center justify-center hover:bg-primary duration-300"
+                  className="min-w-[156px] min-h-[48px] text-center bg-gradient-to-r from-second to-primary  text-white px-[16px] py-[8px] rounded-[8px] text-[15px] font-[700] flex items-center justify-center hover:bg-primary duration-300"
                 >
-                  <FiUser className="ml-2" size={20} />
                   هل انت مقدم خدمة ؟
                 </Link>
               </>
@@ -434,7 +441,7 @@ const Navbar = () => {
                               onClick={() =>
                                 item.name === "الخدمات المنزليه"
                                   ? handleHomeSpecialityClick(
-                                      subItem.specialityId
+                                      subItem.specialityId,
                                     )
                                   : handleSpecialityClick(subItem.specialityId)
                               }
@@ -461,7 +468,7 @@ const Navbar = () => {
                             >
                               {subItem.name}
                             </Link>
-                          )
+                          ),
                         )}
                       </div>
                     )}
@@ -475,7 +482,7 @@ const Navbar = () => {
                   >
                     {item.name}
                   </Link>
-                )
+                ),
               )}
 
               <div className="flex flex-col space-y-2 mt-4 px-3">
@@ -497,14 +504,6 @@ const Navbar = () => {
                       <FiLogIn className="mr-2" size={20} />
                       تسجيل الدخول
                     </Link>
-                    <Link
-                      to="/are-you-provider"
-                      className="bg-gradient-to-r from-second to-primary text-white px-4 py-2 rounded-md text-md font-medium flex items-center justify-center hover:bg-primary duration-300"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <FiUser className="mr-2" size={20} />
-                      هل انت مقدم خدمة
-                    </Link>
                   </>
                 ) : (
                   <>
@@ -513,8 +512,7 @@ const Navbar = () => {
                       className="bg-gradient-to-r from-second to-primary text-white px-4 py-2 rounded-md text-md font-medium flex items-center justify-center hover:bg-primary duration-300"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <FiUser className="mr-2" size={20} />
-                      هل انت مقدم خدمة
+                      هل انت مقدم خدمة ؟
                     </Link>
                     <button
                       onClick={handleLogout}

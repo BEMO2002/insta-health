@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FiLoader, FiAlertCircle } from "react-icons/fi";
+import { toast } from "react-toastify";
 import baseApi from "../api/baseApi";
 
 const initialState = {
@@ -115,14 +116,16 @@ const MedicalSupplierApplicationsForm = ({
         headers: { "Content-Type": "multipart/form-data" },
       });
 
+      toast.success("تم إرسال طلبك بنجاح");
       setFormValues(initialState);
       setErrors({});
       onSuccess?.();
     } catch (err) {
-      setApiError(
+      const errorMessage =
         err?.response?.data?.message ||
-          "حدث خطأ أثناء إرسال الطلب، يرجى المحاولة مرة أخرى."
-      );
+        "حدث خطأ أثناء إرسال الطلب، يرجى المحاولة مرة أخرى.";
+      setApiError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -143,7 +146,7 @@ const MedicalSupplierApplicationsForm = ({
       <input
         type={type}
         name={name}
-        value={type === "file" ? undefined : formValues[name] ?? ""}
+        value={type === "file" ? undefined : (formValues[name] ?? "")}
         onChange={handleChange}
         placeholder={placeholder}
         className={`w-full rounded-2xl border px-4 py-3 text-right focus:ring-2 focus:ring-second focus:outline-none ${

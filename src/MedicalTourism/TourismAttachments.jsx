@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Navigation, Pagination } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import baseApi from '../api/baseApi';
+import React, { useState, useEffect } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import baseApi from "../api/baseApi";
 
-const TourismAttachments = ({ slugProp = 'medical-tourism' }) => {
+const TourismAttachments = ({ slugProp = "medical-tourism" }) => {
   const [attachments, setAttachments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,18 +17,18 @@ const TourismAttachments = ({ slugProp = 'medical-tourism' }) => {
     const fetchAttachments = async () => {
       try {
         setLoading(true);
-        const response = await baseApi.get('/Attachments');
-        
+        const response = await baseApi.get("/Attachments");
+
         if (response.data.success && response.data.data) {
-          const allowedTypes = new Set(['Image', 'Video', 'File']);
+          const allowedTypes = new Set(["Image", "Video", "File"]);
           const filteredAttachments = response.data.data.filter(
-            item => item.slug === slugProp && allowedTypes.has(item.type)
+            (item) => item.slug === slugProp && allowedTypes.has(item.type),
           );
           setAttachments(filteredAttachments);
         }
       } catch (err) {
-        console.error('Error fetching attachments:', err);
-        setError('حدث خطأ في تحميل المرفقات');
+        console.error("Error fetching attachments:", err);
+        setError("حدث خطأ في تحميل المرفقات");
       } finally {
         setLoading(false);
       }
@@ -43,17 +43,17 @@ const TourismAttachments = ({ slugProp = 'medical-tourism' }) => {
     if (!isViewerOpen) return;
 
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         setIsViewerOpen(false);
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isViewerOpen]);
 
   const mediaAttachments = attachments.filter(
-    (a) => a.type === 'Image' || a.type === 'Video'
+    (a) => a.type === "Image" || a.type === "Video",
   );
 
   const openViewer = (attachment) => {
@@ -81,7 +81,7 @@ const TourismAttachments = ({ slugProp = 'medical-tourism' }) => {
   return (
     <div className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
-        <div className="bg-white rounded-xl shadow-lg p-6 md:p-8"> 
+        <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
           <div className="relative">
             <Swiper
               modules={[Autoplay, Pagination, Navigation]}
@@ -112,28 +112,31 @@ const TourismAttachments = ({ slugProp = 'medical-tourism' }) => {
                   spaceBetween: 30,
                 },
               }}
-
             >
               {attachments.map((attachment) => (
                 <SwiperSlide key={attachment.id}>
                   <div
                     className="relative group cursor-pointer overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300"
                     onClick={() => {
-                      if (attachment.type === 'Image' || attachment.type === 'Video') {
+                      if (
+                        attachment.type === "Image" ||
+                        attachment.type === "Video"
+                      ) {
                         openViewer(attachment);
                       }
                     }}
                   >
-                    {attachment.type === 'Image' ? (
+                    {attachment.type === "Image" ? (
                       <img
                         src={attachment.attachmentUrl}
                         alt={`مرفق السياحة العلاجية ${attachment.id}`}
                         className="w-full h-64 md:h-80 object-cover transition-transform duration-300 group-hover:scale-110"
                         onError={(e) => {
-                          e.target.src = 'https://via.placeholder.com/400x300?text=No+Image';
+                          e.target.src =
+                            "https://via.placeholder.com/400x300?text=No+Image";
                         }}
                       />
-                    ) : attachment.type === 'Video' ? (
+                    ) : attachment.type === "Video" ? (
                       <video
                         src={attachment.attachmentUrl}
                         controls
@@ -146,7 +149,9 @@ const TourismAttachments = ({ slugProp = 'medical-tourism' }) => {
                         rel="noreferrer"
                         className="flex items-center justify-center w-full h-64 md:h-72 bg-gray-100 text-gray-700 font-medium"
                       >
-                        {attachment.fileName || attachment.name || `تحميل الملف ${attachment.id}`}
+                        {attachment.fileName ||
+                          attachment.name ||
+                          `تحميل الملف ${attachment.id}`}
                       </a>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -160,7 +165,7 @@ const TourismAttachments = ({ slugProp = 'medical-tourism' }) => {
 
       {isViewerOpen && mediaAttachments.length > 0 && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+          className="fixed inset-0 z-[10000] flex items-center justify-center backdrop-blur-sm bg-black/50 p-4"
           onMouseDown={(e) => {
             if (e.target === e.currentTarget) setIsViewerOpen(false);
           }}
@@ -186,11 +191,11 @@ const TourismAttachments = ({ slugProp = 'medical-tourism' }) => {
               {mediaAttachments.map((attachment) => (
                 <SwiperSlide key={`viewer-${attachment.id}`}>
                   <div className="w-full bg-black">
-                    {attachment.type === 'Image' ? (
+                    {attachment.type === "Image" ? (
                       <img
                         src={attachment.attachmentUrl}
                         alt={`مرفق السياحة العلاجية ${attachment.id}`}
-                        className="w-full max-h-[80vh] object-contain"
+                        className="w-full h-[80vh] object-contain"
                       />
                     ) : (
                       <video

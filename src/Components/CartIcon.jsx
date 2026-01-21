@@ -1,23 +1,47 @@
 import React from "react";
-
 import { FiShoppingBag } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
+
 const CartIcon = ({ count = 0, onClick }) => {
   return (
-    <button
+    <motion.button
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
       onClick={onClick}
-      aria-label="Cart"
-      className="fixed z-50 left-4 bottom-4  shadow-xl border border-gray-300 rounded-md  bg-white  transition-all duration-200 p-3 md:p-4"
-      style={{ backdropFilter: "blur(6px)" }}
+      aria-label="View Cart"
+      className="fixed z-[999] left-6 bottom-6 flex items-center justify-center 
+                 bg-white/80 backdrop-blur-md border border-white/20 
+                 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] 
+                 rounded-2xl p-4 transition-all duration-300
+                 hover:bg-white hover:shadow-2xl group"
     >
-      <div className="">
-        <FiShoppingBag className="text-gray-800 " size={28} />
-        {count > 0 && (
-          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-7 h-7 inline-flex items-center justify-center">
-            {count}
-          </span>
-        )}
+      <div className="relative">
+        <FiShoppingBag
+          className="text-gray-700 group-hover:text-primary/90 transition-colors duration-300"
+          size={26}
+        />
+
+        <AnimatePresence>
+          {count > 0 && (
+            <motion.span
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              className="absolute -top-5 -right-5 bg-primary text-white 
+                         text-[13px] font-black rounded-full w-7 h-7 
+                         flex items-center justify-center shadow-lg 
+                         border-2 border-white uppercase tracking-tighter"
+            >
+              {count > 99 ? "99+" : count}
+            </motion.span>
+          )}
+        </AnimatePresence>
       </div>
-    </button>
+
+      {count > 0 && (
+        <span className="absolute inset-0 rounded-2xl bg-primary/10 animate-ping -z-10" />
+      )}
+    </motion.button>
   );
 };
 

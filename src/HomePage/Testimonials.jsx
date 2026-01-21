@@ -175,11 +175,6 @@ const Testimonials = () => {
                       }`}
                     >
                       <div className="relative">
-                        <img
-                          src={testimonial.photo}
-                          alt={testimonial.name}
-                          className="w-14 h-14 rounded-full object-cover border-4 border-white shadow-lg"
-                        />
                         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#07332f]/20 to-transparent"></div>
                       </div>
                       <div className={isRTL ? "text-right" : "text-left"}>

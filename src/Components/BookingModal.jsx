@@ -69,7 +69,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
         setDaysLoading(false);
       }
     },
-    [serviceItem?.id, serviceItem?.type]
+    [serviceItem?.id, serviceItem?.type],
   );
 
   const fetchAvailableSlots = useCallback(async (dayId) => {
@@ -321,7 +321,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       if (response.data.success) {
@@ -366,7 +366,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 backdrop-blur-sm bg-black/50 bg-opacity-50 flex items-center justify-center z-[10000] p-4">
       <div className="bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">

@@ -33,7 +33,7 @@ const RecordsViewModal = ({
 
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(total / pageSize)),
-    [total, pageSize]
+    [total, pageSize],
   );
 
   // More reliable print on mobile: print via hidden iframe instead of window.open
@@ -232,7 +232,7 @@ const RecordsViewModal = ({
         <div class="header">
           <div class="brand">InstaHealthy</div>
           <div class="meta">تاريخ الطباعة: ${new Date().toLocaleDateString(
-            "ar-EG"
+            "ar-EG",
           )}</div>
         </div>
         ${itemsHtml}
@@ -270,7 +270,7 @@ const RecordsViewModal = ({
         it?.attachmentURL ||
         it?.attachment ||
         it?.imageUrl ||
-        it?.imagePath
+        it?.imagePath,
     );
     return `<article class="record">
       <div class="title">
@@ -293,7 +293,7 @@ const RecordsViewModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 backdrop-blur-sm bg-black/50 z-[10000] flex items-center justify-center p-4">
       <div
         className="bg-white rounded-xl w-full max-w-5xl max-h-[85vh] overflow-hidden flex flex-col"
         dir="rtl"
@@ -328,7 +328,7 @@ const RecordsViewModal = ({
                     it?.attachmentURL ||
                     it?.attachment ||
                     it?.imageUrl ||
-                    it?.imagePath
+                    it?.imagePath,
                 );
                 const itemId = it?.id;
                 return (

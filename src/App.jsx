@@ -34,6 +34,7 @@ import FamilyCardStatus from "./FamilyCard/FamilyCardStatus";
 import MainFilesAndrecord from "./MedicalFileAndRecored/MainFilesAndrecord";
 import ScrollToTop from "./Components/ScrollToTop";
 import NotFound from "./Components/NotFound";
+import MainProfile from "./Profilepage/MainProfile";
 import MedicalFileDetails from "./MedicalFileDetails";
 function App() {
   return (
@@ -67,6 +68,7 @@ function App() {
             path="/package-reservation"
             element={<PackageReservationDetails />}
           />
+          <Route path="/profile" element={<MainProfile />} />
 
           <Route
             path="/medical-consultation-reservation/:reservationNumber"

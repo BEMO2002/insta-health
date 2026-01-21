@@ -133,7 +133,7 @@ const AddRecordModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 backdrop-blur-sm bg-black/50 z-[10000] flex items-center justify-center p-4">
       <div
         className="bg-white rounded-xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col"
         dir="rtl"
@@ -239,8 +239,8 @@ const AddRecordModal = ({
                     ? "جاري التحديث..."
                     : "جاري الحفظ..."
                   : record?.id
-                  ? "تحديث"
-                  : "حفظ"}
+                    ? "تحديث"
+                    : "حفظ"}
               </button>
             </div>
           </form>

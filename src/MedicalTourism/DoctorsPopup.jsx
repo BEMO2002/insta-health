@@ -1,12 +1,21 @@
-import React from 'react';
-import { FiStar, FiX } from 'react-icons/fi';
+import React from "react";
+import { FiStar, FiX } from "react-icons/fi";
 
-const DoctorsPopup = ({ isOpen, onClose, specialty, doctors, onBookDoctor }) => {
+const DoctorsPopup = ({
+  isOpen,
+  onClose,
+  specialty,
+  doctors,
+  onBookDoctor,
+}) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 bg-opacity-30 p-4" onClick={onClose}>
-      <div 
+    <div
+      className="fixed inset-0 z-[10000] flex items-center justify-center backdrop-blur-sm bg-black/50 p-4"
+      onClick={onClose}
+    >
+      <div
         className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
@@ -39,99 +48,115 @@ const DoctorsPopup = ({ isOpen, onClose, specialty, doctors, onBookDoctor }) => 
                   basePrice != null &&
                   Number(discountedPrice) < Number(basePrice);
                 const discountPercent = hasDiscount
-                  ? Math.round(100 - (Number(discountedPrice) / Number(basePrice)) * 100)
+                  ? Math.round(
+                      100 - (Number(discountedPrice) / Number(basePrice)) * 100,
+                    )
                   : 0;
 
                 return (
-                  <div 
-                    key={doctor.id} 
+                  <div
+                    key={doctor.id}
                     className="bg-gray-50 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
                   >
-                  {/* Doctor Image */}
-                  <div className="relative h-48">
-                    <img
-                      src={doctor.imageUrl}
-                      alt={doctor.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="200"%3E%3Crect fill="%23e5e7eb" width="300" height="200"/%3E%3Ctext fill="%234b5563" font-family="Arial" font-size="20" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3Eدكتور%3C/text%3E%3C/svg%3E';
-                      }}
-                    />
+                    {/* Doctor Image */}
+                    <div className="relative h-48">
+                      <img
+                        src={doctor.imageUrl}
+                        alt={doctor.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.src =
+                            'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="200"%3E%3Crect fill="%23e5e7eb" width="300" height="200"/%3E%3Ctext fill="%234b5563" font-family="Arial" font-size="20" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3Eدكتور%3C/text%3E%3C/svg%3E';
+                        }}
+                      />
                       {hasDiscount && (
-                          <div className="absolute top-2 right-2 z-10">
-                            <span className="bg-red-600 text-white px-2 py-0.5 rounded text-sm font-extrabold shadow">
-                              خصم {discountPercent}%
-                            </span>
-                          </div>
-                        )}
-                  </div>
-
-                  {/* Doctor Info */}
-                  <div className="p-4">
-                    <h5 className="text-lg font-bold text-gray-800 mb-1">{doctor.name}</h5>
-                    <p className="text-sm text-second font-medium mb-2">{doctor.speciality}</p>
-                    
-                    {/* Rating */}
-                    {doctor.rate && (
-                      <div className="flex items-center mb-2">
-                        <div className="flex">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <FiStar
-                              key={star}
-                              className={`w-4 h-4 ${
-                                star <= doctor.rate
-                                  ? 'text-yellow-400 fill-yellow-400'
-                                  : 'text-gray-300'
-                              }`}
-                            />
-                          ))}
+                        <div className="absolute top-2 right-2 z-10">
+                          <span className="bg-red-600 text-white px-2 py-0.5 rounded text-sm font-extrabold shadow">
+                            خصم {discountPercent}%
+                          </span>
                         </div>
-                        <span className="text-xs text-gray-600 mr-2">({doctor.rate}/5)</span>
-                      </div>
-                    )}
+                      )}
+                    </div>
 
-                    {/* Experience */}
-                    {doctor.expirence && (
-                      <p className="text-xs text-gray-600 mb-3 line-clamp-2">{doctor.expirence}</p>
-                    )}
+                    {/* Doctor Info */}
+                    <div className="p-4">
+                      <h5 className="text-lg font-bold text-gray-800 mb-1">
+                        {doctor.name}
+                      </h5>
+                      <p className="text-sm text-second font-medium mb-2">
+                        {doctor.speciality}
+                      </p>
 
-                    {/* Price */}
-                    {(basePrice != null || discountedPrice != null) && (
-                      <div className="mb-3 bg-primary/10 p-2 rounded-lg border border-primary/20">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-600 font-semibold">رسوم الاستشارة:</span>
-                          {hasDiscount ? (
-                            <div className="flex flex-row items-center gap-1 leading-tight">
-                              <span className="text-lg font-extrabold text-red-600">
-                                {discountedPrice} $
-                              </span>
-                              <span className="text-md font-bold text-gray-500 line-through -mt-0.5">
+                      {/* Rating */}
+                      {doctor.rate && (
+                        <div className="flex items-center mb-2">
+                          <div className="flex">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <FiStar
+                                key={star}
+                                className={`w-4 h-4 ${
+                                  star <= doctor.rate
+                                    ? "text-yellow-400 fill-yellow-400"
+                                    : "text-gray-300"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-xs text-gray-600 mr-2">
+                            ({doctor.rate}/5)
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Experience */}
+                      {doctor.expirence && (
+                        <p className="text-xs text-gray-600 mb-3 line-clamp-2">
+                          {doctor.expirence}
+                        </p>
+                      )}
+
+                      {/* Price */}
+                      {(basePrice != null || discountedPrice != null) && (
+                        <div className="mb-3 bg-primary/10 p-2 rounded-lg border border-primary/20">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-gray-600 font-semibold">
+                              رسوم الاستشارة:
+                            </span>
+                            {hasDiscount ? (
+                              <div className="flex flex-row items-center gap-1 leading-tight">
+                                <span className="text-lg font-extrabold text-red-600">
+                                  {discountedPrice} $
+                                </span>
+                                <span className="text-md font-bold text-gray-500 line-through -mt-0.5">
+                                  {basePrice} $
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-lg font-bold text-primary">
                                 {basePrice} $
                               </span>
-                            </div>
-                          ) : (
-                            <span className="text-lg font-bold text-primary">{basePrice} $</span>
-                          )}
+                            )}
+                          </div>
                         </div>
+                      )}
 
-                      </div>
-                    )}
-
-                    {/* Booking Button */}
-                    <button
-                      onClick={() => onBookDoctor(doctor)}
-                      className="w-full bg-primary hover:bg-second text-white py-2 rounded-lg font-semibold transition-colors duration-300"
-                    >
-                      احجز استشارة
-                    </button>
-                  </div>
+                      {/* Booking Button */}
+                      <button
+                        onClick={() => onBookDoctor(doctor)}
+                        className="w-full bg-primary hover:bg-second text-white py-2 rounded-lg font-semibold transition-colors duration-300"
+                      >
+                        احجز استشارة
+                      </button>
+                    </div>
                   </div>
                 );
               })}
             </div>
           ) : (
             <div className="text-center text-gray-500 py-12">
-              <p className="text-lg">لا يوجد أطباء متاحون حالياً في هذا التخصص</p>
+              <p className="text-lg">
+                لا يوجد أطباء متاحون حالياً في هذا التخصص
+              </p>
             </div>
           )}
         </div>

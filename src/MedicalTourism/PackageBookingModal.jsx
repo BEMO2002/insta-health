@@ -1,48 +1,54 @@
-import React, { useState } from 'react';
-import { FiX, FiUpload } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
-import baseApi from '../api/baseApi';
-import { toast } from 'react-toastify';
+import React, { useState } from "react";
+import { FiX, FiUpload } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import baseApi from "../api/baseApi";
+import { toast } from "react-toastify";
 
 const PackageBookingModal = ({ isOpen, onClose, package: packageItem }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    passportId: '',
+    passportId: "",
     passportImage: null,
-    userName: '',
-    userMobile: '',
-    userEmail: '',
-    reservationDate: '',
+    userName: "",
+    userMobile: "",
+    userEmail: "",
+    reservationDate: "",
   });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        passportImage: file
+        passportImage: file,
       }));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!packageItem) return;
 
     // Validation
-    if (!formData.passportId || !formData.passportImage || !formData.userName || 
-        !formData.userMobile || !formData.userEmail || !formData.reservationDate) {
-      toast.error('جميع الحقول مطلوبة');
+    if (
+      !formData.passportId ||
+      !formData.passportImage ||
+      !formData.userName ||
+      !formData.userMobile ||
+      !formData.userEmail ||
+      !formData.reservationDate
+    ) {
+      toast.error("جميع الحقول مطلوبة");
       return;
     }
 
@@ -51,26 +57,31 @@ const PackageBookingModal = ({ isOpen, onClose, package: packageItem }) => {
 
       // Create FormData for multipart/form-data
       const submitData = new FormData();
-      submitData.append('PassportId', formData.passportId);
-      submitData.append('PassportImage', formData.passportImage);
-      submitData.append('UserName', formData.userName);
-      submitData.append('UserMobile', formData.userMobile);
-      submitData.append('UserEmail', formData.userEmail);
-      submitData.append('PackageId', packageItem.id);
-      submitData.append('ReservationDate', formData.reservationDate);
+      submitData.append("PassportId", formData.passportId);
+      submitData.append("PassportImage", formData.passportImage);
+      submitData.append("UserName", formData.userName);
+      submitData.append("UserMobile", formData.userMobile);
+      submitData.append("UserEmail", formData.userEmail);
+      submitData.append("PackageId", packageItem.id);
+      submitData.append("ReservationDate", formData.reservationDate);
 
-      const response = await baseApi.post('/MedicalTourismPackageReservations', submitData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      const response = await baseApi.post(
+        "/MedicalTourismPackageReservations",
+        submitData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
-      });
+      );
 
       if (response.data.success) {
         // Check if payment URL is returned directly (redirect to payment gateway)
         if (response.data.data?.sessionUrl || response.data.data?.paymentUrl) {
-          const paymentUrl = response.data.data.sessionUrl || response.data.data.paymentUrl;
-          toast.success('تم الحجز بنجاح! جاري التوجيه لبوابة الدفع...');
-          
+          const paymentUrl =
+            response.data.data.sessionUrl || response.data.data.paymentUrl;
+          toast.success("تم الحجز بنجاح! جاري التوجيه لبوابة الدفع...");
+
           // Close modal and redirect to payment gateway
           onClose();
           setTimeout(() => {
@@ -78,20 +89,21 @@ const PackageBookingModal = ({ isOpen, onClose, package: packageItem }) => {
           }, 1000);
         } else {
           // If no payment URL, navigate to reservation details page
-          const reservationNumber = response.data.data?.reservationNumber || response.data.data?.id;
-          toast.success('تم الحجز بنجاح! جاري التوجيه لصفحة الدفع...');
-          
+          const reservationNumber =
+            response.data.data?.reservationNumber || response.data.data?.id;
+          toast.success("تم الحجز بنجاح! جاري التوجيه لصفحة الدفع...");
+
           onClose();
           setTimeout(() => {
             navigate(`/package-reservation/${reservationNumber}`);
           }, 1000);
         }
       } else {
-        toast.error(response.data.message || 'حدث خطأ أثناء الحجز');
+        toast.error(response.data.message || "حدث خطأ أثناء الحجز");
       }
     } catch (error) {
-      console.error('Error booking package:', error);
-      toast.error(error.response?.data?.message || 'حدث خطأ أثناء الحجز');
+      console.error("Error booking package:", error);
+      toast.error(error.response?.data?.message || "حدث خطأ أثناء الحجز");
     } finally {
       setLoading(false);
     }
@@ -100,11 +112,14 @@ const PackageBookingModal = ({ isOpen, onClose, package: packageItem }) => {
   if (!isOpen || !packageItem) return null;
 
   // Get minimum date (today)
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split("T")[0];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
-      <div 
+    <div
+      className="fixed inset-0 z-[10000] flex items-center justify-center backdrop-blur-sm bg-black/50 p-4"
+      onClick={onClose}
+    >
+      <div
         className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
@@ -123,12 +138,19 @@ const PackageBookingModal = ({ isOpen, onClose, package: packageItem }) => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+        <form
+          onSubmit={handleSubmit}
+          className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]"
+        >
           {/* Package Details */}
           <div className="bg-gray-50 p-4 rounded-lg mb-6">
             <div className="flex justify-between items-center">
-              <span className="text-gray-700 font-semibold">السعر الإجمالي:</span>
-              <span className="text-2xl font-bold text-primary">{packageItem.discountPrice} $</span>
+              <span className="text-gray-700 font-semibold">
+                السعر الإجمالي:
+              </span>
+              <span className="text-2xl font-bold text-primary">
+                {packageItem.discountPrice} $
+              </span>
             </div>
           </div>
 
@@ -168,7 +190,9 @@ const PackageBookingModal = ({ isOpen, onClose, package: packageItem }) => {
               >
                 <FiUpload className="w-5 h-5 ml-2" />
                 <span className="text-gray-600">
-                  {formData.passportImage ? formData.passportImage.name : 'اختر صورة جواز السفر'}
+                  {formData.passportImage
+                    ? formData.passportImage.name
+                    : "اختر صورة جواز السفر"}
                 </span>
               </label>
             </div>
@@ -253,7 +277,7 @@ const PackageBookingModal = ({ isOpen, onClose, package: packageItem }) => {
               className="flex-1 px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-second transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
-              {loading ? 'جاري الحجز...' : 'تأكيد الحجز والدفع'}
+              {loading ? "جاري الحجز..." : "تأكيد الحجز والدفع"}
             </button>
           </div>
         </form>

@@ -132,7 +132,7 @@ const PrescriptionBookingModal = ({
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       if (response.data?.success) {
@@ -183,7 +183,7 @@ const PrescriptionBookingModal = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black/30 bg-opacity-50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 backdrop-blur-sm bg-black/50 bg-opacity-50 flex items-center justify-center z-[10000] p-4"
       dir="rtl"
     >
       <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
