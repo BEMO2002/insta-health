@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 const Work = () => {
   return (
     <div className="py-12 p-4 flex flex-col items-center justify-center">
-      <div className="mx-auto h-full w-[400px] md:w-[400px] lg:w-[500px] flex items-center justify-center">
+      <div className="mx-auto h-full w-full md:w-[400px] lg:w-[500px] flex items-center justify-center">
         <img src={Work2} alt="" />
       </div>
       <div className="mt-8">
