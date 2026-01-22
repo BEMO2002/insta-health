@@ -522,20 +522,31 @@ const Navbar = () => {
                   </>
                 ) : (
                   <>
+                    {user && (
+                      <Link to="/profile" className="  mx-auto">
+                        <div className="flex items-center gap-3 px-2 mb-3 pb-3 border-b border-gray-100">
+                          <img
+                            src={userPhoto}
+                            alt="User"
+                            className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+                          />
+                          <div className="text-right">
+                            <p className="text-xs text-gray-500 mb-0.5">
+                              مرحباً بك👋
+                            </p>
+                            <p className="text-sm font-bold text-gray-800">
+                              {user.arabicName || user.displayName}
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                    )}
                     <Link
                       to="/are-you-provider"
                       className="bg-gradient-to-r from-second to-primary text-white px-4 py-2 rounded-md text-md font-medium flex items-center justify-center hover:bg-primary duration-300"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       هل انت مقدم خدمة ؟
-                    </Link>
-                    <Link
-                      to="/profile"
-                      className="bg-gradient-to-r from-second to-primary text-white px-4 py-2 rounded-md text-md font-medium flex items-center justify-center hover:bg-primary duration-300"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      الملف الشخصي
-                      <FiUser className="mr-2" size={20} />
                     </Link>
                     <button
                       onClick={handleLogout}
