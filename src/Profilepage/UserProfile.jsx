@@ -14,10 +14,10 @@ import {
   FiFileText,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
-
+import userPhoto from "../assets/Home/user.png";
 const UserProfile = () => {
   const [userData, setUserData] = useState(null);
-  const [activeTab, setActiveTab] = useState("orders"); // 'orders', 'tourism', 'home'
+  const [activeTab, setActiveTab] = useState("orders"); // 'orders', 'tourism', 'home', 'consultations', 'services'
   const [listData, setListData] = useState({
     items: [],
     count: 0,
@@ -65,6 +65,9 @@ const UserProfile = () => {
           case "home":
             endpoint = `/HomeReservations/userReservations?pageIndex=${page}&pageSize=5`;
             break;
+          case "services":
+            endpoint = `/ServicesReservations/userReservations?pageIndex=${page}&pageSize=5`;
+            break;
           default:
             return;
         }
@@ -100,7 +103,7 @@ const UserProfile = () => {
     )
       return "bg-green-100 text-green-700";
     if (s === "pending" || s === "dispatched")
-      return "bg-blue-100 text-blue-700";
+      return "bg-yellow-100 text-yellow-700";
     if (s === "cancelled" || s === "refused") return "bg-red-100 text-red-700";
     return "bg-gray-100 text-gray-700";
   };
@@ -168,12 +171,7 @@ const UserProfile = () => {
             <div className="px-8 pb-8">
               <div className="relative flex flex-col md:flex-row items-center md:items-end -mt-16 mb-6 gap-6">
                 <img
-                  src={
-                    userData.imageCover ||
-                    "https://ui-avatars.com/api/?name=" +
-                      userData.displayName +
-                      "&background=random"
-                  }
+                  src={userPhoto}
                   alt={userData.displayName}
                   className="w-32 h-32 md:w-50 md:h-50 rounded-full border-4 border-white shadow-xl object-cover bg-white"
                 />
@@ -200,7 +198,7 @@ const UserProfile = () => {
                       البريد الإلكتروني
                     </p>
                     <p
-                      className="font-semibold text-gray-900 truncate"
+                      className="font-semibold text-gray-900 "
                       title={userData.email}
                     >
                       {userData.email}
@@ -257,6 +255,7 @@ const UserProfile = () => {
             { id: "tourism", label: "السياحة العلاجية", icon: FiActivity },
             { id: "consultations", label: "استشارات طبية", icon: FiUser },
             { id: "home", label: "حجوزات المنزل", icon: FiHome },
+            { id: "services", label: "حجوزات الخدمات", icon: FiActivity },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -601,6 +600,106 @@ const UserProfile = () => {
                             </p>
                           </div>
                         )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+              {activeTab === "services" &&
+                listData.items.map((item) => (
+                  <div
+                    key={item.id}
+                    className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex flex-col lg:flex-row gap-6">
+                      {item.prescriptionImage && (
+                        <div className="w-full lg:w-32 h-32 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+                          <img
+                            src={item.prescriptionImage}
+                            alt="Prescription"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1 w-full">
+                        <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-2">
+                          <div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                              {item.serviceName}
+                            </h3>
+                            <p className="text-second font-medium text-sm mb-2">
+                              {item.serviceProviderName}
+                            </p>
+                          </div>
+                          <span
+                            className={`px-4 py-1.5 rounded-full text-sm font-bold ${getStatusColor(
+                              item.status,
+                            )}`}
+                          >
+                            {translateStatus(item.status)}
+                          </span>
+                        </div>
+
+                        <div className="space-y-3 mt-4 pt-4 border-t border-gray-100">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                              <p className="text-sm text-gray-500 mb-1">
+                                الموعد
+                              </p>
+                              <div className="flex items-center gap-2 text-gray-700">
+                                <FiCalendar size={16} className="text-second" />
+                                <span className="font-semibold dir-ltr">
+                                  {item.date} - {item.appointmentStart}
+                                </span>
+                              </div>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500 mb-1">
+                                التكلفة
+                              </p>
+                              <div className="flex items-center gap-2 text-gray-700">
+                                <FiCreditCard
+                                  size={16}
+                                  className="text-second"
+                                />
+                                <span className="font-bold">
+                                  {item.price} ج.م
+                                </span>
+                              </div>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500 mb-1">
+                                مدة الجلسة
+                              </p>
+                              <div className="flex items-center gap-2 text-gray-700">
+                                <FiClock size={16} className="text-second" />
+                                <span className="font-semibold">
+                                  {item.serviceDuration} دقيقة
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          {item.content && item.content !== "لا يوجد" && (
+                            <div className="bg-gray-50 p-3 rounded-xl">
+                              <p className="text-xs text-gray-500 font-bold mb-1">
+                                تفاصيل:
+                              </p>
+                              <p className="text-sm text-gray-700">
+                                {item.content}
+                              </p>
+                            </div>
+                          )}
+                          {item.doctorNotes && (
+                            <div className="mt-4 bg-yellow-50 p-3 rounded-xl border border-yellow-100">
+                              <p className="text-xs text-yellow-700 font-bold mb-1">
+                                ملاحظات المستخدم:
+                              </p>
+                              <p className="text-sm text-gray-700">
+                                {item.doctorNotes}
+                              </p>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>

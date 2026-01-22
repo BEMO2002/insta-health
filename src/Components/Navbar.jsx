@@ -13,8 +13,9 @@ import navlogo from "../assets/Home/LOGO(INSTA HEALTH).svg";
 import { toast } from "react-toastify";
 import baseApi from "../api/baseApi";
 import { LiaUserNurseSolid } from "react-icons/lia";
+import userPhoto from "../assets/Home/user.png";
 const Navbar = () => {
-  const { isAuthenticated, logout } = useContext(AuthContext);
+  const { isAuthenticated, user, logout } = useContext(AuthContext);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isAuthDropdownOpen, setIsAuthDropdownOpen] = useState(false);
   const [dropdownTimeout, setDropdownTimeout] = useState(null);
@@ -367,10 +368,14 @@ const Navbar = () => {
                   onMouseLeave={handleAuthMouseLeave}
                 >
                   <button
-                    className="w-12 h-12 text-center text-second border-2 border-second  rounded-full p-3 text-[15px] font-[700] flex items-center justify-center hover:bg-second hover:text-white duration-300"
+                    className="w-12 h-12 text-center text-second rounded-full p-0 flex items-center justify-center hover:opacity-80 duration-300 overflow-hidden border-2 border-second"
                     aria-expanded={isAuthDropdownOpen}
                   >
-                    <FiUser size={20} />
+                    <img
+                      src={userPhoto}
+                      alt="User"
+                      className="w-full h-full object-cover"
+                    />
                   </button>
 
                   <div
@@ -383,6 +388,25 @@ const Navbar = () => {
                     onMouseEnter={handleAuthDropdownMouseEnter}
                     onMouseLeave={handleAuthDropdownMouseLeave}
                   >
+                    <div className="py-2 border-b border-gray-100">
+                      {user && (
+                        <div className="px-4 pb-2 pt-1 text-right">
+                          <p className="text-xs text-gray-400 mb-1">
+                            مرحباً بك👋
+                          </p>
+                          <p className="text-sm font-bold text-gray-800 truncate">
+                            {user.arabicName || user.displayName}
+                          </p>
+                        </div>
+                      )}
+                      <Link
+                        to="/profile"
+                        className="flex items-center w-full text-right px-4 py-2 text-sm text-second hover:bg-second hover:text-white transition-colors duration-150"
+                      >
+                        <FiUser className="ml-3" size={18} />
+                        الملف الشخصي
+                      </Link>
+                    </div>
                     <div className="py-2">
                       <button
                         onClick={handleLogout}
@@ -391,15 +415,6 @@ const Navbar = () => {
                         <FiLogOut className="ml-3" size={18} />
                         تسجيل الخروج
                       </button>
-                    </div>
-                    <div className="py-2">
-                      <Link
-                        to="/profile"
-                        className="flex items-center w-full text-right px-4 py-3 text-sm text-second hover:bg-second hover:text-white transition-colors duration-150"
-                      >
-                        <FiUser className="ml-3" size={18} />
-                        الملف الشخصي
-                      </Link>
                     </div>
                   </div>
                 </div>
