@@ -523,7 +523,7 @@ const Navbar = () => {
                 ) : (
                   <>
                     {user && (
-                      <Link to="/profile" className="  mx-auto">
+                      <Link to="/profile" className=" mx-auto">
                         <div className="flex items-center gap-3 px-2 mb-3 pb-3 border-b border-gray-100">
                           <img
                             src={userPhoto}
