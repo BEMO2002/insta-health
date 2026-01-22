@@ -116,10 +116,6 @@ const Testimonials = () => {
                 modules={[Pagination, Autoplay]}
                 spaceBetween={30}
                 slidesPerView={1}
-                pagination={{
-                  clickable: true,
-                  dynamicBullets: true,
-                }}
                 autoplay={{
                   delay: 3000,
                   disableOnInteraction: false,
@@ -193,7 +189,6 @@ const Testimonials = () => {
                 <p className="text-gray-500">لا توجد تقييمات حالياً.</p>
               </div>
             )}
-            {/* Removed custom-pagination container as dynamicBullets handles it internally */}
           </div>
         )}
 
