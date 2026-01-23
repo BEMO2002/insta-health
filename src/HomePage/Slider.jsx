@@ -21,7 +21,7 @@ const MotionDiv = motion.div;
 
 const ProfessionalCarousel = ({ items }) => {
   return (
-    <div className="relative  z-2 w-full h-[90vh] sm:h-[50vh] md:h-[85vh]  lg:h-[90vh]  ">
+    <div className="relative  z-2 w-full h-[105vh] sm:h-[50vh] md:h-[85vh]  lg:h-[90vh]  ">
       {/* Animated Floating Circles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-5">
         {/* Circle 1 */}
