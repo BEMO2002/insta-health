@@ -120,7 +120,7 @@ const MedicalTourismPackges = () => {
               <SwiperSlide key={item.id}>
                 <div className="bg-white mb-5 rounded-xl shadow-lg overflow-hidden h-full flex flex-col hover:shadow-2xl transition-shadow duration-300">
                   {/* Package Image */}
-                  <div className="relative h-52">
+                  <div className="relative h-50">
                     <img
                       src={item.imageUrl}
                       alt={item.name}

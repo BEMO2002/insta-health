@@ -81,7 +81,7 @@ const TourismAttachments = ({ slugProp = "medical-tourism" }) => {
   return (
     <div className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
-        <div className="bg-white max-w-7xl mx-auto rounded-xl shadow-lg p-6 md:p-8">
+        <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 max-w-7xl mx-auto">
           <div className="relative">
             <Swiper
               modules={[Autoplay, Pagination, Navigation]}
