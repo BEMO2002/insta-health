@@ -532,7 +532,7 @@ const ProvidersDetails = () => {
                                 {renderStars(item.averageRating)}
                               </div>
                               <span className="text-sm text-gray-500 mr-2">
-                                ({item.totalRatings})
+                                ({item.rate})
                               </span>
                             </div>
                             {/* <div className="flex flex-col">
