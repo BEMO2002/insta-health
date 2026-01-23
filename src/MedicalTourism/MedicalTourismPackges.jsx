@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import baseApi from '../api/baseApi';
-import PackageBookingModal from './PackageBookingModal';
+import React, { useState, useEffect } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import baseApi from "../api/baseApi";
+import PackageBookingModal from "./PackageBookingModal";
 
 const MedicalTourismPackges = () => {
   const [packagesData, setPackagesData] = useState([]);
@@ -19,14 +19,14 @@ const MedicalTourismPackges = () => {
     const fetchPackages = async () => {
       try {
         setLoading(true);
-        const response = await baseApi.get('/MedicalTourismPackges');
+        const response = await baseApi.get("/MedicalTourismPackges");
 
         if (response.data.success && response.data.data) {
           setPackagesData(response.data.data);
         }
       } catch (err) {
-        console.error('Error fetching packages:', err);
-        setError('حدث خطأ في تحميل البيانات');
+        console.error("Error fetching packages:", err);
+        setError("حدث خطأ في تحميل البيانات");
       } finally {
         setLoading(false);
       }
@@ -66,7 +66,8 @@ const MedicalTourismPackges = () => {
   }
 
   const renderSection = (typeData) => {
-    const title = typeData.type === 'Package' ? 'الباقات الطبية' : 'العروض الخاصة';
+    const title =
+      typeData.type === "Package" ? "الباقات الطبية" : "العروض الخاصة";
     const items = typeData.items || [];
 
     const maxSlidesPerView = Math.min(3, items.length);
@@ -112,22 +113,21 @@ const MedicalTourismPackges = () => {
               Number(item.discountPrice) < Number(item.price);
             const discountPercent = hasDiscount
               ? Math.round(
-                100 -
-                (Number(item.discountPrice) / Number(item.price)) *
-                100
-              )
+                  100 - (Number(item.discountPrice) / Number(item.price)) * 100,
+                )
               : 0;
             return (
               <SwiperSlide key={item.id}>
                 <div className="bg-white mb-5 rounded-xl shadow-lg overflow-hidden h-full flex flex-col hover:shadow-2xl transition-shadow duration-300">
                   {/* Package Image */}
-                  <div className="relative h-64">
+                  <div className="relative h-52">
                     <img
                       src={item.imageUrl}
                       alt={item.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23e5e7eb" width="400" height="300"/%3E%3Ctext fill="%234b5563" font-family="Arial" font-size="20" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3Eباقة طبية%3C/text%3E%3C/svg%3E';
+                        e.target.src =
+                          'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23e5e7eb" width="400" height="300"/%3E%3Ctext fill="%234b5563" font-family="Arial" font-size="20" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3Eباقة طبية%3C/text%3E%3C/svg%3E';
                       }}
                     />
                     {/* Price Badge */}
@@ -140,7 +140,9 @@ const MedicalTourismPackges = () => {
 
                   {/* Package Info */}
                   <div className="p-6 flex-1 flex flex-col">
-                    <h4 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2 ">{item.name}</h4>
+                    <h4 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2 ">
+                      {item.name}
+                    </h4>
                     <p className="text-sm text-gray-600 mb-4 line-clamp-3 min-h-[60px]">
                       {item.description}
                     </p>
@@ -163,11 +165,15 @@ const MedicalTourismPackges = () => {
                       ) : (
                         <>
                           <span className="text-xl font-bold text-second">
-                            {item.price?.toFixed ? item.price.toFixed(2) : item.price}{" "}
-                              $
+                            {item.price?.toFixed
+                              ? item.price.toFixed(2)
+                              : item.price}{" "}
+                            $
                           </span>
                           <span className="text-lg font-bold text-gray-500 line-through -mt-0.5 opacity-0">
-                            {item.price?.toFixed ? item.price.toFixed(2) : item.price}{" "}
+                            {item.price?.toFixed
+                              ? item.price.toFixed(2)
+                              : item.price}{" "}
                             $
                           </span>
                         </>
@@ -198,7 +204,7 @@ const MedicalTourismPackges = () => {
             الباقات والعروض الطبية
           </h2>
 
-          {packagesData.map(typeData => renderSection(typeData))}
+          {packagesData.map((typeData) => renderSection(typeData))}
         </div>
       </div>
 

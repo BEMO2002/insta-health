@@ -150,7 +150,7 @@ const MedicalTourismSpecialties = () => {
               <SwiperSlide key={specialty.id}>
                 <div className="bg-white mb-5 rounded-xl shadow-lg overflow-hidden sm:max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
                   {/* Specialty Image with Text Overlay */}
-                  <div className="relative h-96 md:h-[500px]">
+                  <div className="relative h-96 md:h-[400px] lg:h-[500px]">
                     <img
                       src={specialty.imageUrl}
                       alt={specialty.name}

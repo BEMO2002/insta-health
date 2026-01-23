@@ -51,16 +51,16 @@ const ProvidersDetails = () => {
           // Parse embedded items to services/clinics sections if present
           if (Array.isArray(providerData.items)) {
             const servicesGroup = providerData.items.find(
-              (g) => g?.type === "Service"
+              (g) => g?.type === "Service",
             );
             const clinicsGroup = providerData.items.find(
-              (g) => g?.type === "Clinic"
+              (g) => g?.type === "Clinic",
             );
             setServices(
-              Array.isArray(servicesGroup?.items) ? servicesGroup.items : []
+              Array.isArray(servicesGroup?.items) ? servicesGroup.items : [],
             );
             setClinics(
-              Array.isArray(clinicsGroup?.items) ? clinicsGroup.items : []
+              Array.isArray(clinicsGroup?.items) ? clinicsGroup.items : [],
             );
           } else {
             setServices([]);
@@ -100,7 +100,7 @@ const ProvidersDetails = () => {
     const remainingStars = 5 - Math.ceil(rating);
     for (let i = 0; i < remainingStars; i++) {
       stars.push(
-        <FaStar key={`empty-${i}`} className="text-gray-300" size={16} />
+        <FaStar key={`empty-${i}`} className="text-gray-300" size={16} />,
       );
     }
 
@@ -357,13 +357,13 @@ const ProvidersDetails = () => {
 
         {/* Services and Clinics Section */}
         {(services.length > 0 || clinics.length > 0) && (
-          <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
+          <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 md:max-w-7xl lg:max-w-full mx-auto">
             {services.length > 0 && (
               <>
                 <h2 className="text-2xl md:text-3xl font-bold text-primary mb-6">
                   الخدمات
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10 items-stretch ">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10 items-stretch ">
                   {/* Services */}
                   {services.map((item) => {
                     const hasDiscount =
@@ -374,7 +374,7 @@ const ProvidersDetails = () => {
                       ? Math.round(
                           100 -
                             (Number(item.discountPrice) / Number(item.price)) *
-                              100
+                              100,
                         )
                       : 0;
 
@@ -387,7 +387,7 @@ const ProvidersDetails = () => {
                           <img
                             src={item.imageCover}
                             alt={item.name}
-                            className="w-full h-60 object-cover"
+                            className="w-full h-56 object-cover"
                             onError={(e) => {
                               e.target.src =
                                 "https://via.placeholder.com/400x200?text=No+Image";
@@ -423,7 +423,7 @@ const ProvidersDetails = () => {
                                 {renderStars(item.averageRating)}
                               </div>
                               <span className="text-sm text-gray-500 mr-2">
-                                ({item.totalRatings})
+                                ({item.rate})
                               </span>
                             </div>
                             <div className="flex flex-col">
