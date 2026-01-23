@@ -11,7 +11,6 @@ import { CartContext } from "../Context/CartContext";
 import "swiper/css";
 import baseApi from "../api/baseApi";
 
-
 const AddToCartButton = ({ service, onAdd }) => {
   const [adding, setAdding] = useState(false);
 
@@ -29,7 +28,7 @@ const AddToCartButton = ({ service, onAdd }) => {
     <button
       onClick={handleClick}
       disabled={adding}
-      className="bg-second text-white px-4 py-2 hover:bg-primary/90 transition-colors duration-200 text-sm font-medium flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+      className="bg-second rounded-full text-white px-4 py-2 hover:bg-primary/90 transition-colors duration-200 text-sm font-medium flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
     >
       {adding ? (
         <span className="inline-flex items-center gap-2">
@@ -55,7 +54,7 @@ const ServiceItemCard = ({ service, onAdd }) => {
 
   const discountPercent = hasDiscount
     ? Math.round(
-        100 - (Number(service.discountPrice) / Number(service.price)) * 100
+        100 - (Number(service.discountPrice) / Number(service.price)) * 100,
       )
     : 0;
 
@@ -168,8 +167,8 @@ const ServiceItems = () => {
         if (response.data.success) {
           setServices(
             (response.data.data.items || []).filter(
-              (item) => item.isBestSeller === true
-            )
+              (item) => item.isBestSeller === true,
+            ),
           );
         } else {
           setError("تعذر تحميل الخدمات");
@@ -255,7 +254,7 @@ const ServiceItems = () => {
               disableOnInteraction: false,
               pauseOnMouseEnter: true,
             }}
-            modules={[Autoplay ]}
+            modules={[Autoplay]}
             breakpoints={{
               640: { slidesPerView: 1 },
               768: { slidesPerView: 2 },
@@ -266,10 +265,7 @@ const ServiceItems = () => {
           >
             {services.map((service) => (
               <SwiperSlide key={service.id} className="h-full">
-                <ServiceItemCard
-                  service={service}
-                  onAdd={handleAddToCart}
-                />
+                <ServiceItemCard service={service} onAdd={handleAddToCart} />
               </SwiperSlide>
             ))}
           </Swiper>

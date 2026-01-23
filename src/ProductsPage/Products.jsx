@@ -13,7 +13,7 @@ const ProductCard = ({ product, onAdd }) => {
     Number(product.discountPrice) < Number(product.price);
   const discountPercent = hasDiscount
     ? Math.round(
-        100 - (Number(product.discountPrice) / Number(product.price)) * 100
+        100 - (Number(product.discountPrice) / Number(product.price)) * 100,
       )
     : 0;
   return (
@@ -100,11 +100,11 @@ const AddToCartButton = ({ product, onAdd }) => {
     <button
       onClick={handleClick}
       disabled={adding}
-      className="bg-second text-white px-4 py-2  hover:bg-primary/90 transition-colors duration-200 text-sm font-medium flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+      className="bg-second rounded-full text-white px-4 py-2  hover:bg-primary/90 transition-colors duration-200 text-sm font-medium flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
     >
       {adding ? (
         <span className="inline-flex items-center gap-2">
-          <span className="animate-spin rounded-full h-3 w-3 border-t-2 border-b-2 border-white"></span>
+          <span className="animate-spin  rounded-full h-3 w-3 border-t-2 border-b-2 border-white"></span>
           جاري الإضافة
         </span>
       ) : (
@@ -353,7 +353,7 @@ const Products = () => {
                 {selectedCategoryId && (
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-second text-white">
                     {categories.find(
-                      (c) => String(c.id) === String(selectedCategoryId)
+                      (c) => String(c.id) === String(selectedCategoryId),
                     )?.name || "فئة"}
                     <button
                       onClick={() => setSelectedCategoryId("")}
