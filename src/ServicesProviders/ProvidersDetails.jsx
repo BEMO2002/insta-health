@@ -357,7 +357,7 @@ const ProvidersDetails = () => {
 
         {/* Services and Clinics Section */}
         {(services.length > 0 || clinics.length > 0) && (
-          <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 md:max-w-7xl lg:max-w-full mx-auto">
+          <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 md:max-w-7xl lg:max-w-7xl xl:max-w-full mx-auto">
             {services.length > 0 && (
               <>
                 <h2 className="text-2xl md:text-3xl font-bold text-primary mb-6">
