@@ -335,6 +335,7 @@ const HomeProviders = () => {
                       </span>
                     </div>
                     <button
+                      aria-label="View Details"
                       onClick={() =>
                         navigate(`/home-providers/${provider.slug}`)
                       }
@@ -361,6 +362,7 @@ const HomeProviders = () => {
         {totalCount > pageSize && !providersLoading && (
           <div className="flex justify-center items-center mt-8 space-x-2">
             <button
+              aria-label="Previous Page"
               onClick={() => handlePageChange(pageIndex - 1)}
               disabled={pageIndex === 1}
               className="px-4 py-2 bg-second text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
@@ -383,6 +385,7 @@ const HomeProviders = () => {
             ))}
 
             <button
+              aria-label="Next Page"
               onClick={() => handlePageChange(pageIndex + 1)}
               disabled={pageIndex === totalPages}
               className="px-4 py-2 bg-second text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"

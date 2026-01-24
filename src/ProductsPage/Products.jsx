@@ -248,6 +248,7 @@ const Products = () => {
     return (
       <div className="flex items-center gap-2">
         <button
+          aria-label="Previous Page"
           onClick={() => goToPage(pageIndex - 1)}
           disabled={pageIndex === 1}
           className="px-4 py-2 bg-second text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
@@ -256,6 +257,7 @@ const Products = () => {
         </button>
         {pages.map((p) => (
           <button
+            aria-label={`Page ${p}`}
             key={p}
             onClick={() => goToPage(p)}
             className={`px-4 py-2 rounded-lg ${
@@ -268,6 +270,7 @@ const Products = () => {
           </button>
         ))}
         <button
+          aria-label="Next Page"
           onClick={() => goToPage(pageIndex + 1)}
           disabled={pageIndex === totalPages}
           className="px-4 py-2 bg-second text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
@@ -303,6 +306,7 @@ const Products = () => {
             <h3 className="text-xl font-bold text-primary">فلترة المنتجات</h3>
             {(selectedCategorySlug || searchTerm) && (
               <button
+                aria-label="Clear Filters"
                 onClick={() => {
                   setSearchTerm("");
                   navigate("/products");
@@ -376,6 +380,7 @@ const Products = () => {
                     {categories.find((c) => c.slug === selectedCategorySlug)
                       ?.name || "فئة"}
                     <button
+                      aria-label="Clear Category Filter"
                       onClick={() => navigate("/products")}
                       className="mr-2 hover:text-red-200"
                     >
@@ -387,6 +392,7 @@ const Products = () => {
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-600 text-white">
                     "{searchTerm}"
                     <button
+                      aria-label="Clear Search Filter"
                       onClick={() => setSearchTerm("")}
                       className="mr-2 hover:text-red-200"
                     >

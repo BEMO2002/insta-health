@@ -191,6 +191,7 @@ const PrescriptionBookingModal = ({
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-primary">حجز الوصفة الطبية</h2>
           <button
+            aria-label="Close Modal"
             onClick={handleClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
@@ -343,6 +344,7 @@ const PrescriptionBookingModal = ({
             {/* Submit Button */}
             <div className="flex flex-col md:flex-row gap-3 pt-4">
               <button
+                aria-label="Close Modal"
                 type="button"
                 onClick={handleClose}
                 className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors duration-200"
@@ -350,6 +352,7 @@ const PrescriptionBookingModal = ({
                 إلغاء
               </button>
               <button
+                aria-label="Submit Form"
                 type="submit"
                 disabled={loading}
                 className="flex-1 bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"

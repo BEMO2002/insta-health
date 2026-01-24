@@ -11,7 +11,7 @@ const OrderStatus = () => {
 
   const query = useMemo(
     () => new URLSearchParams(location.search),
-    [location.search]
+    [location.search],
   );
   const merchantOrderIdFromQuery = query.get("merchantOrderId");
   const paymentStatus = query.get("paymentStatus");
@@ -118,8 +118,8 @@ const OrderStatus = () => {
                     isPaid
                       ? "text-green-600"
                       : isFailed
-                      ? "text-red-600"
-                      : "text-yellow-600"
+                        ? "text-red-600"
+                        : "text-yellow-600"
                   }`}
                 >
                   {order.status}
@@ -170,12 +170,14 @@ const OrderStatus = () => {
 
             <div className="mt-8 flex gap-3">
               <Link
+                aria-label="Go Back to Home"
                 to="/"
                 className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300"
               >
                 الصفحة الرئيسية
               </Link>
               <Link
+                aria-label="Go Back to Products"
                 to="/products"
                 className="px-4 py-2 rounded-lg bg-second text-white hover:bg-primary"
               >

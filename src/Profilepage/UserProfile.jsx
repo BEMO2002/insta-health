@@ -131,6 +131,7 @@ const UserProfile = () => {
     return (
       <div className="flex justify-center items-center gap-2 mt-8">
         <button
+          aria-label="Previous Page"
           onClick={() => setPage((p) => Math.max(1, p - 1))}
           disabled={page === 1}
           className="px-4 py-2 rounded-lg border border-gray-300 disabled:opacity-50 hover:bg-gray-50 bg-white"
@@ -141,6 +142,7 @@ const UserProfile = () => {
           صفحة {page} من {totalPages}
         </span>
         <button
+          aria-label="Next Page"
           onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
           disabled={page === totalPages}
           className="px-4 py-2 rounded-lg border border-gray-300 disabled:opacity-50 hover:bg-gray-50 bg-white"
@@ -258,6 +260,7 @@ const UserProfile = () => {
             { id: "services", label: "حجوزات الخدمات", icon: FiActivity },
           ].map((tab) => (
             <button
+              aria-label={`Switch to ${tab.label}`}
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
               className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 font-bold ${

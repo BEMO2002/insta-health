@@ -282,6 +282,7 @@ const PackageReservationDetails = () => {
             <div className="mt-8 flex flex-wrap gap-3">
               {isPending && (
                 <button
+                  aria-label="Pay Now"
                   onClick={handlePayment}
                   disabled={paymentLoading}
                   className="px-6 py-3 rounded-lg bg-primary text-white hover:bg-second transition-colors font-bold disabled:opacity-50 disabled:cursor-not-allowed"
@@ -291,6 +292,7 @@ const PackageReservationDetails = () => {
               )}
               
               <Link
+                aria-label="Go Back to Medical Tourism"
                 to="/medical-tourism"
                 className="px-6 py-3 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors font-semibold"
               >
@@ -298,6 +300,7 @@ const PackageReservationDetails = () => {
               </Link>
               
               <Link
+                aria-label="Go Back to Home"
                 to="/"
                 className="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors font-semibold"
               >

@@ -26,6 +26,7 @@ const DoctorsPopup = ({
             <p className="text-sm opacity-90 mt-1">الأطباء المتاحون</p>
           </div>
           <button
+            aria-label="Close"
             onClick={onClose}
             className="text-white hover:bg-white hover:text-primary rounded-full p-2 transition-colors"
           >
@@ -142,6 +143,7 @@ const DoctorsPopup = ({
 
                       {/* Booking Button */}
                       <button
+                        aria-label="Book Appointment"
                         onClick={() => onBookDoctor(doctor)}
                         className="w-full bg-primary hover:bg-second text-white py-2 rounded-lg font-semibold transition-colors duration-300"
                       >

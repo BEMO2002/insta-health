@@ -104,6 +104,7 @@ const Footer = () => {
                 <div className="flex gap-4 mb-6 text-xl flex-wrap justify-center lg:justify-start">
                   {contactInfo.facebookUrl && (
                     <a
+                      aria-label="Facebook"
                       href={
                         contactInfo.facebookUrl.startsWith("http")
                           ? contactInfo.facebookUrl
@@ -119,6 +120,7 @@ const Footer = () => {
                   )}
                   {contactInfo.instgramUrl && (
                     <a
+                      aria-label="Instagram"
                       href={
                         contactInfo.instgramUrl.startsWith("http")
                           ? contactInfo.instgramUrl
@@ -134,6 +136,7 @@ const Footer = () => {
                   )}
                   {contactInfo.tiktokUrl && (
                     <a
+                      aria-label="TikTok"
                       href={
                         contactInfo.tiktokUrl.startsWith("http")
                           ? contactInfo.tiktokUrl
@@ -149,6 +152,7 @@ const Footer = () => {
                   )}
                   {contactInfo.snapChatUrl && (
                     <a
+                      aria-label="Snapchat"
                       href={
                         contactInfo.snapChatUrl.startsWith("http")
                           ? contactInfo.snapChatUrl
@@ -164,6 +168,7 @@ const Footer = () => {
                   )}
                   {contactInfo.linkedinUrl && (
                     <a
+                      aria-label="LinkedIn"
                       href={
                         contactInfo.linkedinUrl.startsWith("http")
                           ? contactInfo.linkedinUrl
@@ -179,6 +184,7 @@ const Footer = () => {
                   )}
                   {contactInfo.twiterUrl && (
                     <a
+                      aria-label="Twitter"
                       href={
                         contactInfo.twiterUrl.startsWith("http")
                           ? contactInfo.twiterUrl
@@ -194,6 +200,7 @@ const Footer = () => {
                   )}
                   {contactInfo.whatsAppUrl && (
                     <a
+                      aria-label="WhatsApp"
                       href={
                         contactInfo.whatsAppUrl.startsWith("http")
                           ? contactInfo.whatsAppUrl
@@ -218,6 +225,7 @@ const Footer = () => {
                     <div className="flex flex-col gap-2 items-center lg:items-start">
                       {contactInfo.hotLines.map((line) => (
                         <a
+                          aria-label="WhatsApp"
                           key={line.id}
                           href={
                             line.url

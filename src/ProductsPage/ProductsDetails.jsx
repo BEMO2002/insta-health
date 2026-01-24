@@ -148,6 +148,7 @@ const ProductsDetails = () => {
         {/* Breadcrumbs */}
         <div className="flex items-center text-sm text-gray-500 mb-6">
           <button
+            aria-label="Go Back to Products"
             onClick={() => navigate("/products")}
             className="hover:text-primary"
           >
@@ -272,6 +273,7 @@ const ProductsDetails = () => {
                     )}
                   </div>
                   <button
+                    aria-label="Add to Cart"
                     onClick={handleAdd}
                     disabled={adding}
                     className={`bg-second text-white px-10 py-3 rounded-full  hover:bg-primary transition-colors duration-200 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed`}

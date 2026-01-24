@@ -130,6 +130,7 @@ const PackageBookingModal = ({ isOpen, onClose, package: packageItem }) => {
             <p className="text-sm opacity-90 mt-1">{packageItem.name}</p>
           </div>
           <button
+            aria-label="Close"
             onClick={onClose}
             className="text-white hover:bg-white hover:text-primary rounded-full p-2 transition-colors"
           >
@@ -265,6 +266,7 @@ const PackageBookingModal = ({ isOpen, onClose, package: packageItem }) => {
           {/* Submit Buttons */}
           <div className="flex  flex-col md:flex-row gap-4">
             <button
+              aria-label="Close"
               type="button"
               onClick={onClose}
               className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
@@ -273,6 +275,7 @@ const PackageBookingModal = ({ isOpen, onClose, package: packageItem }) => {
               إلغاء
             </button>
             <button
+              aria-label="Submit"
               type="submit"
               className="flex-1 px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-second transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}

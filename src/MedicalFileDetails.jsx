@@ -111,8 +111,8 @@ const formatFieldValue = (key, value) => {
       return value === "Paid"
         ? "مدفوع"
         : value === "Pending"
-        ? "قيد الانتظار"
-        : value;
+          ? "قيد الانتظار"
+          : value;
     case "deliverystatus":
       return getEnumLabel(deliveryStatusOptions, value);
     case "expirationdate":
@@ -249,6 +249,7 @@ const MedicalFileDetails = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <button
+          aria-label="Go Back"
           onClick={() => navigate("/medical-files")}
           className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-gray-900"
         >
@@ -267,6 +268,7 @@ const MedicalFileDetails = () => {
             className="mx-auto w-48 h-48 object-contain border border-gray-300 rounded-lg"
           />
           <button
+            aria-label="Download QR Code"
             onClick={() => {
               const link = document.createElement("a");
               link.href = file.qrCodeUrl;
@@ -312,6 +314,7 @@ const MedicalFileDetails = () => {
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-bold">أنواع السجلات الطبية</h3>
           <button
+            aria-label="View All Records"
             onClick={() => openRecordsModal(null, "جميع السجلات")}
             className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 flex items-center gap-2"
           >
@@ -332,12 +335,14 @@ const MedicalFileDetails = () => {
               </div>
               <div className="flex gap-2 mt-4">
                 <button
+                  aria-label="Add New Record"
                   onClick={() => openAddRecordModal(type.id, type.name)}
                   className="bg-second text-white px-3 py-1 rounded text-sm hover:bg-second/90"
                 >
                   إضافة جديد
                 </button>
                 <button
+                  aria-label="View Records"
                   onClick={() => openRecordsModal(type.id, type.name)}
                   className="bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-300"
                 >

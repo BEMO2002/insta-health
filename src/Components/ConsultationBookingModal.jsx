@@ -143,6 +143,7 @@ const ConsultationBookingModal = ({ isOpen, onClose, doctor }) => {
         <div className="flex items-center justify-between p-6 border-b sticky top-0 bg-white z-10">
           <h2 className="text-xl font-bold text-primary">حجز استشارة طبية</h2>
           <button
+            aria-label="Close Modal"
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
@@ -334,6 +335,7 @@ const ConsultationBookingModal = ({ isOpen, onClose, doctor }) => {
           {/* Submit Button */}
           <div className="mt-6">
             <button
+              aria-label="Submit Booking"
               type="submit"
               disabled={loading}
               className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-second transition-colors flex items-center justify-center disabled:opacity-50"

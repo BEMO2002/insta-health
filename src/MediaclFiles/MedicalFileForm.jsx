@@ -315,6 +315,7 @@ const MedicalFileForm = ({ plan, subscriptionPlanId, onClose, onSuccess }) => {
 
         <div className="flex flex-col md:flex-row gap-4">
           <button
+            aria-label="Submit"
             type="submit"
             disabled={submitting}
             className="flex-1 inline-flex justify-center items-center gap-2 bg-second text-white font-semibold py-3 rounded-2xl hover:bg-primary transition disabled:opacity-70"
@@ -323,6 +324,7 @@ const MedicalFileForm = ({ plan, subscriptionPlanId, onClose, onSuccess }) => {
             <span>إرسال الطلب</span>
           </button>
           <button
+            aria-label="Close"
             type="button"
             onClick={onClose}
             className="flex-1 border-2 border-gray-200 text-gray-700 font-semibold py-3 rounded-2xl hover:border-second hover:text-second transition"

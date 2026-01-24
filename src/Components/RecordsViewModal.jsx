@@ -307,12 +307,17 @@ const RecordsViewModal = ({
           </div>
           <div className="flex items-center gap-2">
             <button
+              aria-label="Print All Records"
               onClick={printAll}
               className="px-3 py-2 bg-second text-white rounded flex items-center gap-2"
             >
               <FaPrint /> طباعة الكل
             </button>
-            <button onClick={onClose} className="text-gray-500">
+            <button
+              aria-label="Close Modal"
+              onClick={onClose}
+              className="text-gray-500"
+            >
               <FaTimes />
             </button>
           </div>
@@ -342,6 +347,7 @@ const RecordsViewModal = ({
                       </div>
                       <div className="flex items-center gap-2">
                         <button
+                          aria-label="Edit Record"
                           onClick={() => handleEdit(it)}
                           className="text-sm bg-blue-500 text-white px-2 py-1 rounded flex items-center gap-1 hover:bg-blue-600"
                         >
@@ -400,6 +406,7 @@ const RecordsViewModal = ({
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-2 p-3 border-t flex-shrink-0">
             <button
+              aria-label="Previous Page"
               disabled={pageIndex === 1}
               onClick={() => setPageIndex((p) => p - 1)}
               className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
@@ -410,6 +417,7 @@ const RecordsViewModal = ({
               صفحة {pageIndex} من {totalPages}
             </span>
             <button
+              aria-label="Next Page"
               disabled={pageIndex === totalPages}
               onClick={() => setPageIndex((p) => p + 1)}
               className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
@@ -458,6 +466,7 @@ const RecordsViewModal = ({
             />
             <div className="flex gap-3">
               <button
+                aria-label="Confirm Delete"
                 onClick={confirmDelete}
                 disabled={deleting || !deleteInput}
                 className="flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -465,6 +474,7 @@ const RecordsViewModal = ({
                 {deleting ? "جاري الحذف..." : "تأكيد الحذف"}
               </button>
               <button
+                aria-label="Cancel Delete"
                 onClick={() => {
                   setDeleteModal({ open: false, record: null });
                   setDeleteInput("");

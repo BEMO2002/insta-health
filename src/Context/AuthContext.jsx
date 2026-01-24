@@ -13,7 +13,6 @@ export const AuthProvider = ({ children }) => {
   // Check auth on page refresh
   const checkAuth = async () => {
     try {
-
       // Step 1: refresh token
       const res = await baseApi.post("/Accounts/refresh-token", {});
 
@@ -24,8 +23,6 @@ export const AuthProvider = ({ children }) => {
             validateStatus: () => true, // important: don't throw on 400
           });
 
-
-
           const profileData = profileRes.data;
 
           if (profileData?.data) {
@@ -33,12 +30,10 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenticated(true);
             localStorage.setItem("user", JSON.stringify(profileData.data));
           } else {
-            console.warn("⚠️ No user data in profile response");
             setUser(null);
             setIsAuthenticated(false);
           }
         } catch (profileErr) {
-
           setUser(null);
           setIsAuthenticated(false);
         }
@@ -50,7 +45,6 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(false);
       return false;
     } catch (err) {
-
       setUser(null);
       setIsAuthenticated(false);
       return false;
@@ -61,11 +55,7 @@ export const AuthProvider = ({ children }) => {
 
   // Login
   const login = async (email, password) => {
-
-
     const res = await baseApi.post("/Accounts/login", { email, password });
-
-
 
     if (res.data?.data) {
       setUser(res.data.data);
@@ -80,13 +70,21 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       // attempt to invalidate refresh cookie on server
-      await baseApi.post("/Accounts/logout", {}, { validateStatus: () => true });
+      await baseApi.post(
+        "/Accounts/logout",
+        {},
+        { validateStatus: () => true },
+      );
     } catch (_) {
       // ignore network errors
     } finally {
       try {
         // optional fallback if API exposes revoke endpoint instead
-        await baseApi.post("/Accounts/revoke-token", {}, { validateStatus: () => true });
+        await baseApi.post(
+          "/Accounts/revoke-token",
+          {},
+          { validateStatus: () => true },
+        );
       } catch (_) {
         // ignore
       }
@@ -98,7 +96,6 @@ export const AuthProvider = ({ children }) => {
 
   // Run once on mount
   useEffect(() => {
-
     checkAuth();
   }, []);
 

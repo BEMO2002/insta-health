@@ -34,6 +34,7 @@ export const Top = () => {
   return (
     isVisible && (
       <button
+        aria-label="Scroll to Top"
         ref={buttonRef}
         onClick={scrollToTop}
         className={`top z-50  p-[15px] border-2 border-primary rounded-full font-bold fixed right-[10px] bottom-[20px] cursor-pointer duration-200

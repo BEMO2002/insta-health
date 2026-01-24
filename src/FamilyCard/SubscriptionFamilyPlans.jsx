@@ -467,6 +467,7 @@ const SubscriptionFamilyPlans = () => {
                   </ul>
                 )}
                 <button
+                  aria-label="Subscribe Now"
                   className="w-full inline-flex justify-center items-center gap-2 bg-second text-white font-semibold py-3 rounded-2xl hover:bg-primary transition-all duration-300"
                   onClick={() => openModal(plan)}
                 >
@@ -479,6 +480,7 @@ const SubscriptionFamilyPlans = () => {
 
         <div className="mt-12 text-center">
           <button
+            aria-label="Show Card Details"
             onClick={openCardModal}
             className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-8 py-3 rounded-2xl hover:bg-second transition-all duration-300"
           >
@@ -497,6 +499,7 @@ const SubscriptionFamilyPlans = () => {
       >
         <div className="flex justify-end p-4 border-b border-gray-100">
           <button
+            aria-label="Close Modal"
             onClick={closeModal}
             className="text-gray-500 hover:text-second font-semibold"
           >
@@ -515,6 +518,7 @@ const SubscriptionFamilyPlans = () => {
       >
         <div className="flex justify-end p-4 border-b border-gray-100">
           <button
+            aria-label="Close Modal"
             onClick={closeCardModal}
             className="text-gray-500 hover:text-second font-semibold"
           >
@@ -536,6 +540,7 @@ const SubscriptionFamilyPlans = () => {
               </div>
               <div className="flex justify-center">
                 <button
+                  aria-label="Close Modal"
                   onClick={closeCardModal}
                   className="px-6 py-3 bg-second text-white rounded-2xl font-semibold hover:bg-primary transition"
                 >
@@ -574,12 +579,14 @@ const SubscriptionFamilyPlans = () => {
               })() && (
                 <div className="flex gap-3 justify-center">
                   <button
+                    aria-label="Renew Cash"
                     onClick={() => handleRenew("Cash")}
                     className="px-6 py-3 bg-second text-white rounded-2xl font-semibold hover:bg-primary transition"
                   >
                     تجديد نقداً
                   </button>
                   <button
+                    aria-label="Renew Visa"
                     onClick={() => handleRenew("Visa")}
                     className="px-6 py-3 bg-primary text-white rounded-2xl font-semibold hover:bg-second transition"
                   >
@@ -592,6 +599,7 @@ const SubscriptionFamilyPlans = () => {
                 cardModalState.cardNumber && (
                   <div className="flex gap-3 justify-center">
                     <button
+                      aria-label="Pay with Visa"
                       onClick={() => handleRenew("Visa")}
                       className="px-6 py-3 bg-primary text-white rounded-2xl font-semibold hover:bg-second transition"
                     >
@@ -717,6 +725,7 @@ const SubscriptionFamilyPlans = () => {
                     <div className="flex items-center gap-2">
                       {canAddMember() && (
                         <button
+                          aria-label="Add New Member"
                           onClick={openAddMemberModal}
                           className="inline-flex items-center gap-2 bg-second text-white px-4 py-2 rounded-2xl text-sm font-semibold hover:bg-primary transition"
                         >
@@ -805,6 +814,7 @@ const SubscriptionFamilyPlans = () => {
       >
         <div className="flex justify-end p-4 border-b border-gray-100">
           <button
+            aria-label="Close Modal"
             onClick={closeAddMemberModal}
             className="text-gray-500 hover:text-second font-semibold"
           >
@@ -894,6 +904,7 @@ const SubscriptionFamilyPlans = () => {
             </div>
             <div className="flex gap-4 pt-4">
               <button
+                aria-label="Add New Member"
                 type="submit"
                 disabled={addMemberModalState.submitting}
                 className="flex-1 inline-flex justify-center items-center gap-2 bg-second text-white font-semibold py-3 rounded-2xl hover:bg-primary transition disabled:opacity-70"
@@ -904,6 +915,7 @@ const SubscriptionFamilyPlans = () => {
                 <span>إضافة العضو</span>
               </button>
               <button
+                aria-label="Close Modal"
                 type="button"
                 onClick={closeAddMemberModal}
                 className="flex-1 border-2 border-gray-200 text-gray-700 font-semibold py-3 rounded-2xl hover:border-second hover:text-second transition"

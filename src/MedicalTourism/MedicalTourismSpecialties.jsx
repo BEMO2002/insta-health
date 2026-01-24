@@ -174,6 +174,7 @@ const MedicalTourismSpecialties = () => {
                   {/* Book Consultation Button */}
                   <div className="p-8">
                     <button
+                      aria-label="Book Consultation"
                       onClick={() => handleShowDoctors(specialty)}
                       className="w-full bg-primary hover:bg-second text-white py-3 rounded-lg font-bold text-lg transition-colors duration-300 shadow-lg hover:shadow-xl"
                     >

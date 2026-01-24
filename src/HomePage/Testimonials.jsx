@@ -224,6 +224,7 @@ const Testimonials = () => {
                   <div className="flex gap-2 justify-end bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-200 h-[50px] items-center">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
+                        aria-label={`Star ${star}`}
                         key={star}
                         type="button"
                         onClick={() =>
@@ -263,6 +264,7 @@ const Testimonials = () => {
 
               <div className="flex justify-center pt-2">
                 <button
+                  aria-label="Submit Review"
                   type="submit"
                   disabled={submitting}
                   className="flex items-center gap-2 bg-primary text-white px-8 py-3 rounded-xl font-bold hover:bg-second transition-all disabled:opacity-70 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"

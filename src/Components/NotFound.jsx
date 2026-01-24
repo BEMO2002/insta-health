@@ -7,7 +7,7 @@ const NotFound = () => {
     <div className='flex items-center flex-col justify-center mt-50 md:mt-0'>
         <img src={notimage} alt="" className='mx-auto' />
         <Link to="/">
-        <button className='flex  items-center gap-2 bg-transparent cursor-pointer hover:bg-primary hover:text-white transition-colors border border-primary text-primary px-6 py-4 rounded-lg '>
+        <button aria-label="Go to Home" className='flex  items-center gap-2 bg-transparent cursor-pointer hover:bg-primary hover:text-white transition-colors border border-primary text-primary px-6 py-4 rounded-lg '>
             العودة للرئيسية
             <HiOutlineHomeModern size={20} />
         </button>

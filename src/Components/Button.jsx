@@ -4,7 +4,7 @@ import styled from "styled-components";
 const Button = () => {
   return (
     <StyledWrapper>
-      <button>عرض جميع الروشتات</button>
+      <button aria-label="View All Prescriptions">عرض جميع الروشتات</button>
     </StyledWrapper>
   );
 };

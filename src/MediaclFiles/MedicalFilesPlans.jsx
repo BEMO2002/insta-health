@@ -308,6 +308,7 @@ const MedicalFilesPlans = () => {
                   </ul>
                 )}
                 <button
+                  aria-label="Subscribe"
                   className="w-full inline-flex justify-center items-center gap-2 bg-second text-white font-semibold py-3 rounded-2xl hover:bg-primary transition-all duration-300"
                   onClick={() => openModal(plan)}
                 >
@@ -320,6 +321,7 @@ const MedicalFilesPlans = () => {
 
         <div className="mt-12 text-center flex justify-center gap-4">
           <button
+            aria-label="View File"
             onClick={openFileModal}
             className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-8 py-3 rounded-2xl hover:bg-second transition-all duration-300"
           >
@@ -327,6 +329,7 @@ const MedicalFilesPlans = () => {
             <span>عرض بيانات الملف</span>
           </button>
           <Link
+            aria-label="Go to Medical File"
             to="/medical-file-record"
             className="inline-flex items-center gap-2 bg-transparent text-primary border border-primary font-semibold px-8 py-3 rounded-2xl hover:bg-second/5 transition-all duration-300"
           >
@@ -345,6 +348,7 @@ const MedicalFilesPlans = () => {
       >
         <div className="flex justify-end p-4 border-b border-gray-100">
           <button
+            aria-label="Close Modal"
             onClick={closeModal}
             className="text-gray-500 hover:text-second font-semibold"
           >
@@ -363,6 +367,7 @@ const MedicalFilesPlans = () => {
       >
         <div className="flex justify-end p-4 border-b border-gray-100">
           <button
+            aria-label="Close Modal"
             onClick={closeFileModal}
             className="text-gray-500 hover:text-second font-semibold"
           >
@@ -384,6 +389,7 @@ const MedicalFilesPlans = () => {
               </div>
               <div className="flex justify-center">
                 <button
+                  aria-label="Close Modal"
                   onClick={closeFileModal}
                   className="px-6 py-3 bg-second text-white rounded-2xl font-semibold hover:bg-primary transition"
                 >
@@ -411,12 +417,14 @@ const MedicalFilesPlans = () => {
                   fileModalState.error?.toLowerCase().includes("تجديد")) && (
                   <div className="flex gap-3 justify-center">
                     <button
+                      aria-label="Renew Cash"
                       onClick={() => handleRenew("Cash")}
                       className="px-6 py-3 bg-second text-white rounded-2xl font-semibold hover:bg-primary transition"
                     >
                       تجديد نقداً
                     </button>
                     <button
+                      aria-label="Renew Visa"
                       onClick={() => handleRenew("Visa")}
                       className="px-6 py-3 bg-primary text-white rounded-2xl font-semibold hover:bg-second transition"
                     >
@@ -428,6 +436,7 @@ const MedicalFilesPlans = () => {
                 fileModalState.cardNumber && (
                   <div className="flex gap-3 justify-center">
                     <button
+                      aria-label="Pay with Visa"
                       onClick={() => handleRenew("Visa")}
                       className="px-6 py-3 bg-primary text-white rounded-2xl font-semibold hover:bg-second transition"
                     >

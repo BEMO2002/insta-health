@@ -323,6 +323,7 @@ const MedicalConsultationReservationsDetails = () => {
             {/* Action Buttons */}
             <div className="mt-8 flex flex-wrap gap-3">  
               <Link
+                aria-label="Go Back to Medical Tourism"
                 to="/medical-tourism"
                 className="px-6 py-3 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors font-semibold"
               >
@@ -330,6 +331,7 @@ const MedicalConsultationReservationsDetails = () => {
               </Link>
               
               <Link
+                aria-label="Go Back to Home"
                 to="/"
                 className="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors font-semibold"
               >

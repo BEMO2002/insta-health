@@ -213,6 +213,7 @@ const Navbar = () => {
             <img src={navlogo} alt="navlogo" className="w-[90px]" />
           </Link>
           <button
+            aria-label="Toggle Mobile Menu"
             onClick={toggleMobileMenu}
             className="text-primary hover:text-second focus:outline-none"
           >
@@ -235,6 +236,7 @@ const Navbar = () => {
                   onMouseLeave={handleMouseLeave}
                 >
                   <button
+                    aria-label="Toggle Dropdown"
                     className="relative  text-primary p-2  text-[13px] font-[800] flex items-center flex-row-reverse rounded-md hover:bg-second hover:text-white transition-colors duration-300"
                     aria-expanded={isServicesOpen === item.name}
                   >
@@ -259,6 +261,7 @@ const Navbar = () => {
                       {item.subItems.map((subItem) =>
                         subItem.isSpeciality ? (
                           <button
+                            aria-label="Toggle Dropdown"
                             key={subItem.name}
                             onClick={() =>
                               item.name === "الخدمات المنزليه"
@@ -271,6 +274,7 @@ const Navbar = () => {
                           </button>
                         ) : subItem.isCategory ? (
                           <button
+                            aria-label="Toggle Dropdown"
                             key={subItem.name}
                             onClick={() => handleCategoryClick(subItem.slug)}
                             className="block w-full text-right p-2 text-sm text-second hover:bg-second hover:text-white transition-colors duration-150"
@@ -313,6 +317,7 @@ const Navbar = () => {
                   onMouseLeave={handleAuthMouseLeave}
                 >
                   <button
+                    aria-label="Toggle Auth Dropdown"
                     className="w-12 h-12 text-center text-second border-2 border-second  rounded-full p-3 text-[15px] font-[700] flex items-center justify-center hover:bg-second hover:text-white duration-300"
                     aria-expanded={isAuthDropdownOpen}
                   >
@@ -364,6 +369,7 @@ const Navbar = () => {
                   onMouseLeave={handleAuthMouseLeave}
                 >
                   <button
+                    aria-label="Toggle Auth Dropdown"
                     className="w-12 h-12 text-center text-second rounded-full p-0 flex items-center justify-center hover:opacity-80 duration-300 overflow-hidden border-2 border-second"
                     aria-expanded={isAuthDropdownOpen}
                   >
@@ -433,6 +439,7 @@ const Navbar = () => {
                 item.subItems ? (
                   <div key={item.name} className="relative">
                     <button
+                      aria-label="Toggle Mobile Dropdown"
                       onClick={() => toggleMobileDropdown(item.name)}
                       className="w-full flex justify-between items-center text-primary px-3 py-2 font-medium hover:bg-second hover:text-white rounded-md"
                     >
@@ -462,6 +469,7 @@ const Navbar = () => {
                             </button>
                           ) : subItem.isCategory ? (
                             <button
+                              aria-label="Toggle Mobile Dropdown"
                               key={subItem.name}
                               onClick={() => handleCategoryClick(subItem.slug)}
                               className="block w-full text-right px-3 py-2 text-sm bg-gray-100 text-primary hover:bg-second hover:text-white rounded-md"
@@ -543,6 +551,7 @@ const Navbar = () => {
                       هل انت مقدم خدمة ؟
                     </Link>
                     <button
+                      aria-label="Logout"
                       onClick={handleLogout}
                       className="text-red-700  border-2 border-red-700 rounded-md px-4 py-2 text-md font-medium flex items-center justify-center hover:bg-red-700 duration-300 hover:text-white"
                     >

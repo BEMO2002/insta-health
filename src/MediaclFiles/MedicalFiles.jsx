@@ -239,7 +239,7 @@ const MedicalFiles = () => {
         payload,
         {
           validateStatus: () => true,
-        }
+        },
       );
 
       if (res.data?.success) {
@@ -258,7 +258,7 @@ const MedicalFiles = () => {
       toast.error(
         e?.response?.data?.message ||
           e?.message ||
-          "حدث خطأ أثناء تجديد الاشتراك"
+          "حدث خطأ أثناء تجديد الاشتراك",
       );
     }
   };
@@ -279,12 +279,14 @@ const MedicalFiles = () => {
       return (
         <div className="flex gap-3 justify-center mt-4">
           <button
+            aria-label="Renew Cash"
             onClick={() => handleRenew("Cash")}
             className="px-6 py-3 bg-second text-white rounded-2xl font-semibold hover:bg-primary transition"
           >
             تجديد نقداً
           </button>
           <button
+            aria-label="Renew Visa"
             onClick={() => handleRenew("Visa")}
             className="px-6 py-3 bg-primary text-white rounded-2xl font-semibold hover:bg-second transition"
           >
@@ -298,6 +300,7 @@ const MedicalFiles = () => {
       return (
         <div className="flex gap-3 justify-center mt-4">
           <button
+            aria-label="Pay with Visa"
             onClick={() => handleRenew("Visa")}
             className="px-6 py-3 bg-primary text-white rounded-2xl font-semibold hover:bg-second transition"
           >
@@ -351,6 +354,7 @@ const MedicalFiles = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-xl font-bold">أنواع السجلات الطبية</h3>
                   <button
+                    aria-label="View All"
                     onClick={() => setViewModal({ open: true, typeId: null })}
                     className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 flex items-center gap-2"
                   >
@@ -373,6 +377,7 @@ const MedicalFiles = () => {
                       </div>
                       <div className="flex gap-2 mt-4">
                         <button
+                          aria-label="Add New"
                           onClick={() =>
                             setAddModal({ open: true, typeId: t.id })
                           }
@@ -381,6 +386,7 @@ const MedicalFiles = () => {
                           إضافة جديد
                         </button>
                         <button
+                          aria-label="View Records"
                           onClick={() =>
                             setViewModal({ open: true, typeId: t.id })
                           }

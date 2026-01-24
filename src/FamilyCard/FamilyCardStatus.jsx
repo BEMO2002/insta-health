@@ -81,7 +81,7 @@ const FamilyCardStatus = () => {
         payload,
         {
           validateStatus: () => true,
-        }
+        },
       );
 
       if (res.data?.success) {
@@ -90,7 +90,7 @@ const FamilyCardStatus = () => {
           return;
         }
         toast.success(
-          "تم تنفيذ طلبك بنجاح وسيتم التواصل معك قريباً من أحد ممثلي الخدمة لإتمام الدفع والتجديد"
+          "تم تنفيذ طلبك بنجاح وسيتم التواصل معك قريباً من أحد ممثلي الخدمة لإتمام الدفع والتجديد",
         );
         // إعادة تحميل بيانات الكارت
         await fetchCard();
@@ -101,7 +101,7 @@ const FamilyCardStatus = () => {
       toast.error(
         err?.response?.data?.message ||
           err?.message ||
-          "حدث خطأ أثناء تجديد الاشتراك"
+          "حدث خطأ أثناء تجديد الاشتراك",
       );
     }
   };
@@ -145,12 +145,14 @@ const FamilyCardStatus = () => {
             </div>
             <div className="flex gap-3">
               <Link
+                aria-label="Go Back to Plans"
                 to="/family-card"
                 className="px-4 py-2 rounded-2xl border border-gray-200 text-gray-700 hover:border-second hover:text-second transition"
               >
                 الرجوع إلى الباقات
               </Link>
               <button
+                aria-label="Refresh Card"
                 onClick={fetchCard}
                 className="px-4 py-2 rounded-2xl bg-second text-white hover:bg-primary transition"
               >
@@ -162,7 +164,7 @@ const FamilyCardStatus = () => {
           {card && (
             <span
               className={`inline-block px-4 py-1 rounded-full text-sm font-semibold ${statusClasses(
-                card.paymentStatus || card.PaymentStatus
+                card.paymentStatus || card.PaymentStatus,
               )}`}
             >
               حالة الدفع: {card.paymentStatus || card.PaymentStatus || "-"}
@@ -192,12 +194,14 @@ const FamilyCardStatus = () => {
                   error?.toLowerCase().includes("تجديد")) && (
                   <div className="flex gap-3 justify-center">
                     <button
+                      aria-label="Renew Cash"
                       onClick={() => handleRenew("Cash")}
                       className="px-6 py-3 bg-second text-white rounded-2xl font-semibold hover:bg-primary transition"
                     >
                       تجديد نقداً
                     </button>
                     <button
+                      aria-label="Renew Visa"
                       onClick={() => handleRenew("Visa")}
                       className="px-6 py-3 bg-primary text-white rounded-2xl font-semibold hover:bg-second transition"
                     >
@@ -209,6 +213,7 @@ const FamilyCardStatus = () => {
               {errorCode === 400 && cardNumber && (
                 <div className="flex gap-3 justify-center">
                   <button
+                    aria-label="Pay with Visa"
                     onClick={() => handleRenew("Visa")}
                     className="px-6 py-3 bg-primary text-white rounded-2xl font-semibold hover:bg-second transition"
                   >
@@ -234,7 +239,7 @@ const FamilyCardStatus = () => {
                             </td>
                             <td className="py-3 px-4">{row.value}</td>
                           </tr>
-                        )
+                        ),
                     )}
                   </tbody>
                 </table>

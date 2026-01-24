@@ -197,6 +197,7 @@ const ProvidersDetails = () => {
         <div className="text-center">
           <p className="text-red-600 text-lg mb-4">{error}</p>
           <button
+            aria-label="Go Back"
             onClick={() => navigate(-1)}
             className="bg-second text-white px-6 py-2 rounded-lg hover:bg-primary transition-colors"
           >
@@ -213,6 +214,7 @@ const ProvidersDetails = () => {
         <div className="text-center">
           <p className="text-gray-600 text-lg mb-4">مقدم الخدمة غير موجود</p>
           <button
+            aria-label="Go Back"
             onClick={() => navigate(-1)}
             className="bg-second text-white px-6 py-2 rounded-lg hover:bg-primary transition-colors"
           >
@@ -229,6 +231,7 @@ const ProvidersDetails = () => {
       <div className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <button
+            aria-label="Go Back"
             onClick={() => navigate(-1)}
             className="flex items-center text-gray-600 hover:text-primary transition-colors mb-4"
           >
@@ -327,6 +330,7 @@ const ProvidersDetails = () => {
                 </span>
               </div>
               <button
+                aria-label="Book Appointment"
                 onClick={handlePrescriptionClick}
                 className="bg-second text-white px-4 py-3  text-md font-medium hover:bg-primary transition-colors duration-300 flex items-center justify-center gap-2"
               >
@@ -498,6 +502,7 @@ const ProvidersDetails = () => {
                           </div>
 
                           <button
+                            aria-label="Book Service"
                             onClick={() => handleBookingClick(item, "Service")}
                             className="w-full bg-second text-white py-2 rounded-lg text-md font-medium hover:bg-primary transition-colors flex items-center justify-center mt-auto"
                           >
@@ -607,6 +612,7 @@ const ProvidersDetails = () => {
                           </div>
 
                           <button
+                            aria-label="Book Clinic"
                             onClick={() => handleBookingClick(item, "Clinic")}
                             className="w-full bg-second text-white py-2 rounded-lg text-md font-medium hover:bg-primary transition-colors flex items-center justify-center mt-auto"
                           >

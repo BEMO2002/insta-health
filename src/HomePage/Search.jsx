@@ -76,6 +76,7 @@ const Search = () => {
               {/* Speciality Dropdown */}
               <div className="relative flex-1" ref={specialityRef}>
                 <button
+                  aria-label="Speciality Dropdown"
                   onClick={() => setIsSpecialityOpen(!isSpecialityOpen)}
                   className="w-full flex items-center justify-between p-3 bg-white border border-gray-300 rounded-lg hover:border-primary transition-colors text-right"
                 >
@@ -88,6 +89,7 @@ const Search = () => {
                 {isSpecialityOpen && (
                   <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-[9999] max-h-40 overflow-y-auto">
                     <button
+                      aria-label="All Specialities"
                       onClick={() => {
                         setSelectedSpecialitySlug("");
                         setIsSpecialityOpen(false);
@@ -98,6 +100,7 @@ const Search = () => {
                     </button>
                     {specialities.map((spec) => (
                       <button
+                        aria-label={`Speciality ${spec.name}`}
                         key={spec.id}
                         onClick={() => {
                           setSelectedSpecialitySlug(spec.slug);
@@ -114,6 +117,7 @@ const Search = () => {
 
               {/* Search Button */}
               <button
+                aria-label="Search"
                 onClick={handleSearch}
                 className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2 justify-center text-right"
               >

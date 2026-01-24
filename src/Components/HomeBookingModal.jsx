@@ -240,6 +240,7 @@ const HomeBookingModal = ({
           </div>
 
           <button
+            aria-label="Close Modal"
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
@@ -419,6 +420,7 @@ const HomeBookingModal = ({
                     className="w-full h-48 object-cover rounded-lg"
                   />
                   <button
+                    aria-label="Remove Image"
                     type="button"
                     onClick={removeImage}
                     className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
@@ -433,6 +435,7 @@ const HomeBookingModal = ({
           {/* Submit Button */}
           <div className="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200">
             <button
+              aria-label="Close Modal"
               type="button"
               onClick={onClose}
               className="px-6 py-3 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
@@ -440,6 +443,7 @@ const HomeBookingModal = ({
               إلغاء
             </button>
             <button
+              aria-label="Submit Booking"
               type="submit"
               disabled={loading}
               className="px-6 py-3 bg-second text-white rounded-lg hover:bg-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"

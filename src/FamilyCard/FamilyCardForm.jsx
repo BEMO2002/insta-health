@@ -305,6 +305,7 @@ const FamilyCardForm = ({ plan, subscriptionPlanId, onClose, onSuccess }) => {
           <div className="flex items-center justify-between">
             <h4 className="text-xl font-bold text-gray-900">أفراد العائلة</h4>
             <button
+              aria-label="Add Member"
               type="button"
               onClick={addMember}
               disabled={members.length >= maxMembers}
@@ -327,6 +328,7 @@ const FamilyCardForm = ({ plan, subscriptionPlanId, onClose, onSuccess }) => {
                   </h5>
                   {members.length > 1 && (
                     <button
+                      aria-label="Remove Member"
                       type="button"
                       onClick={() => removeMember(index)}
                       className="text-red-500 hover:text-red-700 inline-flex items-center gap-1 text-sm"
@@ -385,6 +387,7 @@ const FamilyCardForm = ({ plan, subscriptionPlanId, onClose, onSuccess }) => {
 
         <div className="flex flex-col md:flex-row gap-4">
           <button
+            aria-label="Submit Form"
             type="submit"
             disabled={submitting}
             className="flex-1 inline-flex justify-center items-center gap-2 bg-second text-white font-semibold py-3 rounded-2xl hover:bg-primary transition disabled:opacity-70"
@@ -393,6 +396,7 @@ const FamilyCardForm = ({ plan, subscriptionPlanId, onClose, onSuccess }) => {
             <span>إرسال الطلب</span>
           </button>
           <button
+            aria-label="Close Form"
             type="button"
             onClick={onClose}
             className="flex-1 border-2 border-gray-200 text-gray-700 font-semibold py-3 rounded-2xl hover:border-second hover:text-second transition"

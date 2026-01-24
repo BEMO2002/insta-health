@@ -181,6 +181,7 @@ const MedicalTourismPackges = () => {
                     </div>
                     {/* Booking Button */}
                     <button
+                      aria-label="Book Package"
                       onClick={() => handleBooking(item)}
                       className="w-full bg-primary hover:bg-second text-white py-2 rounded-lg font-bold text-md transition-colors duration-300 shadow-md hover:shadow-lg"
                     >

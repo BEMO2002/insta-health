@@ -119,6 +119,7 @@ const SubscriptionPlans = () => {
           <div className="mb-6 flex items-center justify-between gap-4 bg-green-50 text-green-800 px-6 py-4 rounded-3xl shadow-sm text-right">
             <p className="text-sm md:text-base">{successToast}</p>
             <button
+              aria-label="Close Toast"
               onClick={() => setSuccessToast("")}
               className="text-green-700 hover:text-green-900 font-semibold"
             >
@@ -193,12 +194,14 @@ const SubscriptionPlans = () => {
 
               <div className="border-t border-gray-100 p-6 flex flex-col gap-4 md:flex-row md:gap-3">
                 <button
+                  aria-label="Subscribe as Service Provider"
                   className="w-full inline-flex justify-center items-center gap-2 bg-second text-white font-semibold py-3 rounded-2xl hover:bg-primary transition-all duration-300"
                   onClick={() => openModal("service", plan)}
                 >
                   اشترك كمقدم خدمة طبية
                 </button>
                 <button
+                  aria-label="Subscribe as Medical Supplier"
                   className="w-full inline-flex justify-center items-center gap-2 border-2 border-second text-second font-semibold py-3 rounded-2xl hover:bg-second hover:text-white transition-all duration-300"
                   onClick={() => openModal("supplier", plan)}
                 >
@@ -219,6 +222,7 @@ const SubscriptionPlans = () => {
       >
         <div className="flex justify-end p-4 border-b border-gray-100">
           <button
+            aria-label="Close Modal"
             onClick={closeModal}
             className="text-gray-500 hover:text-second font-semibold"
           >

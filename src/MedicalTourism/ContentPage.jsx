@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import baseApi from '../api/baseApi';
-import { FiArrowRight, FiAlertCircle } from 'react-icons/fi';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import baseApi from "../api/baseApi";
+import { FiArrowRight, FiAlertCircle } from "react-icons/fi";
 
 const ContentPage = ({ slugProp }) => {
   const { slug: slugFromUrl } = useParams();
@@ -18,31 +18,23 @@ const ContentPage = ({ slugProp }) => {
       try {
         setLoading(true);
 
-        
-        const response = await baseApi.get('/ContentPages');
-        
-        
+        const response = await baseApi.get("/ContentPages");
+
         if (response.data.success && response.data.data) {
-          
-          
-          const foundContent = response.data.data.find(item => {
-            
+          const foundContent = response.data.data.find((item) => {
             return item.slug === slug;
           });
-          
-          
-          
+
           if (foundContent) {
             setContent(foundContent);
           } else {
-            setError('المحتوى غير موجود');
+            setError("المحتوى غير موجود");
           }
         } else {
-          setError('فشل في تحميل البيانات');
+          setError("فشل في تحميل البيانات");
         }
       } catch (err) {
-
-        setError('حدث خطأ أثناء تحميل المحتوى');
+        setError("حدث خطأ أثناء تحميل المحتوى");
       } finally {
         setLoading(false);
       }
@@ -58,7 +50,7 @@ const ContentPage = ({ slugProp }) => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-second"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-second"></div>
       </div>
     );
   }
@@ -71,6 +63,7 @@ const ContentPage = ({ slugProp }) => {
           <h2 className="text-2xl font-bold text-gray-800 mb-2">عذراً!</h2>
           <p className="text-gray-600 mb-6">{error}</p>
           <button
+            aria-label="Go Back"
             onClick={() => navigate(-1)}
             className="inline-flex items-center gap-2 bg-second hover:bg-primary text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300"
           >

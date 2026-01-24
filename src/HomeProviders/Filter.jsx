@@ -308,6 +308,7 @@ const Filter = ({
     }) => (
       <div className="relative dropdown-container">
         <button
+          aria-label="Open Dropdown"
           type="button"
           onClick={() => !disabled && setIsOpen(!isOpen)}
           disabled={disabled}
@@ -340,6 +341,7 @@ const Filter = ({
             ) : items.length > 0 ? (
               items.map((item) => (
                 <button
+                  aria-label="Select Item"
                   key={item.id}
                   type="button"
                   onClick={() => onSelect(item)}
@@ -379,6 +381,7 @@ const Filter = ({
           )}
         </div>
         <button
+          aria-label="Clear Filters"
           onClick={clearFilters}
           className="flex items-center text-gray-500 hover:text-red-600 transition-colors duration-200"
         >
@@ -499,6 +502,7 @@ const Filter = ({
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-second text-white">
                   {selectedSpeciality.name}
                   <button
+                    aria-label="Remove Filter"
                     onClick={() => {
                       setSelectedSpeciality(null);
                       setSelectedSubSpeciality(null);
@@ -515,6 +519,7 @@ const Filter = ({
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-500 text-white">
                   {selectedSubSpeciality.name}
                   <button
+                    aria-label="Remove Filter"
                     onClick={() => {
                       setSelectedSubSpeciality(null);
                       setIsSubSpecialityOpen(false);
@@ -530,6 +535,7 @@ const Filter = ({
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary text-white">
                   {selectedGovernorate.arabicName}
                   <button
+                    aria-label="Remove Filter"
                     onClick={() => {
                       setSelectedGovernorate(null);
                       setSelectedCity(null);
@@ -546,6 +552,7 @@ const Filter = ({
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-600 text-white">
                   {selectedCity.arabicName}
                   <button
+                    aria-label="Remove Filter"
                     onClick={() => {
                       setSelectedCity(null);
                       setIsCityOpen(false);
@@ -561,6 +568,7 @@ const Filter = ({
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-600 text-white">
                   "{searchTerm}"
                   <button
+                    aria-label="Remove Filter"
                     onClick={() => {
                       setSearchTerm("");
                     }}

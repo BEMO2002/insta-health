@@ -87,6 +87,7 @@ const Faq = () => {
                 }`}
               >
                 <button
+                  aria-label="Toggle"
                   onClick={() => toggleExpanded(faq.id)}
                   className="w-full px-6 py-4 text-right flex items-center justify-between focus:outline-none"
                 >

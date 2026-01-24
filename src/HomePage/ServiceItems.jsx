@@ -26,6 +26,7 @@ const AddToCartButton = ({ service, onAdd }) => {
 
   return (
     <button
+      aria-label="Add to Cart"
       onClick={handleClick}
       disabled={adding}
       className="bg-second rounded-full text-white px-4 py-2 hover:bg-primary/90 transition-colors duration-200 text-sm font-medium flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
@@ -129,6 +130,7 @@ const ServiceItemCard = ({ service, onAdd }) => {
           <div className="flex items-center justify-between gap-2">
             <AddToCartButton service={service} onAdd={onAdd} />
             <button
+              aria-label="View Details"
               onClick={() =>
                 navigate(`/products/${service.slug}`, {
                   state: { product: service },
@@ -275,12 +277,14 @@ const ServiceItems = () => {
 
         <div className="flex justify-center items-center mt-6 gap-2">
           <button
+            aria-label="Previous Slide"
             className="swiper-nav-btn text-primary rounded-full border-2 border-primary transition-all"
             onClick={goPrev}
           >
             <MdOutlineKeyboardArrowRight size={28} />
           </button>
           <button
+            aria-label="Next Slide"
             className="swiper-nav-btn text-primary rounded-full border-2 border-primary transition-all"
             onClick={goNext}
           >

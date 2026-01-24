@@ -139,12 +139,14 @@ const MedicalFileStatus = () => {
             </div>
             <div className="flex gap-3">
               <Link
+                aria-label="Go to Medical File"
                 to="/medical-file"
                 className="px-4 py-2 rounded-2xl border border-gray-200 text-gray-700 hover:border-second hover:text-second transition"
               >
                 الرجوع إلى الباقات
               </Link>
               <button
+                aria-label="Refresh Status"
                 onClick={fetchFile}
                 className="px-4 py-2 rounded-2xl bg-second text-white hover:bg-primary transition"
               >
@@ -185,12 +187,14 @@ const MedicalFileStatus = () => {
                   error?.toLowerCase().includes("تجديد")) && (
                   <div className="flex gap-3 justify-center">
                     <button
+                      aria-label="Renew Cash"
                       onClick={() => handleRenew("Cash")}
                       className="px-6 py-3 bg-second text-white rounded-2xl font-semibold hover:bg-primary transition"
                     >
                       تجديد نقداً
                     </button>
                     <button
+                      aria-label="Renew Visa"
                       onClick={() => handleRenew("Visa")}
                       className="px-6 py-3 bg-primary text-white rounded-2xl font-semibold hover:bg-second transition"
                     >
@@ -201,6 +205,7 @@ const MedicalFileStatus = () => {
               {errorCode === 400 && cardNumber && (
                 <div className="flex gap-3 justify-center">
                   <button
+                    aria-label="Pay with Visa"
                     onClick={() => handleRenew("Visa")}
                     className="px-6 py-3 bg-primary text-white rounded-2xl font-semibold hover:bg-second transition"
                   >

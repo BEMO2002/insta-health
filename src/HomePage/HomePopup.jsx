@@ -57,6 +57,7 @@ const HomePopup = () => {
           >
             {/* Close Button */}
             <button
+              aria-label="Close"
               onClick={handleClose}
               className="absolute top-4 right-4 z-10 p-2 bg-white/80 hover:bg-white text-gray-800 rounded-full transition-colors shadow-lg"
             >
@@ -105,6 +106,7 @@ const HomePopup = () => {
               {popupData.redirectUrl && (
                 <div className="p-4 flex justify-center pb-6">
                   <a
+                    aria-label="Open Link"
                     href={
                       popupData.redirectUrl.startsWith("http")
                         ? popupData.redirectUrl

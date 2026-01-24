@@ -409,6 +409,7 @@ const OrderButton = () => {
 
       <div className="w-full flex justify-center">
         <button
+          aria-label="Make Payment"
           className={`order ${animate ? "animate" : ""}`}
           onClick={handleClick}
           disabled={processing || items.length === 0}

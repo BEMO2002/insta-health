@@ -172,6 +172,7 @@ const TourismAttachments = ({ slugProp = "medical-tourism" }) => {
         >
           <div className="relative w-full max-w-5xl rounded-xl bg-white shadow-2xl overflow-hidden">
             <button
+              aria-label="Close"
               type="button"
               className="absolute top-3 right-3 z-10 rounded-full bg-black/70 px-3 py-1 text-white"
               onClick={() => setIsViewerOpen(false)}

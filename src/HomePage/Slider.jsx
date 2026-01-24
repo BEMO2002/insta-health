@@ -74,22 +74,22 @@ const ProfessionalCarousel = ({ items }) => {
             <div className="relative w-full h-full md:h-[88vh] lg:h-[89vh] xl:h-[80vh] flex items-center overflow-visible justify-center">
               <img
                 src={looder}
-                alt=""
+                alt="looder"
                 className="absolute opacity-30 lg:opacity-100 md:opacity-100 md:left-20 left-5 top-0 w-40 -z-50"
               />
               <img
                 src={looder2}
-                alt=""
+                alt="looder2"
                 className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 md:right-20 right-5 bottom-0 w-40 -z-50"
               />
               <img
                 src={looder3}
-                alt=""
+                alt="looder3"
                 className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 md:left-20 left-5 bottom-0 w-40 -z-50"
               />
               <img
                 src={looder4}
-                alt=""
+                alt="looder4"
                 className="absolute hidden lg:block opacity-30 lg:opacity-55 md:opacity-100 right-0 top-20 -50"
               />
 
@@ -149,10 +149,16 @@ const ProfessionalCarousel = ({ items }) => {
       </Swiper>
 
       {/* Custom Navigation Arrows */}
-      <button className="swiper-button-prev-custom absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 shadow-lg bg-white text-black hover:bg-black hover:text-white transition duration-300">
+      <button
+        aria-label="Previous"
+        className="swiper-button-prev-custom absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 shadow-lg bg-white text-black hover:bg-black hover:text-white transition duration-300"
+      >
         <FiChevronLeft className="w-6 h-6" />
       </button>
-      <button className="swiper-button-next-custom absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 shadow-lg bg-white text-black hover:bg-black hover:text-white transition duration-300">
+      <button
+        aria-label="Next"
+        className="swiper-button-next-custom absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 shadow-lg bg-white text-black hover:bg-black hover:text-white transition duration-300"
+      >
         <FiChevronRight className="w-6 h-6" />
       </button>
 

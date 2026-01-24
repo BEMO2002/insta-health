@@ -374,6 +374,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
             حجز {serviceItem?.type === "Clinic" ? "عيادة" : "خدمة"}
           </h2>
           <button
+            aria-label="Close Modal"
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
@@ -446,6 +447,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
 
                           return (
                             <button
+                              aria-label="Select Doctor"
                               key={doctor.id}
                               onClick={() => handleDoctorSelect(doctor)}
                               className="w-full p-4 text-right border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-colors"
@@ -553,6 +555,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                       <div className="space-y-2">
                         {availableDays.map((day) => (
                           <button
+                            aria-label="Select Day"
                             key={day.id}
                             onClick={() => handleDaySelect(day)}
                             className="w-full p-3 text-right border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-colors"
@@ -581,6 +584,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <button
+                    aria-label="Go Back"
                     onClick={goBack}
                     className="flex items-center text-gray-600 hover:text-primary"
                   >
@@ -609,6 +613,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                   <div className="space-y-2">
                     {availableDays.map((day) => (
                       <button
+                        aria-label="Select Day"
                         key={day.id}
                         onClick={() => handleDaySelect(day)}
                         className="w-full p-3 text-right border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-colors"
@@ -635,6 +640,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <button
+                    aria-label="Go Back"
                     onClick={goBack}
                     className="flex items-center text-gray-600 hover:text-primary"
                   >
@@ -666,6 +672,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                   <div className="grid grid-cols-2 gap-2">
                     {availableSlots.map((slot) => (
                       <button
+                        aria-label="Select Time Slot"
                         key={slot.id}
                         onClick={() => handleSlotSelect(slot)}
                         className="p-3 text-center border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-colors"
@@ -692,6 +699,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
               <form onSubmit={handleSubmit}>
                 <div className="flex items-center justify-between mb-4">
                   <button
+                    aria-label="Go Back"
                     type="button"
                     onClick={goBack}
                     className="flex items-center text-gray-600 hover:text-primary"
@@ -904,6 +912,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                     {previewUrl && (
                       <div className="mt-4 relative bg-gray-100 rounded-lg p-2 border border-gray-200">
                         <button
+                          aria-label="Remove Prescription"
                           type="button"
                           onClick={() => {
                             setFormData((prev) => ({
@@ -932,6 +941,7 @@ const BookingModal = ({ isOpen, onClose, serviceItem, providerName }) => {
                 {/* Submit Button */}
                 <div className="mt-8">
                   <button
+                    aria-label="Submit Booking"
                     type="submit"
                     disabled={loading}
                     className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors flex items-center justify-center disabled:opacity-50"

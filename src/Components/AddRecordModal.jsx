@@ -142,7 +142,11 @@ const AddRecordModal = ({
           <h3 className="text-lg font-bold">
             {record?.id ? "تعديل سجل طبي" : "إضافة سجل طبي"}
           </h3>
-          <button onClick={() => onClose(false)} className="text-gray-500">
+          <button
+            aria-label="Close Modal"
+            onClick={() => onClose(false)}
+            className="text-gray-500"
+          >
             <FaTimes />
           </button>
         </div>
@@ -223,6 +227,7 @@ const AddRecordModal = ({
             </div>
             <div className="md:col-span-2 flex justify-end gap-3">
               <button
+                aria-label="Cancel"
                 type="button"
                 onClick={() => onClose(false)}
                 className="px-4 py-2 bg-gray-200 rounded"
