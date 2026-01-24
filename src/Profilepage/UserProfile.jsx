@@ -405,7 +405,10 @@ const UserProfile = () => {
                               {item.packageType}
                             </span>
                           </div>
-                          <div className="flex flex-col items-end gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-500">
+                              حالة الحجز:
+                            </span>
                             <span
                               className={`px-4 py-1.5 rounded-full text-sm font-bold ${getStatusColor(
                                 item.reservationStatus,
@@ -471,13 +474,18 @@ const UserProfile = () => {
                               <span>{item.reservationNumber}</span>
                             </div>
                           </div>
-                          <span
-                            className={`px-4 py-1.5 rounded-full text-sm font-bold ${getStatusColor(
-                              item.reservationStatus,
-                            )}`}
-                          >
-                            {translateStatus(item.reservationStatus)}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-500">
+                              حالة الحجز:
+                            </span>
+                            <span
+                              className={`px-4 py-1.5 rounded-full text-sm font-bold ${getStatusColor(
+                                item.reservationStatus,
+                              )}`}
+                            >
+                              {translateStatus(item.reservationStatus)}
+                            </span>
+                          </div>
                         </div>
 
                         <div className="space-y-3 mt-4 pt-4 border-t border-gray-100">
@@ -560,13 +568,18 @@ const UserProfile = () => {
                               </span>
                             )}
                           </div>
-                          <span
-                            className={`px-4 py-1.5 rounded-full text-sm font-bold ${getStatusColor(
-                              item.reservationStatus,
-                            )}`}
-                          >
-                            {translateStatus(item.reservationStatus)}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-500">
+                              حالة الحجز:
+                            </span>
+                            <span
+                              className={`px-4 py-1.5 rounded-full text-sm font-bold ${getStatusColor(
+                                item.reservationStatus,
+                              )}`}
+                            >
+                              {translateStatus(item.reservationStatus)}
+                            </span>
+                          </div>
                         </div>
 
                         <div className="space-y-3 mt-4">
