@@ -21,11 +21,11 @@ const ProductCard = ({ product, onAdd }) => {
       <div className="relative h-48 overflow-hidden">
         <img
           onClick={() =>
-            navigate(`/products/${product.id}`, { state: { product } })
+            navigate(`/products/${product.slug}`, { state: { product } })
           }
           src={product.imageUrl}
           alt={product.name}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-500"
           onError={(e) => {
             e.currentTarget.src =
               "https://via.placeholder.com/600x400?text=No+Image";
@@ -120,6 +120,14 @@ const AddToCartButton = ({ product, onAdd }) => {
 const Products = () => {
   const { addToCart } = useContext(CartContext);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  // Initialize state from URL to avoid race condition on mount
+  const [selectedCategorySlug, setSelectedCategorySlug] = useState(() => {
+    const p = new URLSearchParams(location.search);
+    return p.get("category") || "";
+  });
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -128,63 +136,73 @@ const Products = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [notice, setNotice] = useState("");
   const [categories, setCategories] = useState([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
   const totalPages = useMemo(() => {
     return Math.max(1, Math.ceil(totalCount / Math.max(1, serverPageSize)));
   }, [totalCount, serverPageSize]);
 
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      setError("");
-      const params = {
-        PageIndex: pageIndex,
-        PageSize: serverPageSize,
-      };
-      if (selectedCategoryId) {
-        params.CategoryId = Number(selectedCategoryId);
-      }
-      if (searchTerm && searchTerm.trim()) {
-        const q = searchTerm.trim();
-        params.SearchName = q;
-      }
+  useEffect(() => {
+    const controller = new AbortController();
 
-      const res = await baseApi.get("/Products", {
-        params,
-      });
-      if (res.data?.success) {
-        const data = res.data.data || {};
-        setProducts(Array.isArray(data.items) ? data.items : []);
-        setTotalCount(data.count || 0);
-        // Use the server-advertised page size (backend may cap it)
-        if (data.pageSize && data.pageSize !== serverPageSize) {
-          setServerPageSize(data.pageSize);
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const params = {
+          PageIndex: pageIndex,
+          PageSize: serverPageSize,
+        };
+        if (selectedCategorySlug) {
+          params.CategorySlug = selectedCategorySlug;
         }
-      } else {
-        setError("تعذر تحميل المنتجات");
-      }
-    } catch {
-      setError("تعذر تحميل المنتجات");
-    } finally {
-      setLoading(false);
-    }
-  };
+        if (searchTerm && searchTerm.trim()) {
+          const q = searchTerm.trim();
+          params.SearchName = q;
+        }
 
-  // Read category from URL on component mount
+        const res = await baseApi.get("/Products", {
+          params,
+          signal: controller.signal,
+        });
+
+        if (res.data?.success) {
+          const data = res.data.data || {};
+          setProducts(Array.isArray(data.items) ? data.items : []);
+          setTotalCount(data.count || 0);
+          if (data.pageSize && data.pageSize !== serverPageSize) {
+            setServerPageSize(data.pageSize);
+          }
+        } else {
+          setError("تعذر تحميل المنتجات");
+        }
+      } catch (err) {
+        if (err.name !== "CanceledError" && err.code !== "ERR_CANCELED") {
+          setError("تعذر تحميل المنتجات");
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchProducts();
+
+    return () => {
+      controller.abort();
+    };
+  }, [pageIndex, serverPageSize, selectedCategorySlug, searchTerm]); // Added searchTerm to dependency
+
+  // Sync state with URL changes (e.g. Navigation)
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
-    const categoryFromUrl = urlParams.get("category");
-    if (categoryFromUrl) {
-      setSelectedCategoryId(categoryFromUrl);
+    const categoryFromUrl = urlParams.get("category") || "";
+    if (categoryFromUrl !== selectedCategorySlug) {
+      setSelectedCategorySlug(categoryFromUrl);
+      setPageIndex(1);
     }
-  }, [location.search]);
-
-  useEffect(() => {
-    fetchProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageIndex, serverPageSize, selectedCategoryId]);
+  }, [location.search, selectedCategorySlug]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -283,12 +301,11 @@ const Products = () => {
         <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-primary">فلترة المنتجات</h3>
-            {(selectedCategoryId || searchTerm) && (
+            {(selectedCategorySlug || searchTerm) && (
               <button
                 onClick={() => {
-                  setSelectedCategoryId("");
                   setSearchTerm("");
-                  setPageIndex(1);
+                  navigate("/products");
                 }}
                 className="flex items-center text-gray-500 hover:text-red-600 transition-colors duration-200"
               >
@@ -329,16 +346,20 @@ const Products = () => {
                 الفئة
               </label>
               <select
-                value={selectedCategoryId}
+                value={selectedCategorySlug}
                 onChange={(e) => {
-                  setSelectedCategoryId(e.target.value);
-                  setPageIndex(1);
+                  const val = e.target.value;
+                  if (val) {
+                    navigate(`/products?category=${val}`);
+                  } else {
+                    navigate("/products");
+                  }
                 }}
                 className="w-full px-4 py-3 text-right border border-gray-300 rounded-lg bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-second focus:border-transparent transition-colors duration-200"
               >
                 <option value="">كل الفئات</option>
                 {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
+                  <option key={c.id} value={c.slug}>
                     {c.name}
                   </option>
                 ))}
@@ -346,17 +367,16 @@ const Products = () => {
             </div>
           </div>
 
-          {(selectedCategoryId || searchTerm) && (
+          {(selectedCategorySlug || searchTerm) && (
             <div className="mt-4 pt-4 border-t border-gray-200">
               <div className="flex flex-wrap gap-2">
                 <span className="text-sm text-gray-600">الفلاتر النشطة:</span>
-                {selectedCategoryId && (
+                {selectedCategorySlug && (
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-second text-white">
-                    {categories.find(
-                      (c) => String(c.id) === String(selectedCategoryId),
-                    )?.name || "فئة"}
+                    {categories.find((c) => c.slug === selectedCategorySlug)
+                      ?.name || "فئة"}
                     <button
-                      onClick={() => setSelectedCategoryId("")}
+                      onClick={() => navigate("/products")}
                       className="mr-2 hover:text-red-200"
                     >
                       <FaTimes size={12} />

@@ -5,7 +5,7 @@ import baseApi from "../api/baseApi";
 import { CartContext } from "../Context/CartContext";
 
 const ProductsDetails = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const [product, setProduct] = useState(null);
@@ -82,23 +82,28 @@ const ProductsDetails = () => {
       return;
     }
 
-    const fetchById = async () => {
+    const fetchBySlug = async () => {
       try {
         setPageLoading(true);
         setError("");
-        // Assuming details endpoint follows /Products/{id}
-        const res = await baseApi.get(`/Products/${id}`);
+
+        // Fetch using slug as requested
+        // If the backend assumes /Products/{id}, this might need adjustment if slug is not accepted
+        // But given the request, we assume /Products/{slug} or list filtering
+        const res = await baseApi.get(`/Products/${slug}`);
         if (res.data?.success && res.data.data) {
-          // Some backends return a single object, others return { items: [...] }
           const data = res.data.data;
+
           if (Array.isArray(data?.items)) {
-            const found = data.items.find((p) => String(p.id) === String(id));
+            // If it returns a list, find by slug
+            const found = data.items.find((p) => p.slug === slug);
             if (found) {
               setProduct(found);
             } else {
               setError("تعذر العثور على المنتج");
             }
           } else {
+            // Single object response
             setProduct(data);
           }
         } else {
@@ -111,8 +116,8 @@ const ProductsDetails = () => {
       }
     };
 
-    if (id) fetchById();
-  }, [id, location.state]);
+    if (slug) fetchBySlug();
+  }, [slug, location.state]);
 
   useEffect(() => {
     if (product?.imageUrl) {
@@ -187,7 +192,7 @@ const ProductsDetails = () => {
                     onLoad={(e) => setImageSrc(e.currentTarget.src)}
                   />
                   {hasDiscount && (
-                    <div className="absolute top-3 left-3 bg-red-600 text-white px-6 py-1 rounded-full text-sm font-extrabold shadow">
+                    <div className="absolute top-3 left-3 bg-red-600 text-white px-6 py-1 rounded-full text-xs font-extrabold shadow">
                       خصم {discountPercent}%
                     </div>
                   )}
@@ -269,7 +274,7 @@ const ProductsDetails = () => {
                   <button
                     onClick={handleAdd}
                     disabled={adding}
-                    className={`bg-second text-white px-10 py-3  hover:bg-primary transition-colors duration-200 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed`}
+                    className={`bg-second text-white px-10 py-3 rounded-full  hover:bg-primary transition-colors duration-200 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed`}
                   >
                     {adding ? (
                       <span className="inline-flex items-center gap-2">

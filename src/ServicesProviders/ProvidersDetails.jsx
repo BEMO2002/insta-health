@@ -21,7 +21,7 @@ import BookingModal from "../Components/BookingModal";
 import PrescriptionBookingModal from "../Components/PrescriptionBookingModal";
 import { CiMedicalClipboard } from "react-icons/ci";
 const ProvidersDetails = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [provider, setProvider] = useState(null);
   const [services, setServices] = useState([]);
@@ -41,46 +41,90 @@ const ProvidersDetails = () => {
 
   useEffect(() => {
     const fetchProviderDetails = async () => {
-      try {
-        setLoading(true);
-        const response = await baseApi.get(`/ServicesProviders/${id}`);
+      setLoading(true);
+      setError(null);
+      let providerData = null;
 
-        if (response.data.success) {
-          const providerData = response.data.data;
-          setProvider(providerData);
-          // Parse embedded items to services/clinics sections if present
-          if (Array.isArray(providerData.items)) {
-            const servicesGroup = providerData.items.find(
-              (g) => g?.type === "Service",
-            );
-            const clinicsGroup = providerData.items.find(
-              (g) => g?.type === "Clinic",
-            );
-            setServices(
-              Array.isArray(servicesGroup?.items) ? servicesGroup.items : [],
-            );
-            setClinics(
-              Array.isArray(clinicsGroup?.items) ? clinicsGroup.items : [],
-            );
-          } else {
-            setServices([]);
-            setClinics([]);
-          }
-        } else {
-          setError("فشل في تحميل تفاصيل مقدم الخدمة");
+      try {
+        // 1. Try direct fetch by slug (or ID)
+        // This handles cases where the backend supports slug lookup directly
+        const response = await baseApi.get(`/ServicesProviders/${slug}`);
+        if (response.data?.success) {
+          providerData = response.data.data;
         }
       } catch (err) {
-        setError("حدث خطأ في تحميل تفاصيل مقدم الخدمة");
-        console.error("Error fetching provider details:", err);
-      } finally {
-        setLoading(false);
+        console.log(
+          "Direct fetch failed, attempting backup search strategy...",
+        );
+        // 2. Fallback: If direct fetch failed and slug is likely a string slug
+        if (Number.isNaN(Number(slug))) {
+          try {
+            // A. Search by exact slug string
+            let searchRes = await baseApi.get("/ServicesProviders", {
+              params: { SearchName: slug },
+            });
+
+            let found = searchRes.data?.success
+              ? searchRes.data.data.items.find((p) => p.slug === slug)
+              : null;
+
+            // B. If not found, try fuzzy search (hyphens -> spaces)
+            // This helps if SearchName tokenizes or slug format differs from search
+            if (!found) {
+              const fuzzySearch = slug.replace(/-/g, " ");
+              searchRes = await baseApi.get("/ServicesProviders", {
+                params: { SearchName: fuzzySearch },
+              });
+              if (searchRes.data?.success) {
+                found = searchRes.data.data.items.find((p) => p.slug === slug);
+              }
+            }
+
+            // C. If item found in list, fetch full details by ID
+            if (found) {
+              const idRes = await baseApi.get(`/ServicesProviders/${found.id}`);
+              if (idRes.data?.success) {
+                providerData = idRes.data.data;
+              }
+            }
+          } catch (searchErr) {
+            console.error("Search resolution also failed:", searchErr);
+          }
+        }
       }
+
+      if (providerData) {
+        setProvider(providerData);
+        // Parse services and clinics
+        if (Array.isArray(providerData.items)) {
+          const servicesGroup = providerData.items.find(
+            (g) => g?.type === "Service",
+          );
+          const clinicsGroup = providerData.items.find(
+            (g) => g?.type === "Clinic",
+          );
+          setServices(
+            Array.isArray(servicesGroup?.items) ? servicesGroup.items : [],
+          );
+          setClinics(
+            Array.isArray(clinicsGroup?.items) ? clinicsGroup.items : [],
+          );
+        } else {
+          setServices([]);
+          setClinics([]);
+        }
+      } else {
+        // If both direct and fallback failed
+        setError("لم يتم العثور على تفاصيل مقدم الخدمة");
+      }
+
+      setLoading(false);
     };
 
-    if (id) {
+    if (slug) {
       fetchProviderDetails();
     }
-  }, [id]);
+  }, [slug]);
 
   // Items now come embedded within provider response; no separate fetch needed
 

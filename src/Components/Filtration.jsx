@@ -4,9 +4,9 @@ import baseApi from "../api/baseApi";
 
 const Filtration = ({
   onFilterChange,
-  initialSpecialityId,
-  initialGovernorateId,
-  initialCityId,
+  initialSpecialitySlug,
+  initialGovernorateSlug,
+  initialCitySlug,
   initialSearchTerm,
 }) => {
   // Data states
@@ -38,7 +38,6 @@ const Filtration = ({
 
   // Update ref when onFilterChange changes
   useEffect(() => {
-    console.log("onFilterChange updated:", onFilterChange);
     onFilterChangeRef.current = onFilterChange;
   }, [onFilterChange]);
 
@@ -85,7 +84,7 @@ const Filtration = ({
         try {
           setLoading((prev) => ({ ...prev, cities: true }));
           const response = await baseApi.get(
-            `/Governorates/cities/${selectedGovernorate.id}`
+            `/Governorates/cities/${selectedGovernorate.id}`,
           );
           if (response.data.success) {
             setCities(response.data.data);
@@ -106,49 +105,37 @@ const Filtration = ({
 
   // Initialize filters from props - only when data is loaded
   useEffect(() => {
-    console.log("Initialization effect triggered");
-    console.log("Loading states:", loading);
-    console.log("Initial props:", {
-      initialSpecialityId,
-      initialGovernorateId,
-      initialSearchTerm,
-    });
-
     if (loading.governorates || loading.specialities) {
-      console.log("Still loading, skipping initialization");
       return;
     }
 
     // Set speciality
-    if (initialSpecialityId && specialities.length > 0) {
+    if (initialSpecialitySlug && specialities.length > 0) {
       const speciality = specialities.find(
-        (item) => item.id === initialSpecialityId
+        (item) => item.slug === initialSpecialitySlug,
       );
       if (speciality) {
-        console.log("Setting speciality:", speciality);
         setSelectedSpeciality(speciality);
       }
     }
 
     // Set governorate
-    if (initialGovernorateId && governorates.length > 0) {
+    if (initialGovernorateSlug && governorates.length > 0) {
       const governorate = governorates.find(
-        (item) => item.id === initialGovernorateId
+        (item) => item.slug === initialGovernorateSlug,
       );
       if (governorate) {
-        console.log("Setting governorate:", governorate);
         setSelectedGovernorate(governorate);
       }
     }
 
     // Set search term
     if (initialSearchTerm) {
-      console.log("Setting search term:", initialSearchTerm);
       setSearchTerm(initialSearchTerm);
     }
   }, [
-    initialSpecialityId,
-    initialGovernorateId,
+    initialSpecialitySlug,
+    initialGovernorateSlug,
     initialSearchTerm,
     specialities.length,
     governorates.length,
@@ -158,37 +145,37 @@ const Filtration = ({
 
   // Set city after cities are loaded
   useEffect(() => {
-    if (initialCityId && cities.length > 0) {
-      const city = cities.find((item) => item.id === initialCityId);
+    if (initialCitySlug && cities.length > 0) {
+      const city = cities.find((item) => item.slug === initialCitySlug);
       if (city) {
         setSelectedCity(city);
       }
     }
-  }, [initialCityId, cities]);
+  }, [initialCitySlug, cities]);
 
   // Handle updates when props change
   useEffect(() => {
     // Update speciality if it changed
-    if (initialSpecialityId && specialities.length > 0) {
+    if (initialSpecialitySlug && specialities.length > 0) {
       const speciality = specialities.find(
-        (item) => item.id === initialSpecialityId
+        (item) => item.slug === initialSpecialitySlug,
       );
-      if (speciality && speciality.id !== selectedSpeciality?.id) {
+      if (speciality && speciality.slug !== selectedSpeciality?.slug) {
         setSelectedSpeciality(speciality);
       }
-    } else if (!initialSpecialityId && selectedSpeciality) {
+    } else if (!initialSpecialitySlug && selectedSpeciality) {
       setSelectedSpeciality(null);
     }
 
     // Update governorate if it changed
-    if (initialGovernorateId && governorates.length > 0) {
+    if (initialGovernorateSlug && governorates.length > 0) {
       const governorate = governorates.find(
-        (item) => item.id === initialGovernorateId
+        (item) => item.slug === initialGovernorateSlug,
       );
-      if (governorate && governorate.id !== selectedGovernorate?.id) {
+      if (governorate && governorate.slug !== selectedGovernorate?.slug) {
         setSelectedGovernorate(governorate);
       }
-    } else if (!initialGovernorateId && selectedGovernorate) {
+    } else if (!initialGovernorateSlug && selectedGovernorate) {
       setSelectedGovernorate(null);
     }
 
@@ -197,8 +184,8 @@ const Filtration = ({
       setSearchTerm(initialSearchTerm || "");
     }
   }, [
-    initialSpecialityId,
-    initialGovernorateId,
+    initialSpecialitySlug,
+    initialGovernorateSlug,
     initialSearchTerm,
     specialities.length,
     governorates.length,
@@ -207,13 +194,11 @@ const Filtration = ({
   // Apply filters with debounce
   useEffect(() => {
     const filters = {
-      governorateId: selectedGovernorate?.id || null,
-      cityId: selectedCity?.id || null,
-      specialityId: selectedSpeciality?.id || null,
+      governorateSlug: selectedGovernorate?.slug || null,
+      citySlug: selectedCity?.slug || null,
+      specialitySlug: selectedSpeciality?.slug || null,
       searchTerm: searchTerm.trim(),
     };
-
-    console.log("Filter effect triggered with:", filters);
 
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
@@ -224,12 +209,8 @@ const Filtration = ({
     setTimeout(() => setShowLoading(true), 100);
 
     searchTimeoutRef.current = setTimeout(() => {
-      console.log("Applying filters:", filters);
-      console.log("onFilterChangeRef.current:", onFilterChangeRef.current);
       if (onFilterChangeRef.current) {
         onFilterChangeRef.current(filters);
-      } else {
-        console.error("onFilterChangeRef.current is null!");
       }
       // Hide loading with smooth transition
       setTimeout(() => {
@@ -244,9 +225,9 @@ const Filtration = ({
       }
     };
   }, [
-    selectedGovernorate?.id,
-    selectedCity?.id,
-    selectedSpeciality?.id,
+    selectedGovernorate?.slug,
+    selectedCity?.slug,
+    selectedSpeciality?.slug,
     searchTerm,
   ]);
 
@@ -356,7 +337,7 @@ const Filtration = ({
         )}
       </div>
     ),
-    []
+    [],
   );
 
   return (

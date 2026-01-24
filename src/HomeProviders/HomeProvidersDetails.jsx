@@ -15,7 +15,7 @@ import baseApi from "../api/baseApi";
 import HomeBookingModal from "../Components/HomeBookingModal";
 import { BsJournalBookmark } from "react-icons/bs";
 const HomeProvidersDetails = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [provider, setProvider] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,27 +30,65 @@ const HomeProvidersDetails = () => {
 
   useEffect(() => {
     const fetchProviderDetails = async () => {
-      try {
-        setLoading(true);
-        const response = await baseApi.get(`/HomeProviders/${id}`);
+      setLoading(true);
+      setError(null);
+      let providerData = null;
 
+      try {
+        // 1. Try direct fetch using slug
+        const response = await baseApi.get(`/HomeProviders/${slug}`);
         if (response.data.success) {
-          setProvider(response.data.data);
-        } else {
-          setError("فشل في تحميل تفاصيل مقدم الخدمة");
+          providerData = response.data.data;
         }
       } catch (err) {
-        setError("حدث خطأ في تحميل تفاصيل مقدم الخدمة");
-        console.error("Error fetching provider details:", err);
-      } finally {
-        setLoading(false);
+        // 2. Fallback: Search if slug is not an ID
+        if (Number.isNaN(Number(slug))) {
+          try {
+            // Try searching by exact slug (if search param exists)
+            // HomeProviders list endpoint supports SearchName
+            let searchRes = await baseApi.get("/HomeProviders", {
+              params: { SearchName: slug },
+            });
+            let found = searchRes.data?.success
+              ? searchRes.data.data.items.find((p) => p.slug === slug)
+              : null;
+
+            // Fuzzy search
+            if (!found) {
+              const fuzzySearch = slug.replace(/-/g, " ");
+              searchRes = await baseApi.get("/HomeProviders", {
+                params: { SearchName: fuzzySearch },
+              });
+              if (searchRes.data?.success) {
+                found = searchRes.data.data.items.find((p) => p.slug === slug);
+              }
+            }
+
+            if (found) {
+              // Fetch details by ID
+              const idRes = await baseApi.get(`/HomeProviders/${found.id}`);
+              if (idRes.data.success) {
+                providerData = idRes.data.data;
+              }
+            }
+          } catch (searchErr) {
+            console.error("Search resolution failed", searchErr);
+          }
+        }
       }
+
+      if (providerData) {
+        setProvider(providerData);
+      } else {
+        setError("فشل في تحميل تفاصيل مقدم الخدمة");
+      }
+      setLoading(false);
     };
 
-    if (id) {
+    if (slug) {
       fetchProviderDetails();
     }
-  }, [id]);
+  }, [slug]);
 
   const renderStars = (rating) => {
     const stars = [];

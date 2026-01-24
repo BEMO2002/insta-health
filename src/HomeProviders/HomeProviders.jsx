@@ -22,26 +22,26 @@ const HomeProviders = () => {
 
   // Filters state
   const [filters, setFilters] = useState({
-    governorateId: null,
-    cityId: null,
-    specialityId: null,
-    subSpecialityId: null,
+    governorateSlug: null,
+    citySlug: null,
+    specialitySlug: null,
+    subSpecialitySlug: null,
     searchTerm: "",
   });
 
   // Initialize filters from URL parameters
   useEffect(() => {
-    const specialityId = searchParams.get("speciality");
-    const governorateId = searchParams.get("governorate");
-    const cityId = searchParams.get("city");
-    const subSpecialityId = searchParams.get("subSpeciality");
+    const specialitySlug = searchParams.get("speciality");
+    const governorateSlug = searchParams.get("governorate");
+    const citySlug = searchParams.get("city");
+    const subSpecialitySlug = searchParams.get("subSpeciality");
     const searchTerm = searchParams.get("search");
 
     setFilters({
-      specialityId: specialityId ? parseInt(specialityId) : null,
-      governorateId: governorateId ? parseInt(governorateId) : null,
-      cityId: cityId ? parseInt(cityId) : null,
-      subSpecialityId: subSpecialityId ? parseInt(subSpecialityId) : null,
+      specialitySlug: specialitySlug || null,
+      governorateSlug: governorateSlug || null,
+      citySlug: citySlug || null,
+      subSpecialitySlug: subSpecialitySlug || null,
       searchTerm: searchTerm || "",
     });
   }, [searchParams]);
@@ -49,7 +49,6 @@ const HomeProviders = () => {
   // Fetch providers function
   const fetchProviders = useCallback(async () => {
     try {
-      console.log("fetchProviders called with filters:", filters);
       setProvidersLoading(true);
       setIsDataChanging(true);
 
@@ -59,23 +58,22 @@ const HomeProviders = () => {
       };
 
       // Add filters to API parameters
-      if (filters.specialityId) {
-        params.SpecialityId = filters.specialityId;
+      if (filters.specialitySlug) {
+        params.SpecialitySlug = filters.specialitySlug;
       }
-      if (filters.subSpecialityId) {
-        params.SubSpecialityId = filters.subSpecialityId;
+      if (filters.subSpecialitySlug) {
+        params.SubSpecialitySlug = filters.subSpecialitySlug;
       }
-      if (filters.governorateId) {
-        params.GovernorateId = filters.governorateId;
+      if (filters.governorateSlug) {
+        params.GovernorateSlug = filters.governorateSlug;
       }
-      if (filters.cityId) {
-        params.CityId = filters.cityId;
+      if (filters.citySlug) {
+        params.CitySlug = filters.citySlug;
       }
       if (filters.searchTerm) {
         params.SearchName = filters.searchTerm;
       }
 
-      console.log("API params:", params);
       const response = await baseApi.get("/HomeProviders", { params });
 
       if (response.data.success) {
@@ -110,10 +108,10 @@ const HomeProviders = () => {
     }
   }, [
     pageIndex,
-    filters.specialityId,
-    filters.subSpecialityId,
-    filters.governorateId,
-    filters.cityId,
+    filters.specialitySlug,
+    filters.subSpecialitySlug,
+    filters.governorateSlug,
+    filters.citySlug,
     filters.searchTerm,
     pageSize,
   ]);
@@ -121,18 +119,13 @@ const HomeProviders = () => {
   // Handle filter changes
   const handleFilterChange = useCallback(
     (newFilters) => {
-      console.log("handleFilterChange called with:", newFilters);
-      console.log("Current filters:", filters);
-
       // Check if filters actually changed
       const filtersChanged =
-        newFilters.specialityId !== filters.specialityId ||
-        newFilters.subSpecialityId !== filters.subSpecialityId ||
-        newFilters.governorateId !== filters.governorateId ||
-        newFilters.cityId !== filters.cityId ||
+        newFilters.specialitySlug !== filters.specialitySlug ||
+        newFilters.subSpecialitySlug !== filters.subSpecialitySlug ||
+        newFilters.governorateSlug !== filters.governorateSlug ||
+        newFilters.citySlug !== filters.citySlug ||
         newFilters.searchTerm !== filters.searchTerm;
-
-      console.log("Filters changed:", filtersChanged);
 
       setFilters(newFilters);
 
@@ -143,17 +136,17 @@ const HomeProviders = () => {
 
       // Update URL parameters
       const newParams = {};
-      if (newFilters.specialityId) {
-        newParams.speciality = newFilters.specialityId.toString();
+      if (newFilters.specialitySlug) {
+        newParams.speciality = newFilters.specialitySlug;
       }
-      if (newFilters.subSpecialityId) {
-        newParams.subSpeciality = newFilters.subSpecialityId.toString();
+      if (newFilters.subSpecialitySlug) {
+        newParams.subSpeciality = newFilters.subSpecialitySlug;
       }
-      if (newFilters.governorateId) {
-        newParams.governorate = newFilters.governorateId.toString();
+      if (newFilters.governorateSlug) {
+        newParams.governorate = newFilters.governorateSlug;
       }
-      if (newFilters.cityId) {
-        newParams.city = newFilters.cityId.toString();
+      if (newFilters.citySlug) {
+        newParams.city = newFilters.citySlug;
       }
       if (newFilters.searchTerm) {
         newParams.search = newFilters.searchTerm;
@@ -164,10 +157,9 @@ const HomeProviders = () => {
         newParams.page = "1";
       }
 
-      console.log("New URL params:", newParams);
       setSearchParams(newParams, { replace: true });
     },
-    [setSearchParams, filters]
+    [setSearchParams, filters],
   );
 
   // Handle page change
@@ -184,7 +176,7 @@ const HomeProviders = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
     },
-    [totalCount, pageSize, searchParams, setSearchParams]
+    [totalCount, pageSize, searchParams, setSearchParams],
   );
 
   // Generate page numbers for pagination
@@ -219,10 +211,10 @@ const HomeProviders = () => {
 
   // Check if there are any active filters
   const hasActiveFilters =
-    filters.specialityId ||
-    filters.subSpecialityId ||
-    filters.governorateId ||
-    filters.cityId ||
+    filters.specialitySlug ||
+    filters.subSpecialitySlug ||
+    filters.governorateSlug ||
+    filters.citySlug ||
     filters.searchTerm;
 
   if (providers.length === 0 && !providersLoading && !hasActiveFilters) {
@@ -253,9 +245,10 @@ const HomeProviders = () => {
 
         <Filter
           onFilterChange={handleFilterChange}
-          initialSpecialityId={filters.specialityId}
-          initialSubSpecialityId={filters.subSpecialityId}
-          initialGovernorateId={filters.governorateId}
+          initialSpecialitySlug={filters.specialitySlug}
+          initialSubSpecialitySlug={filters.subSpecialitySlug}
+          initialGovernorateSlug={filters.governorateSlug}
+          initialCitySlug={filters.citySlug}
           initialSearchTerm={filters.searchTerm}
         />
 
@@ -342,7 +335,9 @@ const HomeProviders = () => {
                       </span>
                     </div>
                     <button
-                      onClick={() => navigate(`/home-providers/${provider.id}`)}
+                      onClick={() =>
+                        navigate(`/home-providers/${provider.slug}`)
+                      }
                       className="bg-second text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary transition-colors duration-300"
                     >
                       تفاصيل الخدمه

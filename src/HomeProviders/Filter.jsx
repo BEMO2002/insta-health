@@ -4,9 +4,10 @@ import baseApi from "../api/baseApi";
 
 const Filter = ({
   onFilterChange,
-  initialSpecialityId,
-  initialSubSpecialityId,
-  initialGovernorateId,
+  initialSpecialitySlug,
+  initialSubSpecialitySlug,
+  initialGovernorateSlug,
+  initialCitySlug,
   initialSearchTerm,
 }) => {
   // Data states
@@ -89,7 +90,7 @@ const Filter = ({
           setLoading((prev) => ({ ...prev, subSpecialities: true }));
           // Get sub specialities from the MedicalSpecialities endpoint
           const response = await baseApi.get(
-            `/MedicalSpecialities/${selectedSpeciality.id}`
+            `/MedicalSpecialities/${selectedSpeciality.id}`,
           );
           if (response.data.success && response.data.data.subSpecialities) {
             setSubSpecialities(response.data.data.subSpecialities);
@@ -118,7 +119,7 @@ const Filter = ({
         try {
           setLoading((prev) => ({ ...prev, cities: true }));
           const response = await baseApi.get(
-            `/Governorates/cities/${selectedGovernorate.id}`
+            `/Governorates/cities/${selectedGovernorate.id}`,
           );
           if (response.data.success) {
             setCities(response.data.data);
@@ -144,9 +145,9 @@ const Filter = ({
     }
 
     // Set speciality
-    if (initialSpecialityId && specialities.length > 0) {
+    if (initialSpecialitySlug && specialities.length > 0) {
       const speciality = specialities.find(
-        (item) => item.id === initialSpecialityId
+        (item) => item.slug === initialSpecialitySlug,
       );
       if (speciality) {
         setSelectedSpeciality(speciality);
@@ -154,9 +155,9 @@ const Filter = ({
     }
 
     // Set governorate
-    if (initialGovernorateId && governorates.length > 0) {
+    if (initialGovernorateSlug && governorates.length > 0) {
       const governorate = governorates.find(
-        (item) => item.id === initialGovernorateId
+        (item) => item.slug === initialGovernorateSlug,
       );
       if (governorate) {
         setSelectedGovernorate(governorate);
@@ -168,8 +169,8 @@ const Filter = ({
       setSearchTerm(initialSearchTerm);
     }
   }, [
-    initialSpecialityId,
-    initialGovernorateId,
+    initialSpecialitySlug,
+    initialGovernorateSlug,
     initialSearchTerm,
     specialities,
     governorates,
@@ -178,24 +179,34 @@ const Filter = ({
   ]);
 
   // Set sub speciality after sub specialities are loaded
+  // Set sub speciality after sub specialities are loaded
   useEffect(() => {
-    if (initialSubSpecialityId && subSpecialities.length > 0) {
+    if (initialSubSpecialitySlug && subSpecialities.length > 0) {
       const subSpeciality = subSpecialities.find(
-        (item) => item.id === initialSubSpecialityId
+        (item) => item.slug === initialSubSpecialitySlug,
       );
       if (subSpeciality) {
         setSelectedSubSpeciality(subSpeciality);
       }
     }
-  }, [initialSubSpecialityId, subSpecialities]);
+  }, [initialSubSpecialitySlug, subSpecialities]);
+
+  useEffect(() => {
+    if (initialCitySlug && cities.length > 0) {
+      const city = cities.find((item) => item.slug === initialCitySlug);
+      if (city) {
+        setSelectedCity(city);
+      }
+    }
+  }, [initialCitySlug, cities]);
 
   // Apply filters with debounce
   useEffect(() => {
     const filters = {
-      governorateId: selectedGovernorate?.id || null,
-      cityId: selectedCity?.id || null,
-      specialityId: selectedSpeciality?.id || null,
-      subSpecialityId: selectedSubSpeciality?.id || null,
+      governorateSlug: selectedGovernorate?.slug || null,
+      citySlug: selectedCity?.slug || null,
+      specialitySlug: selectedSpeciality?.slug || null,
+      subSpecialitySlug: selectedSubSpeciality?.slug || null,
       searchTerm: searchTerm.trim(),
     };
 
@@ -224,10 +235,10 @@ const Filter = ({
       }
     };
   }, [
-    selectedGovernorate?.id,
-    selectedCity?.id,
-    selectedSpeciality?.id,
-    selectedSubSpeciality?.id,
+    selectedGovernorate?.slug,
+    selectedCity?.slug,
+    selectedSpeciality?.slug,
+    selectedSubSpeciality?.slug,
     searchTerm,
   ]);
 
@@ -346,7 +357,7 @@ const Filter = ({
         )}
       </div>
     ),
-    []
+    [],
   );
 
   return (

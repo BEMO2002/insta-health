@@ -73,21 +73,21 @@ const Navbar = () => {
     fetchData();
   }, []);
 
-  const handleSpecialityClick = (specialityId) => {
+  const handleSpecialityClick = (slug) => {
     // Navigate to providers page with speciality filter
-    navigate(`/providers?speciality=${specialityId}`);
+    navigate(`/providers?speciality=${slug}`);
     setMobileMenuOpen(false);
   };
 
-  const handleHomeSpecialityClick = (specialityId) => {
+  const handleHomeSpecialityClick = (slug) => {
     // Navigate to home providers page with speciality filter
-    navigate(`/home-providers?speciality=${specialityId}`);
+    navigate(`/home-providers?speciality=${slug}`);
     setMobileMenuOpen(false);
   };
 
-  const handleCategoryClick = (categoryId) => {
+  const handleCategoryClick = (slug) => {
     // Navigate to products page with category filter
-    navigate(`/products?category=${categoryId}`);
+    navigate(`/products?category=${slug}`);
     setMobileMenuOpen(false);
   };
 
@@ -157,7 +157,7 @@ const Navbar = () => {
       name: "المتجر",
       subItems: categories.map((category) => ({
         name: category.name,
-        categoryId: category.id,
+        slug: category.slug,
         isCategory: true,
       })),
     },
@@ -167,7 +167,7 @@ const Navbar = () => {
         { name: "الروشته الطبيه", path: "/prescription-reservations" },
         ...medicalSpecialities.map((speciality) => ({
           name: speciality.name,
-          specialityId: speciality.id,
+          slug: speciality.slug,
           isSpeciality: true,
         })),
       ],
@@ -177,7 +177,7 @@ const Navbar = () => {
       subItems: [
         ...medicalSpecialitiesHome.map((HomeSpeciality) => ({
           name: HomeSpeciality.name,
-          specialityId: HomeSpeciality.id,
+          slug: HomeSpeciality.slug,
           isSpeciality: true,
         })),
       ],
@@ -262,10 +262,8 @@ const Navbar = () => {
                             key={subItem.name}
                             onClick={() =>
                               item.name === "الخدمات المنزليه"
-                                ? handleHomeSpecialityClick(
-                                    subItem.specialityId,
-                                  )
-                                : handleSpecialityClick(subItem.specialityId)
+                                ? handleHomeSpecialityClick(subItem.slug)
+                                : handleSpecialityClick(subItem.slug)
                             }
                             className="block w-full text-right p-2 text-sm text-second hover:bg-second hover:text-white transition-colors duration-150"
                           >
@@ -274,9 +272,7 @@ const Navbar = () => {
                         ) : subItem.isCategory ? (
                           <button
                             key={subItem.name}
-                            onClick={() =>
-                              handleCategoryClick(subItem.categoryId)
-                            }
+                            onClick={() => handleCategoryClick(subItem.slug)}
                             className="block w-full text-right p-2 text-sm text-second hover:bg-second hover:text-white transition-colors duration-150"
                           >
                             {subItem.name}
@@ -467,9 +463,7 @@ const Navbar = () => {
                           ) : subItem.isCategory ? (
                             <button
                               key={subItem.name}
-                              onClick={() =>
-                                handleCategoryClick(subItem.categoryId)
-                              }
+                              onClick={() => handleCategoryClick(subItem.slug)}
                               className="block w-full text-right px-3 py-2 text-sm bg-gray-100 text-primary hover:bg-second hover:text-white rounded-md"
                             >
                               {subItem.name}

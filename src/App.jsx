@@ -49,14 +49,14 @@ function App() {
             path="/prescription-reservations"
             element={<PrescriptionReservations />}
           />
-          <Route path="/providers/:id" element={<ProvidersDetails />} />
+          <Route path="/providers/:slug" element={<ProvidersDetails />} />
           <Route path="/home-providers" element={<MainHomeProviders />} />
           <Route
-            path="/home-providers/:id"
+            path="/home-providers/:slug"
             element={<HomeProvidersDetails />}
           />
           <Route path="/products" element={<MainProducts />} />
-          <Route path="/products/:id" element={<ProductsDetails />} />
+          <Route path="/products/:slug" element={<ProductsDetails />} />
           <Route path="/cart" element={<MainCart />} />
           <Route path="/orders/:merchantOrderId" element={<OrderStatus />} />
           <Route path="/orders" element={<OrderStatus />} />
