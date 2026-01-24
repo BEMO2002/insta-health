@@ -435,7 +435,7 @@ const UserProfile = () => {
                           <div>
                             <p className="text-sm text-gray-500">السعر</p>
                             <p className="font-bold text-second">
-                              {item.price} ج.م
+                              {item.price} $
                             </p>
                           </div>
                         </div>
