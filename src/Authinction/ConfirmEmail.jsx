@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import baseApi from "../api/baseApi";
-
+import SeoHead from "../Components/SeoHead";
 const ConfirmEmail = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -46,35 +46,46 @@ const ConfirmEmail = () => {
   }, [location]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-lg bg-white shadow rounded-lg p-6 text-center">
-        <h1 className="text-2xl font-bold mb-4 text-[#313131]">
-          تأكيد البريد الإلكتروني
-        </h1>
-        {isVerifying && <p>جاري التحقق...</p>}
-        {!isVerifying && status === "success" && (
-          <>
-            <p className="mb-6">تم التفعيل بنجاح. يمكنك الآن تسجيل الدخول.</p>
-            <button
-              onClick={() => navigate("/login")}
-              className="px-4 py-2 rounded-md bg-[#116845] text-white hover:bg-[#0e5638]"
-            >
-              الذهاب لتسجيل الدخول
-            </button>
-          </>
-        )}
-        {!isVerifying && status === "error" && (
-          <p className="text-red-600">
-            حدث خطأ أثناء التفعيل. تأكد من صحة الرابط.
-          </p>
-        )}
-        {!isVerifying && status === "missing" && (
-          <p className="text-red-600">
-            الرابط غير مكتمل. مفقود البريد أو الرمز.
-          </p>
-        )}
+    <>
+      <SeoHead
+        title="تأكيد البريد الإلكتروني - Insta Health"
+        description="تأكيد البريد الإلكتروني لحسابك."
+        keywords="تأكيد البريد الإلكتروني, Insta Health"
+        ogTitle="تأكيد البريد الإلكتروني - Insta Health"
+        ogDescription="تأكيد البريد الإلكتروني لحسابك."
+        ogImage="https://instahealth.com/share/confirm-email-og.jpg"
+        canonical="https://instahealth.com/confirm-email"
+      />
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="w-full max-w-lg bg-white shadow rounded-lg p-6 text-center">
+          <h1 className="text-2xl font-bold mb-4 text-[#313131]">
+            تأكيد البريد الإلكتروني
+          </h1>
+          {isVerifying && <p>جاري التحقق...</p>}
+          {!isVerifying && status === "success" && (
+            <>
+              <p className="mb-6">تم التفعيل بنجاح. يمكنك الآن تسجيل الدخول.</p>
+              <button
+                onClick={() => navigate("/login")}
+                className="px-4 py-2 rounded-md bg-[#116845] text-white hover:bg-[#0e5638]"
+              >
+                الذهاب لتسجيل الدخول
+              </button>
+            </>
+          )}
+          {!isVerifying && status === "error" && (
+            <p className="text-red-600">
+              حدث خطأ أثناء التفعيل. تأكد من صحة الرابط.
+            </p>
+          )}
+          {!isVerifying && status === "missing" && (
+            <p className="text-red-600">
+              الرابط غير مكتمل. مفقود البريد أو الرمز.
+            </p>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -9,7 +9,7 @@ import {
 } from "react-icons/fi";
 import baseApi from "../api/baseApi";
 import { toast } from "react-toastify";
-
+import SeoHead from "../Components/SeoHead";
 const PrescriptionReservations = () => {
   const [formData, setFormData] = useState({
     userName: "",
@@ -126,7 +126,7 @@ const PrescriptionReservations = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       if (response.data?.success) {
@@ -155,186 +155,201 @@ const PrescriptionReservations = () => {
   };
 
   return (
-    <section className="py-16 bg-gray-50 min-h-screen" dir="rtl">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-primary mb-4">
-            حجز الوصفة الطبية
-          </h1>
-          <p className="text-gray-600 text-lg">
-            أرسل وصفتك الطبية واحصل على الأدوية المطلوبة بسهولة
-          </p>
-        </div>
+    <>
+      <SeoHead
+        title="حجز الوصفة الطبية - اطلب أدويتك أونلاين | Insta Health"
+        description="أرسل صورة الروشتة أو اكتب أسماء الأدوية واحصل عليها من أقرب صيدلية. خدمة حجز الوصفات الطبية من انستا هيلث توفر لك الوقت والمجهود."
+        keywords="حجز روشتة, اطلب دواء, صيدلية اونلاين, توصيل ادوية, انستا هيلث, order medicine, prescription, online pharmacy, egypt"
+        ogTitle="اطلب أدويتك بصورة الروشتة - انستا هيلث"
+        ogDescription="صور الروشتة وابعتها، وهنجيبلك الدواء لحد البيت."
+        ogImage="https://instahealth.com/share/prescription-order-og.jpg"
+        canonical="https://instahealth.com/prescription-reservations"
+      />
+      <section className="py-16 bg-gray-50 min-h-screen" dir="rtl">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-primary mb-4">
+              حجز الوصفة الطبية
+            </h1>
+            <p className="text-gray-600 text-lg">
+              أرسل وصفتك الطبية واحصل على الأدوية المطلوبة بسهولة
+            </p>
+          </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Personal Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Personal Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+                    <FiUser className="text-primary" />
+                    اسم المستخدم *
+                  </label>
+                  <input
+                    type="text"
+                    name="userName"
+                    value={formData.userName}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
+                      errors.userName ? "border-red-500" : "border-gray-300"
+                    }`}
+                    placeholder="أدخل اسمك الكامل"
+                  />
+                  {errors.userName && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.userName}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+                    <FiPhone className="text-primary" />
+                    رقم الهاتف *
+                  </label>
+                  <input
+                    type="tel"
+                    name="userMobile"
+                    value={formData.userMobile}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
+                      errors.userMobile ? "border-red-500" : "border-gray-300"
+                    }`}
+                    placeholder="01xxxxxxxxx"
+                  />
+                  {errors.userMobile && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.userMobile}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Address */}
               <div>
                 <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
-                  <FiUser className="text-primary" />
-                  اسم المستخدم *
+                  <FiMapPin className="text-primary" />
+                  العنوان *
                 </label>
                 <input
                   type="text"
-                  name="userName"
-                  value={formData.userName}
+                  name="userAddress"
+                  value={formData.userAddress}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
-                    errors.userName ? "border-red-500" : "border-gray-300"
+                    errors.userAddress ? "border-red-500" : "border-gray-300"
                   }`}
-                  placeholder="أدخل اسمك الكامل"
+                  placeholder="أدخل عنوانك الكامل"
                 />
-                {errors.userName && (
-                  <p className="text-red-500 text-sm mt-1">{errors.userName}</p>
+                {errors.userAddress && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.userAddress}
+                  </p>
                 )}
               </div>
 
+              {/* Medicines Names */}
               <div>
                 <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
-                  <FiPhone className="text-primary" />
-                  رقم الهاتف *
+                  <FiFileText className="text-primary" />
+                  أسماء الأدوية *
                 </label>
-                <input
-                  type="tel"
-                  name="userMobile"
-                  value={formData.userMobile}
+                <textarea
+                  name="medicinesNames"
+                  value={formData.medicinesNames}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
-                    errors.userMobile ? "border-red-500" : "border-gray-300"
+                  rows={4}
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors resize-none ${
+                    errors.medicinesNames ? "border-red-500" : "border-gray-300"
                   }`}
-                  placeholder="01xxxxxxxxx"
+                  placeholder="اكتب أسماء الأدوية المطلوبة، كل دواء في سطر منفصل"
                 />
-                {errors.userMobile && (
+                {errors.medicinesNames && (
                   <p className="text-red-500 text-sm mt-1">
-                    {errors.userMobile}
+                    {errors.medicinesNames}
                   </p>
                 )}
               </div>
-            </div>
 
-            {/* Address */}
-            <div>
-              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
-                <FiMapPin className="text-primary" />
-                العنوان *
-              </label>
-              <input
-                type="text"
-                name="userAddress"
-                value={formData.userAddress}
-                onChange={handleInputChange}
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
-                  errors.userAddress ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder="أدخل عنوانك الكامل"
-              />
-              {errors.userAddress && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.userAddress}
-                </p>
-              )}
-            </div>
-
-            {/* Medicines Names */}
-            <div>
-              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
-                <FiFileText className="text-primary" />
-                أسماء الأدوية *
-              </label>
-              <textarea
-                name="medicinesNames"
-                value={formData.medicinesNames}
-                onChange={handleInputChange}
-                rows={4}
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors resize-none ${
-                  errors.medicinesNames ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder="اكتب أسماء الأدوية المطلوبة، كل دواء في سطر منفصل"
-              />
-              {errors.medicinesNames && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.medicinesNames}
-                </p>
-              )}
-            </div>
-
-            {/* Prescription Image Upload */}
-            <div>
-              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
-                <FiUpload className="text-primary" />
-                صورة الوصفة الطبية
-              </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors">
-                <input
-                  type="file"
-                  id="prescriptionImage"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-                <label htmlFor="prescriptionImage" className="cursor-pointer">
-                  <FiUpload className="mx-auto text-3xl text-gray-400 mb-2" />
-                  <p className="text-gray-600 mb-2">
-                    {formData.prescriptionImage
-                      ? formData.prescriptionImage.name
-                      : "اضغط لاختيار صورة الوصفة الطبية"}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    JPG, PNG أو WebP - الحد الأقصى 5 ميجابايت
-                  </p>
+              {/* Prescription Image Upload */}
+              <div>
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+                  <FiUpload className="text-primary" />
+                  صورة الوصفة الطبية
                 </label>
-              </div>
-              {errors.prescriptionImage && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.prescriptionImage}
-                </p>
-              )}
-              {formData.prescriptionImage && (
-                <div className="mt-2 flex items-center gap-2 text-green-600">
-                  <FiCheck />
-                  <span className="text-sm">تم اختيار الملف بنجاح</span>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors">
+                  <input
+                    type="file"
+                    id="prescriptionImage"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                  <label htmlFor="prescriptionImage" className="cursor-pointer">
+                    <FiUpload className="mx-auto text-3xl text-gray-400 mb-2" />
+                    <p className="text-gray-600 mb-2">
+                      {formData.prescriptionImage
+                        ? formData.prescriptionImage.name
+                        : "اضغط لاختيار صورة الوصفة الطبية"}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      JPG, PNG أو WebP - الحد الأقصى 5 ميجابايت
+                    </p>
+                  </label>
                 </div>
-              )}
-            </div>
-
-            {/* Provider Id */}
-
-            {/* Submit Button */}
-            <div className="pt-6">
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-4 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                    جاري الإرسال...
-                  </>
-                ) : (
-                  <>
-                    <FiCheck />
-                    إرسال طلب الحجز
-                  </>
+                {errors.prescriptionImage && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.prescriptionImage}
+                  </p>
                 )}
-              </button>
-            </div>
-          </form>
+                {formData.prescriptionImage && (
+                  <div className="mt-2 flex items-center gap-2 text-green-600">
+                    <FiCheck />
+                    <span className="text-sm">تم اختيار الملف بنجاح</span>
+                  </div>
+                )}
+              </div>
 
-          {/* Info Box */}
-          <div className="mt-8 p-6 bg-blue-50 rounded-lg border border-blue-200">
-            <h3 className="font-semibold text-blue-800 mb-2">معلومات مهمة:</h3>
-            <ul className="text-sm text-blue-700 space-y-1">
-              <li>• تأكد من وضوح صورة الوصفة الطبية</li>
-              <li>• اكتب أسماء الأدوية بوضوح</li>
-              <li>• سيتم التواصل معك خلال 24 ساعة</li>
-              <li>• التوصيل متاح في جميع أنحاء مصر</li>
-            </ul>
+              {/* Provider Id */}
+
+              {/* Submit Button */}
+              <div className="pt-6">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-4 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                      جاري الإرسال...
+                    </>
+                  ) : (
+                    <>
+                      <FiCheck />
+                      إرسال طلب الحجز
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+
+            {/* Info Box */}
+            <div className="mt-8 p-6 bg-blue-50 rounded-lg border border-blue-200">
+              <h3 className="font-semibold text-blue-800 mb-2">
+                معلومات مهمة:
+              </h3>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• تأكد من وضوح صورة الوصفة الطبية</li>
+                <li>• اكتب أسماء الأدوية بوضوح</li>
+                <li>• سيتم التواصل معك خلال 24 ساعة</li>
+                <li>• التوصيل متاح في جميع أنحاء مصر</li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
 

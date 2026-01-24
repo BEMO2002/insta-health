@@ -25,7 +25,6 @@ import MedicalFileStatus from "./MediaclFiles/MedicalFileStatus";
 import MianMedicalTourism from "./MedicalTourism/MianMedicalTourism";
 import ContentPage from "./MedicalTourism/ContentPage";
 import PackageReservationDetails from "./MedicalTourism/PackageReservationDetails";
-import MedicalPrescriptions from "./MedicalPrescriptions/MedicalPrescriptions";
 import MedicalPrescriptionsDetails from "./MedicalPrescriptions/MedicalPrescriptionsDetails";
 import MedicalConsultationReservationsDetails from "./MedicalTourism/MedicalConsultationReservationsDetails";
 import MainAreYouProvider from "./AreYouProvider/MainAreYouProvider";
@@ -36,6 +35,7 @@ import ScrollToTop from "./Components/ScrollToTop";
 import NotFound from "./Components/NotFound";
 import MainProfile from "./Profilepage/MainProfile";
 import MedicalFileDetails from "./MedicalFileDetails";
+import MainMedicalPrescriptions from "./MedicalPrescriptions/MainMedicalPrescriptions";
 function App() {
   return (
     <BrowserRouter>
@@ -84,7 +84,7 @@ function App() {
           <Route path="/content/:slug" element={<ContentPage />} />
           <Route
             path="/medical-prescriptions"
-            element={<MedicalPrescriptions />}
+            element={<MainMedicalPrescriptions />}
           />
           <Route
             path="/medical-prescriptions/:id"

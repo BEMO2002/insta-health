@@ -10,12 +10,21 @@ import Testimonials from "./Testimonials";
 import Faq from "./Faq";
 import ServiceItems from "./ServiceItems";
 import NumbersTwo from "./NumbersTwo";
-
+import SeoHead from "../Components/SeoHead";
 import HomePopup from "./HomePopup";
 
 const MainHome = () => {
   return (
     <>
+      <SeoHead
+        title="انستا هيلث - خدمات الرعاية الصحية المنزلية الشاملة | Insta Health"
+        description="الرائدون في الرعاية الصحية المنزلية في مصر. تمريض منزلي، زيارات أطباء، تحاليل طبية، علاج طبيعي، ورعاية مسنين بجودة عالية. | Comprehensive home healthcare in Egypt."
+        keywords="رعاية صحية منزلية, تمريض منزلي, كشف منزلي, تحاليل طبية, علاج طبيعي, انستا هيلث, home nursing, doctor visit, medical analysis, physiotheraphy, egypt"
+        ogTitle="انستا هيلث - رعاية صحية في منزلك"
+        ogDescription="احصل على أفضل خدمات الرعاية الطبية في منزلك مع انستا هيلث."
+        ogImage="https://instahealth.com/share/home-og.jpg"
+        canonical="https://instahealth.com"
+      />
       <HomePopup />
       <Slider />
       <AboutTwo />
