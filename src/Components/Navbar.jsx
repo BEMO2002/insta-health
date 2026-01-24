@@ -210,7 +210,14 @@ const Navbar = () => {
         {/* Logo + Menu Toggle (for xl and below) */}
         <div className="flex justify-between  items-center h-24 lg:hidden">
           <Link to={"/"}>
-            <img src={navlogo} alt="navlogo" className="w-[90px]" />
+            <img
+              src={navlogo}
+              alt="navlogo"
+              className="w-[90px]"
+              width="90"
+              height="90"
+              fetchPriority="high"
+            />
           </Link>
           <button
             aria-label="Toggle Mobile Menu"
@@ -225,7 +232,14 @@ const Navbar = () => {
         <div className="hidden lg:flex justify-around p-2 h-[80px]  items-center ">
           <div className="flex items-center gap-10">
             <Link to={"/"}>
-              <img src={navlogo} alt="navlogo" className="w-[80px]" />
+              <img
+                src={navlogo}
+                alt="navlogo"
+                className="w-[80px]"
+                width="80"
+                height="80"
+                fetchPriority="high"
+              />
             </Link>
             {navItems.map((item) =>
               item.subItems ? (
