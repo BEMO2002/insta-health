@@ -250,6 +250,24 @@ const MedicalFilesPlans = () => {
           <p className="text-gray-600 text-lg">
             اختر الباقة واملأ بياناتك بسهولة
           </p>
+          <div className="mt-12 text-center flex justify-center gap-4">
+            <button
+              aria-label="View File"
+              onClick={openFileModal}
+              className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-8 py-3 rounded-2xl hover:bg-second transition-all duration-300"
+            >
+              <FiFileText className="w-5 h-5" />
+              <span>عرض بيانات الملف</span>
+            </button>
+            <Link
+              aria-label="Go to Medical File"
+              to="/medical-file-record"
+              className="inline-flex items-center gap-2 bg-transparent text-primary border border-primary font-semibold px-8 py-3 rounded-2xl hover:bg-second/5 transition-all duration-300"
+            >
+              <IoReturnUpBackOutline className="w-6 h-6" />
+              <span>الذهاب للملف الطبي</span>
+            </Link>
+          </div>
         </div>
 
         <div className="grid gap-8">
@@ -317,25 +335,6 @@ const MedicalFilesPlans = () => {
               </div>
             </article>
           ))}
-        </div>
-
-        <div className="mt-12 text-center flex justify-center gap-4">
-          <button
-            aria-label="View File"
-            onClick={openFileModal}
-            className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-8 py-3 rounded-2xl hover:bg-second transition-all duration-300"
-          >
-            <FiFileText className="w-5 h-5" />
-            <span>عرض بيانات الملف</span>
-          </button>
-          <Link
-            aria-label="Go to Medical File"
-            to="/medical-file-record"
-            className="inline-flex items-center gap-2 bg-transparent text-primary border border-primary font-semibold px-8 py-3 rounded-2xl hover:bg-second/5 transition-all duration-300"
-          >
-            <IoReturnUpBackOutline className="w-6 h-6" />
-            <span>الذهاب للملف الطبي</span>
-          </Link>
         </div>
       </div>
 

@@ -405,6 +405,16 @@ const SubscriptionFamilyPlans = () => {
           <p className="text-gray-600 text-lg">
             اختر الباقة الأنسب واملأ بيانات العائلة بسهولة
           </p>
+          <div className="mt-12 text-center">
+            <button
+              aria-label="Show Card Details"
+              onClick={openCardModal}
+              className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-8 py-3 rounded-2xl hover:bg-second transition-all duration-300"
+            >
+              <FiCreditCard className="w-5 h-5" />
+              <span>عرض بيانات الكارت</span>
+            </button>
+          </div>
         </div>
 
         <div className="grid gap-8">
@@ -476,17 +486,6 @@ const SubscriptionFamilyPlans = () => {
               </div>
             </article>
           ))}
-        </div>
-
-        <div className="mt-12 text-center">
-          <button
-            aria-label="Show Card Details"
-            onClick={openCardModal}
-            className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-8 py-3 rounded-2xl hover:bg-second transition-all duration-300"
-          >
-            <FiCreditCard className="w-5 h-5" />
-            <span>عرض بيانات الكارت</span>
-          </button>
         </div>
       </div>
 
