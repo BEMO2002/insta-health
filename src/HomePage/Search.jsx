@@ -5,7 +5,7 @@ import baseApi from "../api/baseApi";
 
 const Search = () => {
   const [specialities, setSpecialities] = useState([]);
-  const [selectedSpeciality, setSelectedSpeciality] = useState("");
+  const [selectedSpecialitySlug, setSelectedSpecialitySlug] = useState("");
   const [isSpecialityOpen, setIsSpecialityOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -49,12 +49,13 @@ const Search = () => {
 
   const handleSearch = () => {
     const params = new URLSearchParams();
-    if (selectedSpeciality) params.append("speciality", selectedSpeciality);
+    if (selectedSpecialitySlug)
+      params.append("speciality", selectedSpecialitySlug);
     navigate(`/providers?${params.toString()}`);
   };
 
-  const getSpecialityName = (id) => {
-    const spec = specialities.find((s) => s.id === parseInt(id));
+  const getSpecialityName = (slug) => {
+    const spec = specialities.find((s) => s.slug === slug);
     return spec ? spec.name : "اختر التخصص";
   };
 
@@ -79,7 +80,7 @@ const Search = () => {
                   className="w-full flex items-center justify-between p-3 bg-white border border-gray-300 rounded-lg hover:border-primary transition-colors text-right"
                 >
                   <span className="text-gray-700">
-                    {getSpecialityName(selectedSpeciality)}
+                    {getSpecialityName(selectedSpecialitySlug)}
                   </span>
                   <FiChevronDown className="text-gray-500" />
                 </button>
@@ -88,7 +89,7 @@ const Search = () => {
                   <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-[9999] max-h-40 overflow-y-auto">
                     <button
                       onClick={() => {
-                        setSelectedSpeciality("");
+                        setSelectedSpecialitySlug("");
                         setIsSpecialityOpen(false);
                       }}
                       className="w-full text-right p-3 hover:bg-gray-100 text-gray-700"
@@ -99,7 +100,7 @@ const Search = () => {
                       <button
                         key={spec.id}
                         onClick={() => {
-                          setSelectedSpeciality(spec.id);
+                          setSelectedSpecialitySlug(spec.slug);
                           setIsSpecialityOpen(false);
                         }}
                         className="w-full text-right p-3 hover:bg-gray-100 text-gray-700"

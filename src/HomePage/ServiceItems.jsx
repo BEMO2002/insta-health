@@ -64,7 +64,9 @@ const ServiceItemCard = ({ service, onAdd }) => {
       <div className="relative h-48 overflow-hidden">
         <img
           onClick={() =>
-            navigate(`/products/${service.id}`, { state: { product: service } })
+            navigate(`/products/${service.slug}`, {
+              state: { product: service },
+            })
           }
           src={service.imageUrl}
           alt={service.name}
@@ -128,7 +130,7 @@ const ServiceItemCard = ({ service, onAdd }) => {
             <AddToCartButton service={service} onAdd={onAdd} />
             <button
               onClick={() =>
-                navigate(`/products/${service.id}`, {
+                navigate(`/products/${service.slug}`, {
                   state: { product: service },
                 })
               }
