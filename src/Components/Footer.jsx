@@ -55,7 +55,7 @@ const Footer = () => {
             </h2>
 
             {/* Service Description */}
-            <p className="text-lg md:text-xl text-white/90 leading-relaxed mb-8 max-w-2xl mx-auto lg:mx-0">
+            <p className="text-lg md:text-xl text-white/90 leading-relaxed mb-8 w-full md:max-w-2xl mx-auto lg:mx-0">
               هي منصة لحجز خدمات الرعاية الصحية في منزلك بحيث تربط المرضى
               بالعديد من الخدمات الطبية من خلال نخبة من أفضل مقدمي الرعاية
               الصحية من المستشفيات والمراكز الطبية إما من خلال الزيارات المنزلية
