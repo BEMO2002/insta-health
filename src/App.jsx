@@ -63,6 +63,7 @@ const MedicalFileDetails = lazy(() => import("./MedicalFileDetails"));
 const MainMedicalPrescriptions = lazy(
   () => import("./MedicalPrescriptions/MainMedicalPrescriptions"),
 );
+const WhyDetails = lazy(() => import("./HomePage/WhyDetails"));
 
 // Loading Component
 const PageLoader = () => (
@@ -140,6 +141,7 @@ function App() {
               path="medical-files/:fileNumber"
               element={<MedicalFileDetails />}
             />
+            <Route path="/medical-features/:slug" element={<WhyDetails />} />
           </Route>
 
           <Route path="/login" element={<Login />} />
