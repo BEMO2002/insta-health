@@ -27,16 +27,14 @@ export const CartProvider = ({ children }) => {
     try {
       setLoading(true);
       const res = await baseApi.get("/Carts", { validateStatus: () => true });
-  
+
       const data = res.data;
       if (res.status >= 200 && res.status < 300) {
-   
         if (data?.success && Array.isArray(data.data?.items)) {
           setItems(data.data.items);
         }
       }
     } catch (err) {
-  
     } finally {
       setLoading(false);
     }
@@ -68,8 +66,6 @@ export const CartProvider = ({ children }) => {
           validateStatus: () => true,
         });
 
-        
-
         const ok = res.status >= 200 && res.status < 300;
         if (ok) {
           setItems((prev) => {
@@ -78,7 +74,7 @@ export const CartProvider = ({ children }) => {
               return prev.map((i) =>
                 i.productId === product.id
                   ? { ...i, quantity: i.quantity + quantity }
-                  : i
+                  : i,
               );
             }
             return [
@@ -100,14 +96,13 @@ export const CartProvider = ({ children }) => {
         // Return a response-like object so callers can branch on ok/status
         return { ok, status: res.status, data: res.data };
       } catch (err) {
-       
         toast.error("حدث خطأ");
         return { ok: false, status: 0, error: err };
       } finally {
         setLoading(false);
       }
     },
-    [isAuthenticated]
+    [isAuthenticated],
   );
 
   // Update quantity
@@ -116,30 +111,23 @@ export const CartProvider = ({ children }) => {
       if (!isAuthenticated) return;
 
       try {
-        setLoading(true);
         const res = await baseApi.put(
           "/Carts",
           { productId, quantity },
-          { validateStatus: () => true }
+          { validateStatus: () => true },
         );
-
-      
 
         if (res.status >= 200 && res.status < 300) {
           setItems((prev) =>
             prev.map((i) =>
-              i.productId === productId ? { ...i, quantity } : i
-            )
+              i.productId === productId ? { ...i, quantity } : i,
+            ),
           );
           toast.success("تم تحديث الكمية");
         }
-      } catch (err) {
-
-      } finally {
-        setLoading(false);
-      }
+      } catch (err) {}
     },
-    [isAuthenticated]
+    [isAuthenticated],
   );
 
   // Remove
@@ -148,28 +136,21 @@ export const CartProvider = ({ children }) => {
       if (!isAuthenticated) return;
 
       try {
-        setLoading(true);
         const res = await baseApi.delete(`/Carts/${productId}`, {
           validateStatus: () => true,
         });
-
 
         if (res.status >= 200 && res.status < 300) {
           setItems((prev) => prev.filter((i) => i.productId !== productId));
           toast.success("تم الحذف");
         }
-      } catch (err) {
-
-      } finally {
-        setLoading(false);
-      }
+      } catch (err) {}
     },
-    [isAuthenticated]
+    [isAuthenticated],
   );
 
   // Load cart on auth change
   useEffect(() => {
-
     if (isAuthenticated) getCart();
     else setItems([]);
   }, [isAuthenticated, getCart]);

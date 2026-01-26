@@ -5,6 +5,7 @@ import OrderButton from "../Components/OrderButton";
 import { Link } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import SeoHead from "../Components/SeoHead";
+
 const MainCart = () => {
   const { items, updateQuantity, removeFromCart, error, loading } =
     useContext(CartContext);
@@ -31,12 +32,13 @@ const MainCart = () => {
   }, [originalTotal, totalPrice]);
 
   // Handle quantity update with individual loading
-  const handleQuantityUpdate = async (productId, newQuantity) => {
-    setLoadingStates((prev) => ({ ...prev, [`qty_${productId}`]: true }));
+  const handleQuantityUpdate = async (productId, newQuantity, type) => {
+    const key = `qty_${productId}_${type}`;
+    setLoadingStates((prev) => ({ ...prev, [key]: true }));
     try {
       await updateQuantity(productId, newQuantity);
     } finally {
-      setLoadingStates((prev) => ({ ...prev, [`qty_${productId}`]: false }));
+      setLoadingStates((prev) => ({ ...prev, [key]: false }));
     }
   };
 
@@ -61,10 +63,10 @@ const MainCart = () => {
         ogImage="https://instahealth.com/share/cart-og.jpg"
         canonical="https://instahealth.com/cart"
       />
-      <section className="py-20 bg-gray-50 min-h-screen">
+      <section className="py-10 md:py-20 bg-gray-50 min-h-screen">
         <div className="max-w-7xl mx-auto px-4">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               سلة التسوق
             </h1>
             <p className="text-gray-600">مراجعة طلباتك قبل الدفع</p>
@@ -102,31 +104,34 @@ const MainCart = () => {
               {/* Cart Items */}
               <div className="lg:col-span-2">
                 <div className="bg-white rounded-xl shadow-sm">
-                  <div className="p-6 border-b border-gray-300">
+                  <div className="p-4 md:p-6 border-b border-gray-300">
                     <h2 className="text-lg font-semibold text-gray-900">
                       العناصر ({items.length})
                     </h2>
                   </div>
-                  <div className="divide-y">
+                  <div className="divide-y divide-gray-300">
                     {items.map((item) => (
                       <div
                         key={item.productId}
-                        className="p-6 flex items-center gap-4 hover:bg-gray-50 transition-colors"
+                        className="p-4 md:p-6 flex flex-col sm:flex-row items-center gap-4 hover:bg-gray-50 transition-colors"
                       >
+                        {/* Image - Centered on mobile */}
                         <img
                           src={item.imageUrl}
                           alt={item.name}
-                          className="w-20 h-20 object-cover rounded-lg shadow-sm"
+                          className="w-24 h-24 sm:w-20 sm:h-20 object-cover rounded-lg shadow-sm"
                           onError={(e) =>
                             (e.currentTarget.src =
                               "https://via.placeholder.com/80x80?text=No+Image")
                           }
                         />
-                        <div className="flex-1 min-w-0">
+
+                        {/* Details - Full width on mobile */}
+                        <div className="flex-1 min-w-0 text-center sm:text-right w-full">
                           <h3 className="font-semibold text-gray-900 truncate">
                             {item.name}
                           </h3>
-                          <div className="flex flex-col">
+                          <div className="flex flex-col mt-1">
                             {item.discountPrice ? (
                               <>
                                 <span className="text-lg font-bold text-red-600">
@@ -143,38 +148,46 @@ const MainCart = () => {
                             )}
                           </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center border border-gray-300 rounded-lg">
+
+                        {/* Controls - Full width on mobile */}
+                        <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto mt-4 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-0 border-gray-100">
+                          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
                             <button
-                              disabled={loadingStates[`qty_${item.productId}`]}
+                              disabled={
+                                loadingStates[`qty_${item.productId}_dec`]
+                              }
                               onClick={() =>
                                 handleQuantityUpdate(
                                   item.productId,
                                   Math.max(1, item.quantity - 1),
+                                  "dec",
                                 )
                               }
-                              className="p-2 hover:bg-gray-100 border-l border-r border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="p-2 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                              {loadingStates[`qty_${item.productId}`] ? (
+                              {loadingStates[`qty_${item.productId}_dec`] ? (
                                 <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
                               ) : (
                                 <FiMinus className="w-4 h-4" />
                               )}
                             </button>
-                            <span className="px-4 py-2 min-w-[3rem] text-center font-medium">
+                            <span className="px-4 py-2 min-w-[3rem] text-center font-medium bg-white">
                               {item.quantity}
                             </span>
                             <button
-                              disabled={loadingStates[`qty_${item.productId}`]}
+                              disabled={
+                                loadingStates[`qty_${item.productId}_inc`]
+                              }
                               onClick={() =>
                                 handleQuantityUpdate(
                                   item.productId,
                                   item.quantity + 1,
+                                  "inc",
                                 )
                               }
-                              className="p-2 hover:bg-gray-100 border-l border-r border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="p-2 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                              {loadingStates[`qty_${item.productId}`] ? (
+                              {loadingStates[`qty_${item.productId}_inc`] ? (
                                 <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
                               ) : (
                                 <FiPlus className="w-4 h-4" />
@@ -201,7 +214,7 @@ const MainCart = () => {
 
               {/* Checkout Summary */}
               <div className="lg:col-span-1">
-                <div className="bg-white rounded-xl shadow-sm  sticky top-4">
+                <div className="bg-white rounded-xl shadow-sm sticky top-4">
                   <div className="p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       ملخص الطلب
@@ -249,15 +262,7 @@ const MainCart = () => {
                         </div>
                       </div>
                     </div>
-
-                    {/* <button
-                      disabled={items.length === 0}
-                      className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                      <FiShoppingBag className="w-5 h-5" />
-                      متابعة الدفع
-                        </button>  */}
-                    <OrderButton className="" />
+                    <OrderButton className="w-full" />
                   </div>
                 </div>
               </div>
