@@ -63,7 +63,7 @@ const MainCart = () => {
         ogImage="https://instahealth.com/share/cart-og.jpg"
         canonical="https://instahealth.com/cart"
       />
-      <section className="py-10 md:py-20 bg-gray-50 min-h-screen">
+      <section className="py-10 md:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="mb-8">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
@@ -214,7 +214,7 @@ const MainCart = () => {
 
               {/* Checkout Summary */}
               <div className="lg:col-span-1">
-                <div className="bg-white rounded-xl shadow-sm sticky top-4">
+                <div className="bg-white rounded-xl shadow-sm sticky top-20">
                   <div className="p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       ملخص الطلب
