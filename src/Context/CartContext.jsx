@@ -88,7 +88,9 @@ export const CartProvider = ({ children }) => {
               },
             ];
           });
-          toast.success("تمت إضافة المنتج");
+          toast.success("تمت إضافة المنتج", {
+            theme: "colored",
+          });
         } else {
           toast.error("فشل إضافة المنتج");
         }
@@ -123,7 +125,9 @@ export const CartProvider = ({ children }) => {
               i.productId === productId ? { ...i, quantity } : i,
             ),
           );
-          toast.success("تم تحديث الكمية");
+          toast.success("تم تحديث الكمية", {
+            theme: "colored",
+          });
         }
       } catch (err) {}
     },
