@@ -12,7 +12,6 @@ import { AuthContext } from "../Context/AuthContext";
 import navlogo from "../assets/Home/LOGO(INSTA HEALTH).svg";
 import { toast } from "react-toastify";
 import baseApi from "../api/baseApi";
-import { LiaUserNurseSolid } from "react-icons/lia";
 import userPhoto from "../assets/Home/user.png";
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useContext(AuthContext);
@@ -230,12 +229,12 @@ const Navbar = () => {
 
         {/* Desktop Nav (visible on xl+) */}
         <div className="hidden lg:flex justify-around p-2 h-[80px]  items-center ">
-          <div className="flex items-center gap-10">
+          <div className="flex items-center gap-2 lg:gap-4 xl:gap-6">
             <Link to={"/"}>
               <img
                 src={navlogo}
                 alt="navlogo"
-                className="w-[80px]"
+                className="w-[70px] xl:w-[80px]"
                 width="80"
                 height="80"
                 fetchPriority="high"
@@ -251,7 +250,7 @@ const Navbar = () => {
                 >
                   <button
                     aria-label="Toggle Dropdown"
-                    className="relative  text-primary p-2  text-[13px] font-[800] flex items-center flex-row-reverse rounded-md hover:bg-second hover:text-white transition-colors duration-300"
+                    className="relative  text-primary p-2  text-[12px] xl:text-[13px] font-[800] flex items-center flex-row-reverse rounded-md hover:bg-second hover:text-white transition-colors duration-300 whitespace-nowrap"
                     aria-expanded={isServicesOpen === item.name}
                   >
                     {item.name}
@@ -312,7 +311,7 @@ const Navbar = () => {
                 <Link
                   key={item.name}
                   to={item.path}
-                  className="text-primary p-2 text-[14px] font-[800] rounded-md hover:bg-second hover:text-white transition-colors duration-200"
+                  className="text-primary p-2 text-[12px] xl:text-[14px] font-[800] rounded-md hover:bg-second hover:text-white transition-colors duration-200 whitespace-nowrap"
                 >
                   {item.name}
                 </Link>
@@ -370,7 +369,7 @@ const Navbar = () => {
                 {/* Provider Button - Separate */}
                 <Link
                   to="/are-you-provider"
-                  className="min-w-[156px] min-h-[48px] text-center bg-gradient-to-r from-second to-primary  text-white px-[16px] py-[8px] rounded-[8px] text-[15px] font-[700] flex items-center justify-center hover:bg-primary duration-300"
+                  className="min-w-[140px] xl:min-w-[156px] min-h-[48px] text-center bg-gradient-to-r from-second to-primary  text-white px-[12px] xl:px-[16px] py-[8px] rounded-[8px] text-[13px] xl:text-[15px] font-[700] flex items-center justify-center hover:bg-primary duration-300 whitespace-nowrap"
                 >
                   هل انت مقدم خدمة ؟
                 </Link>
@@ -436,7 +435,7 @@ const Navbar = () => {
                 </div>
                 <Link
                   to="/are-you-provider"
-                  className="min-w-[156px] min-h-[48px] text-center bg-gradient-to-r from-second to-primary  text-white px-[16px] py-[8px] rounded-[8px] text-[15px] font-[700] flex items-center justify-center hover:bg-primary duration-300"
+                  className="min-w-[140px] xl:min-w-[156px] min-h-[48px] text-center bg-gradient-to-r from-second to-primary  text-white px-[12px] xl:px-[16px] py-[8px] rounded-[8px] text-[13px] xl:text-[15px] font-[700] flex items-center justify-center hover:bg-primary duration-300 whitespace-nowrap"
                 >
                   هل انت مقدم خدمة ؟
                 </Link>
@@ -539,7 +538,11 @@ const Navbar = () => {
                 ) : (
                   <>
                     {user && (
-                      <Link to="/profile" className=" mx-auto">
+                      <Link
+                        to="/profile"
+                        className=" mx-auto"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
                         <div className="flex items-center gap-3 px-2 mb-3 pb-3 border-b border-gray-100">
                           <img
                             src={userPhoto}

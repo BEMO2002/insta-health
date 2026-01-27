@@ -55,3 +55,21 @@ body {
 .tourism-gallery-swiper .swiper-pagination-bullet-active {
   opacity: 1;
 }
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 13px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  /* border-radius: 10px; */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to right, #2685c7, #03A7FF);
+  border-radius: 10px;
+}
