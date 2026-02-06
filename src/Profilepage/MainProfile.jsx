@@ -10,7 +10,7 @@ const MainProfile = () => {
         keywords="الملف الشخصي, حسابي, حجوزاتي, تاريخي الطبي, انستا هيلث, user profile, my account, my bookings, medical history, insta health"
         ogTitle="حسابي - انستا هيلث"
         ogDescription="تحكم في حسابك وتابع جميع خدماتك الطبية من مكان واحد."
-        ogImage="https://instahealth.com/share/profile-og.jpg"
+        ogImage="https://insta-health.netlify.app/metalogo.jpeg"
         canonical="https://instahealth.com/profile"
       />
       <UserProfile />

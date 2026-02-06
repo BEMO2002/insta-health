@@ -11,7 +11,7 @@ const MainAreYouProvider = () => {
         keywords="تسجيل مقدم خدمة, انضمام طبيب, تسويق عيادة, مورد مستلزمات طبية, منصة طبية, انستا هيلث, join insta health, medical provider registration, medical marketing, egypt"
         ogTitle="انضم لشركاء نجاح انستا هيلث - منصة الخدمات الطبية"
         ogDescription="سجل الآن كمقدم خدمة واستفد من حملاتنا التسويقية والدعم المستمر لتطوير عملك."
-        ogImage="https://instahealth.com/share/provider-join-og.jpg"
+        ogImage="https://insta-health.netlify.app/metalogo.jpeg"
         canonical="https://instahealth.com/are-you-provider"
       />
       <SlugProvider slugProp="altaryf-bmqdmy-alkhmat" />

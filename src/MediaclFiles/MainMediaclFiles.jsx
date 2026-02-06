@@ -12,7 +12,7 @@ const MainMediaclFiles = () => {
         keywords="ملف طبي الكتروني, سجل صحي, تاريخ مرضي, تحاليل طبية, اشعة, وصفات طبية, انستا هيلث, medical record, electronic health record, ehr, egypt, medical history"
         ogTitle="الملف الطبي الإلكتروني - سجلك الصحي في جيبك"
         ogDescription="احتفظ بجميع بياناتك الطبية، تقاريرك، وتحاليلك في مكان واحد آمن ومحدث دائماً."
-        ogImage="https://instahealth.com/share/medical-file-og.jpg"
+        ogImage="https://insta-health.netlify.app/metalogo.jpeg"
         canonical="https://instahealth.com/medical-file"
       />
       <SlugMedicalFiles slugProp="almlf-altby" />

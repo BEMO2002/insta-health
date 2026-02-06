@@ -35,7 +35,7 @@ const ForgetPassword = () => {
         keywords="استعادة كلمة المرور, Insta Health"
         ogTitle="استعادة كلمة المرور - Insta Health"
         ogDescription="استعادة كلمة المرور"
-        ogImage="https://instahealth.com/share/forget-password-og.jpg"
+        ogImage="https://insta-health.netlify.app/metalogo.jpeg"
         canonical="https://instahealth.com/forget-password"
       />
       <div className=" pt-30 flex items-center justify-center p-4 bg-white">

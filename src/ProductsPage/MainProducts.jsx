@@ -11,7 +11,7 @@ const MainProducts = () => {
         keywords="متجر طبي, مستلزمات طبية, أجهزة طبية, صيدلية أونلاين, منتجات عناية, انستا هيلث, شراء دواء, medical store, medical equipment, pharmacy online, egypt"
         ogTitle="متجر انستا هيلث - منتجات ومستلزمات طبية أونلاين"
         ogDescription="اكتشف تشكيلة واسعة من المنتجات والمستلزمات الطبية بأسعار مميزة وتوصيل سريع."
-        ogImage="https://instahealth.com/share/store-og.jpg"
+        ogImage="https://insta-health.netlify.app/metalogo.jpeg"
         canonical="https://instahealth.com/products"
       />
       <Products />

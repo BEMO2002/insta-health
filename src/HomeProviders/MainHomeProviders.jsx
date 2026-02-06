@@ -12,7 +12,7 @@ const MainHomeProviders = () => {
         keywords="تمريض منزلي, كشف منزلي, دكتور يجي البيت, علاج طبيعي منزلي, رعاية مسنين, سحب عينات, اشعة منزلية, home nursing, home visit doctor, elderly care, egypt"
         ogTitle="انستا هيلث - خدمات الرعاية الصحية المنزلية"
         ogDescription="رعاية صحية متكاملة تصلك إلى باب بيتك. تمريض، أطباء، وتحاليل."
-        ogImage="https://instahealth.com/share/home-services-og.jpg"
+        ogImage="https://insta-health.netlify.app/metalogo.jpeg"
         canonical="https://instahealth.com/home-providers"
       />
       <HomeContent slugProp="alkhdmat-almnzlyh" />

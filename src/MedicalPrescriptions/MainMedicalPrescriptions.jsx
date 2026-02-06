@@ -11,7 +11,7 @@ const MainMedicalPrescriptions = () => {
         keywords="مدونة طبية, مقالات طبية, نصائح صحية, معلومات طبية, صحة عامة, تغذية, انستا هيلث, medical blog, health articles, health tips, insta health, egypt"
         ogTitle="المدونة الطبية - دليلك لحياة صحية أفضل"
         ogDescription="اقرأ أحدث المقالات والنصائح الطبية من خبراء انستا هيلث."
-        ogImage="https://instahealth.com/share/medical-prescriptions-og.jpg"
+        ogImage="https://insta-health.netlify.app/metalogo.jpeg"
         canonical="https://instahealth.com/medical-prescriptions"
       />
       <MedicalPrescriptions />

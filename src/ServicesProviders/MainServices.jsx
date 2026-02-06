@@ -11,7 +11,7 @@ const MainServices = () => {
         keywords="دليل أطباء, حجز موعد دكتور, عيادات, مستشفيات, مراكز أشعة, معامل تحاليل, انستا هيلث, doctors directory, book doctor, medical centers, egypt"
         ogTitle="دليل مقدمي الخدمات الطبية - انستا هيلث"
         ogDescription="ابحث عن أفضل مقدمي الرعاية الصحية في مصر واحجز موعدك أونلاين."
-        ogImage="https://instahealth.com/share/providers-og.jpg"
+        ogImage="https://insta-health.netlify.app/metalogo.jpeg"
         canonical="https://instahealth.com/providers"
       />
       <Providers />

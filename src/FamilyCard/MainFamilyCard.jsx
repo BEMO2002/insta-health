@@ -11,7 +11,7 @@ const MainFamilyCard = () => {
         keywords="كارت الصحة, كارت خصومات طبية, تأمين صحي, خصم تحاليل, خصم اشعة, رعاية صحية مخفضة, انستا هيلث, health card, medical discount card, discount coupon, egypt"
         ogTitle="كارت الصحة - خصومات فورية على خدمات الرعاية الصحية"
         ogDescription="وفر حتى 70% على مصاريفك الطبية مع كارت الصحة من انستا هيلث. اشترك الآن!"
-        ogImage="https://instahealth.com/share/health-card-og.jpg"
+        ogImage="https://insta-health.netlify.app/metalogo.jpeg"
         canonical="https://instahealth.com/health-card"
       />
       <SlugFamily slugProp="kart-alshh" />

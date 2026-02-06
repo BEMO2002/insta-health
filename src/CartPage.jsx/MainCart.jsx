@@ -60,7 +60,7 @@ const MainCart = () => {
         keywords="سلة التسوق, دفع الكتروني, شراء منتجات طبية, اتمام الطلب, انستا هيلث, shopping cart, checkout, buy medical products, medical ecommerce, egypt"
         ogTitle="سلة مشترياتك - انستا هيلث"
         ogDescription="أنت على بعد خطوة واحدة من استلام منتجاتك الطبية. استكمل طلبك الآن."
-        ogImage="https://instahealth.com/share/cart-og.jpg"
+        ogImage="https://insta-health.netlify.app/metalogo.jpeg"
         canonical="https://instahealth.com/cart"
       />
       <section className="py-10 md:py-20 bg-gray-50">

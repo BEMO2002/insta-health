@@ -151,7 +151,7 @@ const Login = () => {
         keywords="تسجيل الدخول, حسابات, انستا هيلث, login, account, shopping cart, checkout, buy medical products, medical ecommerce, egypt"
         ogTitle="تسجيل الدخول - انستا هيلث"
         ogDescription="سجل الدخول للوصول إلى حسابك في انستا هيلث."
-        ogImage="https://instahealth.com/share/cart-og.jpg"
+        ogImage="https://insta-health.netlify.app/metalogo.jpeg"
         canonical="https://instahealth.com/login"
       />
 

@@ -22,7 +22,7 @@ const MainHome = () => {
         keywords="رعاية صحية منزلية, تمريض منزلي, كشف منزلي, تحاليل طبية, علاج طبيعي, انستا هيلث, home nursing, doctor visit, medical analysis, physiotheraphy, egypt"
         ogTitle="انستا هيلث - رعاية صحية في منزلك"
         ogDescription="احصل على أفضل خدمات الرعاية الطبية في منزلك مع انستا هيلث."
-        ogImage="https://instahealth.com/share/home-og.jpg"
+        ogImage="https://insta-health.netlify.app/metalogo.jpeg"
         canonical="https://instahealth.com"
       />
       <HomePopup />

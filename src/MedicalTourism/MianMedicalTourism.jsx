@@ -13,7 +13,7 @@ const MianMedicalTourism = () => {
         keywords="سياحة علاجية, سياحة طبية, علاج في مصر, عمليات تجميل, زراعة اسنان, جراحة قلب, مصحات علاجية, medical tourism egypt, cosmetic surgery, dental tourism, insta health"
         ogTitle="السياحة العلاجية في مصر - جودة طبية وتكلفة منافسة"
         ogDescription="خطط لرحلتك العلاجية الآن مع انستا هيلث. باقات شاملة للعلاج والإقامة في مصر."
-        ogImage="https://instahealth.com/share/medical-tourism-og.jpg"
+        ogImage="https://insta-health.netlify.app/metalogo.jpeg"
         canonical="https://instahealth.com/medical-tourism"
       />
       <ContentPage slugProp="alsyahh-alalajyh" />

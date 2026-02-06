@@ -98,7 +98,7 @@ const ResetPassword = () => {
         keywords="تعيين كلمة مرور جديدة, Insta Health"
         ogTitle="تعيين كلمة مرور جديدة - Insta Health"
         ogDescription="تعيين كلمة مرور جديدة لحسابك."
-        ogImage="https://instahealth.com/share/reset-password-og.jpg"
+        ogImage="https://insta-health.netlify.app/metalogo.jpeg"
         canonical="https://instahealth.com/reset-password"
       />
       <div className=" pt-30 flex items-center justify-center p-4 bg-white">

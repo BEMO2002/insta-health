@@ -296,7 +296,7 @@ const Signup = () => {
         keywords=" انشاء حساب جديد, حسابات, انستا هيلث, signup, account, shopping cart, checkout, buy medical products, medical ecommerce, egypt"
         ogTitle=" انشاء حساب جديد - انستا هيلث"
         ogDescription=" انشاء حساب جديد للوصول إلى حسابك في انستا هيلث."
-        ogImage="https://instahealth.com/share/cart-og.jpg"
+        ogImage="https://insta-health.netlify.app/metalogo.jpeg"
         canonical="https://instahealth.com/signup"
       />
       <div className="min-h-screen auth-container flex items-center justify-center p-2">
